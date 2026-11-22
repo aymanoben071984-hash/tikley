@@ -1,0 +1,3 @@
+Quran text: Tanzil Project (tanzil.net), Uthmani edition, retrieved via api.alquran.cloud.
+Verbatim copies are permitted with this attribution; the text must not be modified.
+The Basmala that prefixes ayah 1 of each surah (except 1 and 9) is shown separately by the overlay and removed from ayah 1 here.
