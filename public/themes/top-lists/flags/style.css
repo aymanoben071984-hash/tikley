@@ -1,0 +1,722 @@
+/* Country Flags Top List — shared stylesheet for every flags-<country> design.
+   The wrapper carries data-country (flag colors/emblem) and data-direction
+   ("rtl" = avatar right & bars grow leftward, the native look of the reference
+   designs; "ltr" = fully mirrored). NO backdrop-filter and NO filter:blur()
+   anywhere — both render as opaque black in TikTok LIVE Studio sources. */
+
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;900&family=Orbitron:wght@700;900&display=swap');
+
+.wrapper {
+  /* Per-country vars — every country block below overrides these. */
+  --accent: #FFD700;          /* rank-1 borders/glows */
+  --row-glow: rgba(255, 215, 0, 0.35);
+  --flag: linear-gradient(180deg, #333 0%, #555 100%);
+  --tri-color: transparent;   /* hoist triangle/band color */
+  /* Base on the hoist (outer) edge, apex pointing INTO the bar — the shapes
+     are authored for the RTL position (right edge); LTR mirrors via scaleX. */
+  --tri-clip: polygon(100% 0, 0 50%, 100% 100%);
+  --tri-width: 42px;
+  --emblem: none;             /* data-uri SVG, sits on the hoist side */
+  --emblem-size: 26px;
+  --metric-glow: #FF2A6D;
+
+  font-family: 'Cairo', sans-serif;
+  display: block;
+  width: 100%;
+}
+
+.flag-list {
+  display: flex;
+  flex-direction: column;
+  /* Roomier than the reference: each row's name chip sits fully above the
+     bar's top edge and needs that much clearance from the row above. */
+  gap: 24px;
+  padding: 22px 0 10px;
+}
+
+/* ── Row ─────────────────────────────────────────────────────────── */
+.rank-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px;
+  opacity: 0;
+  transform: translateY(-18px);
+  animation: fl-row-in 0.55s cubic-bezier(0.34, 1.4, 0.64, 1) forwards;
+}
+/* rtl (default look): avatar column on the right, bars anchored right */
+.wrapper[data-direction="rtl"] .rank-bar { flex-direction: row; justify-content: flex-end; }
+.wrapper[data-direction="ltr"] .rank-bar { flex-direction: row-reverse; justify-content: flex-end; }
+
+.rank-bar[data-rank="1"] { animation-delay: 0.05s; }
+.rank-bar[data-rank="2"] { animation-delay: 0.15s; }
+.rank-bar[data-rank="3"] { animation-delay: 0.25s; }
+.rank-bar[data-rank="4"] { animation-delay: 0.35s; }
+.rank-bar[data-rank="5"] { animation-delay: 0.45s; }
+.rank-bar[data-rank="6"] { animation-delay: 0.55s; }
+.rank-bar[data-rank="7"] { animation-delay: 0.65s; }
+
+@keyframes fl-row-in {
+  from { opacity: 0; transform: translateY(-20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Stepped widths: rank 1 longest, shrinking toward rank 7. */
+.rank-bar[data-rank="1"] .mid { width: 372px; }
+.rank-bar[data-rank="2"] .mid { width: 356px; }
+.rank-bar[data-rank="3"] .mid { width: 340px; }
+.rank-bar[data-rank="4"] .mid { width: 324px; }
+.rank-bar[data-rank="5"] .mid { width: 308px; }
+.rank-bar[data-rank="6"] .mid { width: 292px; }
+.rank-bar[data-rank="7"] .mid { width: 276px; }
+
+/* ── Flag bar ─────────────────────────────────────────────────────── */
+.mid {
+  position: relative;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+}
+
+.bar-track {
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--flag);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.35);
+}
+.rank-bar[data-rank="1"] .bar-track {
+  border: 1px solid var(--accent);
+  box-shadow: 0 0 18px var(--row-glow);
+}
+
+/* Hoist triangle / band — anchored to the avatar (hoist) side. */
+.tri {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: var(--tri-width);
+  background: var(--tri-color);
+}
+.wrapper[data-direction="rtl"] .tri { right: 0; clip-path: var(--tri-clip); }
+.wrapper[data-direction="ltr"] .tri { left: 0; clip-path: var(--tri-clip); transform: scaleX(-1); }
+
+/* Country emblem (star/crescent/sun/…) near the hoist side. */
+.emblem {
+  position: absolute;
+  top: 50%;
+  width: var(--emblem-size);
+  height: var(--emblem-size);
+  transform: translateY(-50%);
+  background: var(--emblem) center / contain no-repeat;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.55));
+  pointer-events: none;
+}
+.wrapper[data-direction="rtl"] .emblem { right: 12px; }
+.wrapper[data-direction="ltr"] .emblem { left: 12px; }
+
+/* Moving sheen highlight. */
+.sheen { position: absolute; inset: 0; overflow: hidden; }
+.sheen::after {
+  content: '';
+  position: absolute;
+  top: -40%;
+  left: -60%;
+  width: 40%;
+  height: 180%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+  transform: rotate(18deg);
+  animation: fl-sheen 3.2s linear infinite;
+}
+@keyframes fl-sheen { from { left: -60%; } to { left: 140%; } }
+
+.bar-line {
+  position: absolute;
+  bottom: 0;
+  left: 6px;
+  right: 6px;
+  height: 3px;
+  border-radius: 0 0 8px 8px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  box-shadow: 0 0 10px var(--row-glow);
+}
+
+/* ── Row content ──────────────────────────────────────────────────── */
+.hud {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  gap: 10px;
+  padding: 0 12px;
+}
+/* Leave room for the emblem/triangle on the hoist side. */
+.wrapper[data-direction="rtl"] .hud { flex-direction: row; padding-right: 48px; }
+.wrapper[data-direction="ltr"] .hud { flex-direction: row-reverse; padding-left: 48px; }
+
+.metric {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.metric.pulse { animation: fl-pulse 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.5); }
+@keyframes fl-pulse {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+.icon { width: 21px; height: 21px; flex-shrink: 0; }
+.icon-heart { fill: #E4312B; filter: drop-shadow(0 0 5px var(--metric-glow)); animation: fl-spin 2.6s linear infinite; }
+.icon-coin { filter: drop-shadow(0 0 5px #FFAA00); animation: fl-spin 2.6s linear infinite; }
+@keyframes fl-spin {
+  0% { transform: rotateY(0deg) scale(1); }
+  50% { transform: rotateY(180deg) scale(1.12); }
+  100% { transform: rotateY(360deg) scale(1); }
+}
+/* Which metric icon shows follows the board type (set by the loader). */
+.wrapper[data-widget-type="top_likes"] .icon-coin { display: none; }
+.wrapper[data-widget-type="top_gifters"] .icon-heart { display: none; }
+
+.score {
+  font-family: 'Orbitron', monospace;
+  font-size: 16px;
+  font-weight: 900;
+  color: #fff;
+  min-width: 48px;
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 6px var(--metric-glow), 0 2px 4px rgba(0, 0, 0, 0.95);
+}
+.wrapper[data-direction="rtl"] .score { text-align: left; }
+.wrapper[data-direction="ltr"] .score { text-align: right; }
+.rank-bar[data-rank="1"] .score { font-size: 17px; }
+
+/* Username chip — a small bordered pill riding the bar's top edge, so the
+   name never sits ON the flag itself. Dark body + a border in the country's
+   accent color ties it to the flag without covering it. */
+.name-chip {
+  position: absolute;
+  /* Rest EXACTLY on the flag's top border: the chip's bottom edge is anchored
+     to the bar's top edge (bottom:100% of .mid, whose inset-0 child IS the
+     flag), overlapping 2px so chip and flag visibly touch on the line. */
+  bottom: 100%;
+  margin-bottom: -2px;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  max-width: 72%;
+  padding: 2px 12px;
+  border-radius: 999px;
+  background: rgba(8, 9, 14, 0.9);
+  border: 1.5px solid var(--accent);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.55), 0 0 10px var(--row-glow);
+}
+.wrapper[data-direction="rtl"] .name-chip { right: 12px; }
+.wrapper[data-direction="ltr"] .name-chip { left: 12px; }
+.rank-bar[data-rank="1"] .name-chip {
+  border-width: 2px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.55), 0 0 14px var(--row-glow);
+}
+
+/* Pure white by default — the chip body is near-black, so white fits every
+   flag; the dashboard's Name color setting overrides it per board. */
+.name {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  font-size: 15px;
+  font-weight: 900;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #fff;
+  letter-spacing: 0.3px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+}
+/* Rank 1 keeps plain white too (no color-cycling animation): the chip body is
+   near-black, so white is the readable default for every name — the Name
+   color setting still overrides it per board. */
+.rank-bar[data-rank="1"] .name { font-size: 16px; }
+/* Floating hearts/coins burst — spawned by the renderer on score change. */
+.burst {
+  position: absolute;
+  top: -8px;
+  width: 34px;
+  height: 34px;
+  pointer-events: none;
+  z-index: 6;
+}
+.wrapper[data-direction="rtl"] .burst { left: -6px; }
+.wrapper[data-direction="ltr"] .burst { right: -6px; }
+.float-p {
+  position: absolute;
+  bottom: 0;
+  font-size: 13px;
+  opacity: 0;
+  animation: fl-float 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  text-shadow: 0 0 6px var(--metric-glow);
+}
+@keyframes fl-float {
+  0% { transform: translateY(0) translateX(0) scale(0.4) rotate(0deg); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 0.85; }
+  100% { transform: translateY(-52px) translateX(var(--rx, 14px)) scale(1.25) rotate(var(--rr, 40deg)); opacity: 0; }
+}
+
+/* ── Avatar column ────────────────────────────────────────────────── */
+.side { flex-shrink: 0; position: relative; }
+.av-wrap {
+  position: relative;
+  width: 54px;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fl-av-cycle 17s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+}
+.rank-bar[data-rank="2"] .av-wrap { animation-delay: 0.15s; }
+.rank-bar[data-rank="3"] .av-wrap { animation-delay: 0.30s; }
+.rank-bar[data-rank="4"] .av-wrap { animation-delay: 0.45s; }
+.rank-bar[data-rank="5"] .av-wrap { animation-delay: 0.60s; }
+.rank-bar[data-rank="6"] .av-wrap { animation-delay: 0.75s; }
+.rank-bar[data-rank="7"] .av-wrap { animation-delay: 0.90s; }
+@keyframes fl-av-cycle {
+  0%, 70.5% { transform: scale(1) rotateY(0deg); }
+  78.5% { transform: scale(1.15) rotateY(180deg); }
+  86.5%, 100% { transform: scale(1) rotateY(360deg); }
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 12px var(--row-glow);
+}
+.ring {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-top-color: var(--accent);
+  border-right-color: var(--accent);
+  animation: fl-ring 3.2s linear infinite;
+  pointer-events: none;
+}
+@keyframes fl-ring { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+.rank-num {
+  position: absolute;
+  bottom: -2px;
+  border-radius: 50%;
+  width: 19px;
+  height: 19px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Orbitron', monospace;
+  font-size: 10px;
+  font-weight: 900;
+  color: #fff;
+  z-index: 5;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  background: linear-gradient(135deg, var(--accent), #111);
+}
+.wrapper[data-direction="rtl"] .rank-num { right: -4px; }
+.wrapper[data-direction="ltr"] .rank-num { left: -4px; }
+
+/* Crown — the same Font Awesome gold crown the Classic main list wears on
+   rank 1 (toggled by the Crown setting). */
+.crown {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 8;
+  font-size: 24px;
+  color: #FFD700;
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.6)) drop-shadow(0 0 8px rgba(255, 215, 0, 0.75));
+  animation: fl-crown 2s ease-in-out infinite alternate;
+}
+.crown i { display: block; }
+@keyframes fl-crown {
+  0% { transform: translateX(-50%) translateY(0) rotate(-2deg); }
+  100% { transform: translateX(-50%) translateY(-3px) rotate(2deg); }
+}
+
+/* ═══ COUNTRY FLAGS ═══════════════════════════════════════════════ */
+/* Each block sets: --flag (stripes), --accent + --row-glow, and optionally
+   --tri-color/--tri-clip (hoist triangle/band) and --emblem (inline SVG). */
+
+.wrapper[data-country="palestine"] {
+  --flag: linear-gradient(180deg, #000 0% 33.4%, #fff 33.4% 66.7%, #007A3D 66.7% 100%);
+  --tri-color: #E4312B;
+  --accent: #E4312B;
+  --row-glow: rgba(228, 49, 43, 0.5);
+}
+
+.wrapper[data-country="saudi"] {
+  --flag: linear-gradient(135deg, #0b3d24 0%, #165d31 55%, #0e4527 100%);
+  --accent: #FFD700;
+  --row-glow: rgba(255, 215, 0, 0.4);
+  --emblem: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 24'%3E%3Crect x='2' y='10' width='52' height='3' rx='1.5' fill='%23fff'/%3E%3Cpath d='M54 8.5l8 3-8 3z' fill='%23fff'/%3E%3C/svg%3E");
+  --emblem-size: 44px;
+}
+
+.wrapper[data-country="syria"] {
+  --flag: linear-gradient(180deg, #009A44 0% 33.4%, #fff 33.4% 66.7%, #111 66.7% 100%);
+  --accent: #CE1126;
+  --row-glow: rgba(206, 17, 38, 0.5);
+  --emblem: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 72 24'%3E%3Cpolygon points='12,4 14.4,10 21,10 15.8,13.8 17.8,20 12,16.4 6.2,20 8.2,13.8 3,10 9.6,10' fill='%23CE1126'/%3E%3Cpolygon points='36,4 38.4,10 45,10 39.8,13.8 41.8,20 36,16.4 30.2,20 32.2,13.8 27,10 33.6,10' fill='%23CE1126'/%3E%3Cpolygon points='60,4 62.4,10 69,10 63.8,13.8 65.8,20 60,16.4 54.2,20 56.2,13.8 51,10 57.6,10' fill='%23CE1126'/%3E%3C/svg%3E");
+  --emblem-size: 58px;
+}
+
+.wrapper[data-country="morocco"] {
+  --flag: linear-gradient(90deg, #6f0917 0%, #9d1020 25%, #d61b32 50%, #ff344f 75%, #b50f20 100%);
+  --accent: #FFD700;
+  --row-glow: rgba(255, 215, 0, 0.45);
+  --emblem: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpolygon points='50,8 61,38 93,38 67,57 77,88 50,69 23,88 33,57 7,38 39,38' fill='none' stroke='%23006233' stroke-width='7'/%3E%3C/svg%3E");
+}
+
+.wrapper[data-country="kurdistan"] {
+  --flag: linear-gradient(180deg, #ED2024 0% 33.4%, #fff 33.4% 66.7%, #278E43 66.7% 100%);
+  --accent: #FEBD11;
+  --row-glow: rgba(254, 189, 17, 0.5);
+  --emblem: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cg fill='%23FEBD11'%3E%3Ccircle cx='20' cy='20' r='8'/%3E%3Cg%3E%3Cpath d='M20 0l1.8 9-1.8 3-1.8-3z'/%3E%3Cpath d='M20 40l1.8-9-1.8-3-1.8 3z'/%3E%3Cpath d='M0 20l9-1.8 3 1.8-3 1.8z'/%3E%3Cpath d='M40 20l-9-1.8-3 1.8 3 1.8z'/%3E%3Cpath d='M5.9 5.9l7.6 5.1.9 3.4-3.4-.9z'/%3E%3Cpath d='M34.1 34.1l-7.6-5.1-.9-3.4 3.4.9z'/%3E%3Cpath d='M34.1 5.9l-5.1 7.6-3.4.9.9-3.4z'/%3E%3Cpath d='M5.9 34.1l5.1-7.6 3.4-.9-.9 3.4z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  --emblem-size: 30px;
+}
+
+.wrapper[data-country="egypt"] {
+  --flag: linear-gradient(180deg, #CE1126 0% 33.4%, #fff 33.4% 66.7%, #111 66.7% 100%);
+  --accent: #C09300;
+  --row-glow: rgba(192, 147, 0, 0.5);
+  --emblem: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2l2 5 4-2-1.5 5.5L21 12l-4 2 1 6-6-3-6 3 1-6-4-2 4.5-1.5L6 5l4 2z' fill='%23C09300'/%3E%3C/svg%3E");
+  --emblem-size: 22px;
+}
+
+.wrapper[data-country="iraq"] {
+  --flag: linear-gradient(180deg, #CE1126 0% 33.4%, #fff 33.4% 66.7%, #111 66.7% 100%);
+  --accent: #007A3D;
+  --row-glow: rgba(0, 122, 61, 0.5);
+  --emblem: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 72 24'%3E%3Cpolygon points='12,4 14.4,10 21,10 15.8,13.8 17.8,20 12,16.4 6.2,20 8.2,13.8 3,10 9.6,10' fill='%23007A3D'/%3E%3Cpolygon points='36,4 38.4,10 45,10 39.8,13.8 41.8,20 36,16.4 30.2,20 32.2,13.8 27,10 33.6,10' fill='%23007A3D'/%3E%3Cpolygon points='60,4 62.4,10 69,10 63.8,13.8 65.8,20 60,16.4 54.2,20 56.2,13.8 51,10 57.6,10' fill='%23007A3D'/%3E%3C/svg%3E");
+  --emblem-size: 52px;
+}
+
+.wrapper[data-country="jordan"] {
+  --flag: linear-gradient(180deg, #000 0% 33.4%, #fff 33.4% 66.7%, #007A3D 66.7% 100%);
+  --tri-color: #CE1126;
+  --accent: #CE1126;
+  --row-glow: rgba(206, 17, 38, 0.5);
+  --emblem: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 3l1.6 5.2 5.4-1.4-3.8 4 3.8 4-5.4-1.4L12 18.6l-1.6-5.2-5.4 1.4 3.8-4-3.8-4 5.4 1.4z' fill='%23fff'/%3E%3C/svg%3E");
+  --emblem-size: 15px;
+}
+
+.wrapper[data-country="lebanon"] {
+  --flag: linear-gradient(180deg, #EE161F 0% 27%, #fff 27% 73%, #EE161F 73% 100%);
+  --accent: #00A651;
+  --row-glow: rgba(0, 166, 81, 0.5);
+  --emblem: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2L7 9h3l-4 5h4l-5 5h6v3h2v-3h6l-5-5h4l-4-5h3z' fill='%2300A651'/%3E%3C/svg%3E");
+  --emblem-size: 24px;
+}
+
+.wrapper[data-country="uae"] {
+  --flag: linear-gradient(180deg, #00843D 0% 33.4%, #fff 33.4% 66.7%, #111 66.7% 100%);
+  --tri-color: #EF3340;
+  --tri-clip: none;
+  --tri-width: 22px;
+  --accent: #EF3340;
+  --row-glow: rgba(239, 51, 64, 0.5);
+}
+
+.wrapper[data-country="kuwait"] {
+  --flag: linear-gradient(180deg, #007A3D 0% 33.4%, #fff 33.4% 66.7%, #CE1126 66.7% 100%);
+  --tri-color: #111;
+  /* Trapezoid: full height on the hoist edge, narrowing into the bar. */
+  --tri-clip: polygon(100% 0, 0 28%, 0 72%, 100% 100%);
+  --accent: #007A3D;
+  --row-glow: rgba(0, 122, 61, 0.5);
+}
+
+.wrapper[data-country="qatar"] {
+  --flag: linear-gradient(90deg, #8A1538 0%, #8A1538 100%);
+  --tri-color: #fff;
+  --tri-clip: polygon(100% 0, 0 6%, 100% 12%, 0 19%, 100% 25%, 0 31%, 100% 38%, 0 44%, 100% 50%, 0 56%, 100% 62%, 0 69%, 100% 75%, 0 81%, 100% 88%, 0 94%, 100% 100%);
+  --tri-width: 30px;
+  --accent: #FFD700;
+  --row-glow: rgba(255, 215, 0, 0.4);
+}
+
+.wrapper[data-country="bahrain"] {
+  --flag: linear-gradient(90deg, #CE1126 0%, #CE1126 100%);
+  --tri-color: #fff;
+  --tri-clip: polygon(100% 0, 0 10%, 100% 20%, 0 30%, 100% 40%, 0 50%, 100% 60%, 0 70%, 100% 80%, 0 90%, 100% 100%);
+  --tri-width: 30px;
+  --accent: #fff;
+  --row-glow: rgba(255, 255, 255, 0.4);
+}
+
+.wrapper[data-country="oman"] {
+  --flag: linear-gradient(180deg, #fff 0% 33.4%, #DB161B 33.4% 66.7%, #008751 66.7% 100%);
+  --tri-color: #DB161B;
+  --tri-clip: none;
+  --tri-width: 22px;
+  --accent: #DB161B;
+  --row-glow: rgba(219, 22, 27, 0.5);
+}
+
+.wrapper[data-country="yemen"] {
+  --flag: linear-gradient(180deg, #CE1126 0% 33.4%, #fff 33.4% 66.7%, #111 66.7% 100%);
+  --accent: #CE1126;
+  --row-glow: rgba(206, 17, 38, 0.5);
+}
+
+.wrapper[data-country="libya"] {
+  --flag: linear-gradient(180deg, #E70013 0% 25%, #111 25% 75%, #239E46 75% 100%);
+  --accent: #239E46;
+  --row-glow: rgba(35, 158, 70, 0.5);
+  --emblem: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M14 2a10 10 0 1 0 0 20 8 8 0 1 1 0-20z' fill='%23fff'/%3E%3Cpath d='M17 9l1 2.6 2.8.2-2.1 1.8.7 2.7L17 14.8l-2.4 1.5.7-2.7-2.1-1.8 2.8-.2z' fill='%23fff'/%3E%3C/svg%3E");
+  --emblem-size: 22px;
+}
+
+.wrapper[data-country="tunisia"] {
+  --flag: linear-gradient(90deg, #E70013 0%, #E70013 100%);
+  --accent: #fff;
+  --row-glow: rgba(255, 255, 255, 0.45);
+  /* White disc, red crescent (two-circle cutout) + red star — centered. */
+  --emblem: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%23fff'/%3E%3Ccircle cx='16' cy='16' r='9.5' fill='%23E70013'/%3E%3Ccircle cx='19' cy='16' r='7.6' fill='%23fff'/%3E%3Cpath d='M18.6 12.4l1.1 2.7 2.9.2-2.2 1.9.7 2.8-2.5-1.5-2.5 1.5.7-2.8-2.2-1.9 2.9-.2z' fill='%23E70013'/%3E%3C/svg%3E");
+  --emblem-size: 30px;
+}
+
+.wrapper[data-country="algeria"] {
+  --flag: linear-gradient(90deg, #006233 0% 50%, #fff 50% 100%);
+  --accent: #D21034;
+  --row-glow: rgba(210, 16, 52, 0.5);
+  --emblem: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M14 3a9 9 0 1 0 0 18 7.4 7.4 0 1 1 0-18z' fill='%23D21034'/%3E%3Cpath d='M15.5 8.8l1 2.5 2.7.2-2 1.8.7 2.6-2.4-1.5-2.4 1.5.7-2.6-2-1.8 2.7-.2z' fill='%23D21034'/%3E%3C/svg%3E");
+  --emblem-size: 26px;
+}
+
+.wrapper[data-country="sudan"] {
+  --flag: linear-gradient(180deg, #CE1126 0% 33.4%, #fff 33.4% 66.7%, #111 66.7% 100%);
+  --tri-color: #007229;
+  --accent: #007229;
+  --row-glow: rgba(0, 114, 41, 0.5);
+}
+
+.wrapper[data-country="turkey"] {
+  --flag: linear-gradient(90deg, #E30A17 0%, #E30A17 100%);
+  --accent: #fff;
+  --row-glow: rgba(255, 255, 255, 0.45);
+  --emblem: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M13 3a9 9 0 1 0 0 18 7.2 7.2 0 1 1 0-18z' fill='%23fff'/%3E%3Cpath d='M17.5 9l1 2.4 2.6.2-2 1.7.7 2.5-2.3-1.4-2.3 1.4.7-2.5-2-1.7 2.6-.2z' fill='%23fff'/%3E%3C/svg%3E");
+  --emblem-size: 26px;
+}
+
+/* ── Europe ─────────────────────────────────────────────────────── */
+
+.wrapper[data-country="spain"] {
+  --flag: linear-gradient(180deg, #AA151B 0% 25%, #F1BF00 25% 75%, #AA151B 75% 100%);
+  --accent: #F1BF00;
+  --row-glow: rgba(241, 191, 0, 0.5);
+}
+
+.wrapper[data-country="france"] {
+  --flag: linear-gradient(90deg, #0055A4 0% 33.4%, #fff 33.4% 66.7%, #EF4135 66.7% 100%);
+  --accent: #0055A4;
+  --row-glow: rgba(0, 85, 164, 0.5);
+}
+
+.wrapper[data-country="germany"] {
+  --flag: linear-gradient(180deg, #000 0% 33.4%, #DD0000 33.4% 66.7%, #FFCE00 66.7% 100%);
+  --accent: #FFCE00;
+  --row-glow: rgba(255, 206, 0, 0.5);
+}
+
+.wrapper[data-country="italy"] {
+  --flag: linear-gradient(90deg, #009246 0% 33.4%, #fff 33.4% 66.7%, #CE2B37 66.7% 100%);
+  --accent: #009246;
+  --row-glow: rgba(0, 146, 70, 0.5);
+}
+
+.wrapper[data-country="uk"] {
+  --flag: linear-gradient(90deg, #012169 0%, #012169 100%);
+  --accent: #C8102E;
+  --row-glow: rgba(200, 16, 46, 0.5);
+  --emblem: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%23012169'/%3E%3Cpath d='M0 0l32 32M32 0L0 32' stroke='%23fff' stroke-width='6'/%3E%3Cpath d='M0 0l32 32M32 0L0 32' stroke='%23C8102E' stroke-width='2.4'/%3E%3Cpath d='M16 0v32M0 16h32' stroke='%23fff' stroke-width='10'/%3E%3Cpath d='M16 0v32M0 16h32' stroke='%23C8102E' stroke-width='5'/%3E%3C/svg%3E");
+  --emblem-size: 32px;
+}
+
+.wrapper[data-country="portugal"] {
+  --flag: linear-gradient(90deg, #006600 0% 38%, #FF0000 38% 100%);
+  --accent: #FFE900;
+  --row-glow: rgba(255, 233, 0, 0.45);
+  --emblem: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='12' fill='none' stroke='%23FFE900' stroke-width='3'/%3E%3Ccircle cx='16' cy='16' r='6' fill='%23D40000'/%3E%3Ccircle cx='16' cy='16' r='3.4' fill='%23fff'/%3E%3C/svg%3E");
+  --emblem-size: 26px;
+}
+
+.wrapper[data-country="netherlands"] {
+  --flag: linear-gradient(180deg, #AE1C28 0% 33.4%, #fff 33.4% 66.7%, #21468B 66.7% 100%);
+  --accent: #FF7F00;
+  --row-glow: rgba(255, 127, 0, 0.45);
+}
+
+.wrapper[data-country="poland"] {
+  --flag: linear-gradient(180deg, #fff 0% 50%, #DC143C 50% 100%);
+  --accent: #DC143C;
+  --row-glow: rgba(220, 20, 60, 0.5);
+}
+
+.wrapper[data-country="sweden"] {
+  --flag: linear-gradient(90deg, transparent 0 28%, #FECC00 28% 40%, transparent 40%), linear-gradient(180deg, transparent 0 38%, #FECC00 38% 62%, transparent 62%), linear-gradient(#006AA7, #006AA7);
+  --accent: #FECC00;
+  --row-glow: rgba(254, 204, 0, 0.5);
+}
+
+.wrapper[data-country="greece"] {
+  --flag: repeating-linear-gradient(180deg, #0D5EAF 0 11.1%, #fff 11.1% 22.2%);
+  --accent: #0D5EAF;
+  --row-glow: rgba(13, 94, 175, 0.5);
+  --emblem: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%230D5EAF'/%3E%3Cpath d='M16 0v32M0 16h32' stroke='%23fff' stroke-width='8'/%3E%3C/svg%3E");
+  --emblem-size: 28px;
+}
+
+.wrapper[data-country="ukraine"] {
+  --flag: linear-gradient(180deg, #0057B7 0% 50%, #FFD700 50% 100%);
+  --accent: #FFD700;
+  --row-glow: rgba(255, 215, 0, 0.5);
+}
+
+.wrapper[data-country="albania"] {
+  --flag: linear-gradient(90deg, #DA291C 0%, #DA291C 100%);
+  --accent: #FFD700;
+  --row-glow: rgba(0, 0, 0, 0.6);
+  --emblem: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 4l-3 4-5-3 2 5-6 1 5 3-4 4 6-1-1 6 4-4 2 6 2-6 4 4-1-6 6 1-4-4 5-3-6-1 2-5-5 3z' fill='%23111'/%3E%3C/svg%3E");
+  --emblem-size: 28px;
+}
+
+/* ── Latin America ──────────────────────────────────────────────── */
+
+.wrapper[data-country="brazil"] {
+  --flag: linear-gradient(90deg, #009739 0%, #009739 100%);
+  --accent: #FEDD00;
+  --row-glow: rgba(254, 221, 0, 0.5);
+  --emblem: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 3L30 16 16 29 2 16z' fill='%23FEDD00'/%3E%3Ccircle cx='16' cy='16' r='7' fill='%23012169'/%3E%3Cpath d='M9.8 14.6c4-1.6 8.8-.6 12.6 1.9' stroke='%23fff' stroke-width='1.6' fill='none'/%3E%3C/svg%3E");
+  --emblem-size: 30px;
+}
+
+.wrapper[data-country="argentina"] {
+  --flag: linear-gradient(180deg, #74ACDF 0% 33.4%, #fff 33.4% 66.7%, #74ACDF 66.7% 100%);
+  --accent: #F6B40E;
+  --row-glow: rgba(246, 180, 14, 0.5);
+  --emblem: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cg fill='%23F6B40E'%3E%3Ccircle cx='20' cy='20' r='7'/%3E%3Cpath d='M20 2l1.6 8-1.6 2.6L18.4 10z'/%3E%3Cpath d='M20 38l1.6-8-1.6-2.6-1.6 2.6z'/%3E%3Cpath d='M2 20l8-1.6 2.6 1.6-2.6 1.6z'/%3E%3Cpath d='M38 20l-8-1.6-2.6 1.6 2.6 1.6z'/%3E%3Cpath d='M7.3 7.3l6.8 4.5.8 3-3-.8z'/%3E%3Cpath d='M32.7 32.7l-6.8-4.5-.8-3 3 .8z'/%3E%3Cpath d='M32.7 7.3l-4.5 6.8-3 .8.8-3z'/%3E%3Cpath d='M7.3 32.7l4.5-6.8 3-.8-.8 3z'/%3E%3C/g%3E%3C/svg%3E");
+  --emblem-size: 26px;
+}
+
+.wrapper[data-country="mexico"] {
+  --flag: linear-gradient(90deg, #006341 0% 33.4%, #fff 33.4% 66.7%, #C8102E 66.7% 100%);
+  --accent: #006341;
+  --row-glow: rgba(0, 99, 65, 0.5);
+  --emblem: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 6c-2.4 3.4-6.8 4.6-10.2 3.4 2.3 2.3 5.7 3.4 8 3.4l-3.4 6.9 5.6-3.4 5.6 3.4-3.4-6.9c2.3 0 5.7-1.1 8-3.4C22.8 10.6 18.4 9.4 16 6z' fill='%236B4A2B'/%3E%3Cpath d='M12 24h8l-1.4 3h-5.2z' fill='%23006341'/%3E%3C/svg%3E");
+  --emblem-size: 26px;
+}
+
+.wrapper[data-country="colombia"] {
+  --flag: linear-gradient(180deg, #FCD116 0% 50%, #003893 50% 75%, #CE1126 75% 100%);
+  --accent: #FCD116;
+  --row-glow: rgba(252, 209, 22, 0.5);
+}
+
+.wrapper[data-country="chile"] {
+  --flag: linear-gradient(180deg, #fff 0% 50%, #D52B1E 50% 100%);
+  --tri-color: #0039A6;
+  --tri-clip: none;
+  --tri-width: 34px;
+  --accent: #D52B1E;
+  --row-glow: rgba(213, 43, 30, 0.5);
+  --emblem: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 3l1.9 5.9 6.2.1-5 3.7 1.9 5.9-5-3.6-5 3.6 1.9-5.9-5-3.7 6.2-.1z' fill='%23fff'/%3E%3C/svg%3E");
+  --emblem-size: 16px;
+}
+
+.wrapper[data-country="peru"] {
+  --flag: linear-gradient(90deg, #D91023 0% 33.4%, #fff 33.4% 66.7%, #D91023 66.7% 100%);
+  --accent: #D91023;
+  --row-glow: rgba(217, 16, 35, 0.5);
+}
+
+.wrapper[data-country="venezuela"] {
+  --flag: linear-gradient(180deg, #FFCC00 0% 33.4%, #00247D 33.4% 66.7%, #CF142B 66.7% 100%);
+  --accent: #FFCC00;
+  --row-glow: rgba(255, 204, 0, 0.5);
+  --emblem: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 20'%3E%3Cg fill='%23fff'%3E%3Ccircle cx='6' cy='14' r='1.7'/%3E%3Ccircle cx='11' cy='9.5' r='1.7'/%3E%3Ccircle cx='17' cy='6.5' r='1.7'/%3E%3Ccircle cx='24' cy='5.5' r='1.7'/%3E%3Ccircle cx='31' cy='6.5' r='1.7'/%3E%3Ccircle cx='37' cy='9.5' r='1.7'/%3E%3Ccircle cx='42' cy='14' r='1.7'/%3E%3C/g%3E%3C/svg%3E");
+  --emblem-size: 40px;
+}
+
+.wrapper[data-country="ecuador"] {
+  --flag: linear-gradient(180deg, #FFDD00 0% 50%, #034EA2 50% 75%, #ED1C24 75% 100%);
+  --accent: #FFDD00;
+  --row-glow: rgba(255, 221, 0, 0.5);
+}
+
+.wrapper[data-country="uruguay"] {
+  --flag: repeating-linear-gradient(180deg, #fff 0 11.1%, #0038A8 11.1% 22.2%);
+  --accent: #FCD116;
+  --row-glow: rgba(252, 209, 22, 0.5);
+  --emblem: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cg fill='%23FCD116'%3E%3Ccircle cx='20' cy='20' r='7'/%3E%3Cpath d='M20 2l1.6 8-1.6 2.6L18.4 10z'/%3E%3Cpath d='M20 38l1.6-8-1.6-2.6-1.6 2.6z'/%3E%3Cpath d='M2 20l8-1.6 2.6 1.6-2.6 1.6z'/%3E%3Cpath d='M38 20l-8-1.6-2.6 1.6 2.6 1.6z'/%3E%3Cpath d='M7.3 7.3l6.8 4.5.8 3-3-.8z'/%3E%3Cpath d='M32.7 32.7l-6.8-4.5-.8-3 3 .8z'/%3E%3Cpath d='M32.7 7.3l-4.5 6.8-3 .8.8-3z'/%3E%3Cpath d='M7.3 32.7l4.5-6.8 3-.8-.8 3z'/%3E%3C/g%3E%3C/svg%3E");
+  --emblem-size: 24px;
+}
+
+.wrapper[data-country="cuba"] {
+  --flag: repeating-linear-gradient(180deg, #002A8F 0 20%, #fff 20% 40%);
+  --tri-color: #CF142B;
+  --accent: #CF142B;
+  --row-glow: rgba(207, 20, 43, 0.5);
+  --emblem: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 3l1.9 5.9 6.2.1-5 3.7 1.9 5.9-5-3.6-5 3.6 1.9-5.9-5-3.7 6.2-.1z' fill='%23fff'/%3E%3C/svg%3E");
+  --emblem-size: 14px;
+}
+
+/* ── Center-placed emblems ────────────────────────────────────────
+   These flags carry their stars/symbol in the CENTER of the flag (Syria and
+   Iraq's stars sit in the middle band, crescents/suns/etc. are centered), not
+   at the hoist. Must come AFTER the base [data-direction] emblem rules — the
+   specificity ties and source order lets this win in both directions. The
+   emblem sits inside .bar-track (below the .hud text), so it reads as part of
+   the flag behind the names. Countries whose emblem genuinely lives in a
+   triangle/canton/band (jordan, chile, cuba, greece, uk, portugal) keep the
+   hoist placement. */
+.wrapper:is(
+  [data-country="syria"],
+  [data-country="iraq"],
+  [data-country="saudi"],
+  [data-country="kurdistan"],
+  [data-country="egypt"],
+  [data-country="lebanon"],
+  [data-country="libya"],
+  [data-country="tunisia"],
+  [data-country="algeria"],
+  [data-country="turkey"],
+  [data-country="albania"],
+  [data-country="brazil"],
+  [data-country="argentina"],
+  [data-country="mexico"],
+  [data-country="venezuela"],
+  [data-country="uruguay"]
+) .emblem {
+  left: 50%;
+  right: auto;
+  transform: translate(-50%, -50%);
+}
+
+/* Coin particles are the shared TikTok coin SVG (/assets/tiktok-coin.svg);
+   sizing off 1em keeps them in step with each theme's .float-p font-size. */
+.float-p img {
+  width: 1.2em;
+  height: 1.2em;
+  display: block;
+  filter: drop-shadow(0 0 6px rgba(255, 190, 60, 0.85));
+}
