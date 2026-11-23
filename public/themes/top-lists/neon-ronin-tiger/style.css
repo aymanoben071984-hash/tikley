@@ -1,0 +1,421 @@
+/* Neon Ronin Tiger — cyberpunk ring podium (Thunderclaw build). The animated
+   asset is a neon-streak ring that FLASHES on and off, like Thunderclaw's lightning. */
+.wrapper {
+  /* Theme knobs — the only per-design differences in this family. */
+  --ring-y: 45.5%; /* window centre measured from frame.png (901x764 window, 71.9% of the canvas) */
+  --av-inset: 1.7%; /* 71.9% window -> between Solar Phoenix (69.3 -> 3) and Crimson (73.1 -> 1) */
+  --name-glow: rgba(24, 219, 227, 0.55); /* streamer default: #18dbe3 */
+  --score-color: #18dbe3;
+  --badge-a: #18dbe3; /* rank badges in the board default #18dbe3 (was magenta) */
+  --badge-b: #0b7f86;
+  /* Name plate — each board's own palette, so the two stop reading as the
+     same design in different photos. */
+  --plate-a: #0b1526;
+  --plate-b: #05080f;
+  --plate-edge: rgba(24, 219, 227, 0.8);
+  /* The host already fits this 840px podium to the available preview/OBS width.
+     A second 0.75 zoom here made the complete board render needlessly tiny. */
+  zoom: 1;
+  width: 100%;
+  min-height: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.podium-container {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: flex-end;
+  justify-content: center;
+  position: relative;
+  gap: 0;
+  padding: 60px 10px 26px;
+  /* CONSTANT board width — the full five-slot span, even when fewer ranks are
+     visible. The host's podium auto-zoom scales by the container's natural
+     width, so without this a 1-entry list rendered a giant ring and a 5-entry
+     list a small one; a fixed span keeps the size the streamer set no matter
+     how the likes/coins rotation reshuffles the list. */
+  width: 840px;
+  box-sizing: border-box;
+}
+
+.rank-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 5;
+  opacity: 1;
+  --tr-y: 0px;
+  transform: translateY(var(--tr-y));
+  transition: transform 0.55s ease, opacity 0.55s ease;
+  margin: 0 -10px;
+}
+
+.rank-1 {
+  transform: translateY(-34px) scale(1.12);
+  z-index: 50;
+}
+
+.rank-4,
+.rank-5 {
+  z-index: 4;
+  transform: translateY(4px) scale(0.92);
+  transform-origin: bottom center;
+}
+
+/* Dataset-switch animations (renderer adds/removes these classes). */
+.rank-unit.tr-switch-out-up { --tr-y: -90px; opacity: 0; }
+.rank-unit.tr-switch-out-down { --tr-y: 90px; opacity: 0; }
+.rank-unit.tr-switch-in-from-up { --tr-y: -90px; opacity: 0; }
+.rank-unit.tr-switch-in-from-down { --tr-y: 90px; opacity: 0; }
+.rank-unit.rank-1.tr-switch-in-rank1-from-down { --tr-y: 120px; opacity: 0; }
+.rank-unit.rank-1.tr-switch-out-up { transform: translateY(-90px) scale(1.12) !important; }
+.rank-unit.rank-1.tr-switch-out-down { transform: translateY(90px) scale(1.12) !important; }
+.rank-unit.rank-1.tr-switch-in-from-up { transform: translateY(-90px) scale(1.12) !important; }
+.rank-unit.rank-1.tr-switch-in-from-down { transform: translateY(90px) scale(1.12) !important; }
+.rank-unit.rank-1.tr-switch-in-rank1-from-down { transform: translateY(120px) scale(1.12) !important; }
+.rank-unit.rank-4.tr-switch-out-up,
+.rank-unit.rank-5.tr-switch-out-up { transform: translateY(-86px) scale(0.92) !important; }
+.rank-unit.rank-4.tr-switch-out-down,
+.rank-unit.rank-5.tr-switch-out-down { transform: translateY(94px) scale(0.92) !important; }
+.rank-unit.rank-4.tr-switch-in-from-up,
+.rank-unit.rank-5.tr-switch-in-from-up { transform: translateY(-86px) scale(0.92) !important; }
+.rank-unit.rank-4.tr-switch-in-from-down,
+.rank-unit.rank-5.tr-switch-in-from-down { transform: translateY(94px) scale(0.92) !important; }
+
+/* Avatar block: photo circle behind, ring art over it, fx art over that. */
+.avatar-container {
+  position: relative;
+  /* Low pivot: the unit leans like a card standing on its base. */
+  width: 150px;
+  height: 150px;
+}
+
+.rank-1 .avatar-container { width: 184px; height: 184px; }
+.rank-4 .avatar-container,
+.rank-5 .avatar-container { width: 134px; height: 134px; }
+
+.avatar-circle {
+  position: absolute;
+  /* Sized so the photo's edge lands exactly under the ring art's inner edge
+     (per-theme: each art's transparent window is a slightly different size).
+     Negative inset = photo a hair LARGER than the box, tucked under the ring. */
+  inset: var(--av-inset);
+  border-radius: 50%;
+  overflow: hidden;
+  background: #000;
+  z-index: 1;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* The drawn ring: its transparent window is ~74-75% of the canvas, so at 135%
+   of the avatar box the ring's inner edge lands on the photo's edge. The
+   window centre sits at --ring-y of the art's height (measured per theme). */
+.ring-frame {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 135%;
+  height: 135%;
+  max-width: none;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.ring-frame {
+  transform: translate(-50%, calc(0% - var(--ring-y)));
+  z-index: 2;
+}
+
+
+/* Whole-unit float — staggered so the podium breathes without moving in lockstep. */
+.rank-2 .avatar-container, .rank-3 .avatar-container,
+.rank-4 .avatar-container, .rank-5 .avatar-container {
+  animation: unit-float 5.2s ease-in-out infinite;
+  will-change: transform;
+}
+.rank-1 .avatar-container { animation: unit-float 4.6s ease-in-out infinite; will-change: transform; }
+.rank-2 .avatar-container { animation-delay: -1.2s; }
+.rank-3 .avatar-container { animation-delay: -2.4s; }
+.rank-4 .avatar-container { animation-delay: -3.4s; }
+.rank-5 .avatar-container { animation-delay: -4.2s; }
+
+@keyframes unit-float {
+  /* Crystal Comet's float, verbatim: a smooth 6px rise and settle, no tilt.
+     (The card-lean version this replaced rotated each unit around 50% 72%,
+     which read as a different animation from the rest of the family.) */
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* The theme's drawn crown — rank #1 only, seated just above the ring's top
+   edge with a gentle GPU-only bob. (Each theme ships its own matching tiara.) */
+.crown-top {
+  /* Crown geometry is MEASURED, never hand-tuned, and the PNG is never re-encoded.
+     Every crown in this family renders at the same on-screen size and height:
+     visible gold = 40.7% of the rank-1 unit, gold base 11.7px into the ring.
+     Both numbers below are derived from THIS PNG's own alpha padding and from
+     how far frame.png overflows the unit, so they differ per theme for the same
+     result — copying another theme's percentages will not line up. Measure the
+     RESTING position (crown-bob frozen) if you re-derive them. */
+  position: absolute;
+  bottom: 95.77%; /* Seat matched to Thunderclaw by measuring the RESTING position with crown-bob frozen. Depends on this PNG's own bottom padding and how far frame.png overflows the unit — never copy another theme's number. */
+  left: 50%;
+  width: 61.8%; /* sized to Thunderclaw: visible gold = 41% of the unit. This PNG is tall art (gold fills only 66% of the canvas height), so the % differs from other themes for the same on-screen size. */
+  max-width: none;
+  object-fit: contain;
+  pointer-events: none;
+  z-index: 5;
+  transform: translateX(-50%);
+  animation: crown-bob 4s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes crown-bob {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-6px); }
+}
+
+/* Rank number badge — requested explicitly: 1 / 2 / 3… on every unit. */
+.rank-badge {
+  position: absolute;
+  /* Lower-LEFT, not bottom-centre: the fox sits at the bottom of this ring,
+     and the badge used to land right on its head. */
+  bottom: 6%;
+  left: 1%;
+  z-index: 6;
+  width: 34px;
+  min-width: 34px;
+  height: 34px;
+  padding: 0;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: linear-gradient(160deg, var(--badge-a), var(--badge-b));
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  color: #fff;
+  font-family: "Montserrat", "Segoe UI", sans-serif;
+  font-size: 17px;
+  font-weight: 900;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+}
+
+.rank-1 .rank-badge { width: 40px; min-width: 40px; height: 40px; font-size: 20px; }
+
+/* Name + score under the avatar — same plain treatment the retired podiums
+   settled on (no plate box). */
+.player-name {
+  display: block;
+  /* Above the fx overlay art (which reaches below the avatar box) — the name
+     and score must never hide behind flames/clouds. */
+  position: relative;
+  z-index: 7;
+  margin-top: 16px;
+  font-family: "Tajawal", "Segoe UI", Tahoma, sans-serif;
+  color: #ffffff;
+  font-size: 1.15rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+  text-align: center;
+  width: 170px;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow:
+    0 0 6px #000,
+    0 0 12px rgba(0, 0, 0, 0.9),
+    0 1px 3px #000,
+    0 0 14px var(--name-glow);
+}
+
+.rank-1 .player-name { font-size: 1.3rem; width: 190px; }
+
+.support-value-box,
+.score {
+  position: relative;
+  z-index: 7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.score-value {
+  color: var(--score-color);
+  font-size: 23px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  font-family: "Montserrat", "Segoe UI", sans-serif;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+}
+
+.rank-1 .score-value { font-size: 26px; }
+
+.icon-heart,
+.icon-coin {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+.icon-heart { fill: #ff2d55; filter: drop-shadow(0 0 8px rgba(182, 0, 0, 0.8)); }
+.icon-coin { filter: drop-shadow(0 0 8px rgba(255, 172, 51, 0.9)); }
+
+/* Icon micro-motion only on #1 — animating all five keeps 8 extra GPU layers
+   alive for movement nobody notices. */
+.icon-heart { animation: heartBeat 1s ease-in-out infinite; will-change: transform; }
+.icon-coin { animation: coinRotate 5s linear infinite; will-change: transform; }
+
+@keyframes heartBeat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+@keyframes coinRotate {
+  from { transform: rotateY(0deg); }
+  to { transform: rotateY(360deg); }
+}
+
+[data-widget-type="top_likes"] .icon-coin { display: none; }
+[data-widget-type="top_gifters"] .icon-heart { display: none; }
+
+[data-visible-ranks="1"] .rank-2,
+[data-visible-ranks="1"] .rank-3,
+[data-visible-ranks="1"] .rank-4,
+[data-visible-ranks="1"] .rank-5 { display: none !important; }
+[data-visible-ranks="2"] .rank-3,
+[data-visible-ranks="2"] .rank-4,
+[data-visible-ranks="2"] .rank-5 { display: none !important; }
+[data-visible-ranks="3"] .rank-4,
+[data-visible-ranks="3"] .rank-5 { display: none !important; }
+[data-visible-ranks="4"] .rank-5 { display: none !important; }
+
+
+/* Name plate: the board's palette behind the name. Static shadow (never
+   animated) so it costs nothing per frame. */
+.player-name {
+  background: linear-gradient(150deg, var(--plate-a), var(--plate-b));
+  border: 1px solid var(--plate-edge);
+  border-radius: 999px;
+  padding: 3px 14px;
+  box-sizing: border-box;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+/* Storm ring (lightning, crescents and sparks) orbiting the wolf frame —
+   the Crystal Comet treatment at the quicker 16s turn the streamer asked
+   for. Pivots on the art's window centre so it circles the avatar. */
+.ring-fx {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 140%;
+  height: 140%;
+  max-width: none;
+  object-fit: contain;
+  pointer-events: none;
+  transform: translate(-50%, calc(0% - var(--ring-y)));
+  z-index: 3;
+  /* Lightning, not an orbit: the ring flashes on and dies out on an irregular
+     beat, so it reads as strikes rather than a pulse. Opacity only. */
+  animation: nr-fx-flash 5.3s linear infinite;
+  will-change: transform;
+}
+@keyframes nr-fx-flash {
+  0%   { opacity: 0.12; }
+  3%   { opacity: 1; }
+  5%   { opacity: 0.35; }
+  8%   { opacity: 1; }
+  12%  { opacity: 0.18; }
+  22%  { opacity: 0.22; }
+  24%  { opacity: 0.95; }
+  26%  { opacity: 0.3; }
+  41%  { opacity: 0.18; }
+  43%  { opacity: 1; }
+  45%  { opacity: 0.4; }
+  47%  { opacity: 1; }
+  51%  { opacity: 0.2; }
+  72%  { opacity: 0.22; }
+  74%  { opacity: 0.85; }
+  76%  { opacity: 0.2; }
+  100% { opacity: 0.12; }
+}
+/* Each slot strikes on its own beat (negative delay = already mid-cycle). */
+.rank-2 .ring-fx { animation-delay: -1.3s; }
+.rank-3 .ring-fx { animation-delay: -2.7s; }
+.rank-4 .ring-fx { animation-delay: -3.9s; }
+.rank-5 .ring-fx { animation-delay: -0.8s; }
+
+/* ── Right-to-left (2026-09-19): the units are laid out side by side, so the
+   mirror is their ORDER (and the text runs) — the Layout direction switch
+   used to do nothing on this design. */
+#theme-wrapper[data-direction="rtl"] .podium-container { direction: rtl; }
+
+/* ── ONE plate for the name AND the count (2026-09-19). The count used to hang
+   loose under the name pill; now the pill grows a lower band and the count
+   rides up into it, over a hairline. Two glyphs (see the ::before/::after
+   content) travel an ellipse around the plate — transform + opacity only.
+   "Avatars only" hides the name; the host then dresses the count as the
+   plate itself (hideNamesCss), so it keeps the same place under the photo. */
+.player-name {
+  border-radius: 18px;
+  padding: 5px 16px 36px;
+  background:
+    linear-gradient(90deg, transparent 12%, var(--plate-edge) 50%, transparent 88%) center bottom 34px / 100% 1px no-repeat,
+    linear-gradient(150deg, var(--plate-a), var(--plate-b));
+}
+.support-value-box,
+.score {
+  margin-top: -34px;
+  z-index: 8;
+  height: 32px;
+}
+.score::before,
+.score::after {
+  position: absolute;
+  left: 50%;
+  top: -14px;
+  --rx: 98px;
+  --ry: 34px;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  font-size: 13px;
+  line-height: 14px;
+  text-align: center;
+  color: var(--score-color);
+  text-shadow: 0 0 6px var(--name-glow), 0 0 10px var(--name-glow);
+  pointer-events: none;
+  z-index: 9;
+  animation: lb-orbit 9s linear infinite, lb-orbit-twinkle 2s ease-in-out infinite;
+  will-change: transform;
+}
+.score::before { content: "\2726"; }
+.score::after { content: "\2727"; font-size: 10px; animation-delay: -4.5s, -0.7s; }
+.rank-1 .score::before, .rank-1 .score::after { --rx: 108px; }
+@keyframes lb-orbit {
+  0%    { transform: translate(var(--rx), 0); }
+  12.5% { transform: translate(calc(var(--rx) * 0.7071), calc(var(--ry) * 0.7071)); }
+  25%   { transform: translate(0, var(--ry)); }
+  37.5% { transform: translate(calc(var(--rx) * -0.7071), calc(var(--ry) * 0.7071)); }
+  50%   { transform: translate(calc(var(--rx) * -1), 0); }
+  62.5% { transform: translate(calc(var(--rx) * -0.7071), calc(var(--ry) * -0.7071)); }
+  75%   { transform: translate(0, calc(var(--ry) * -1)); }
+  87.5% { transform: translate(calc(var(--rx) * 0.7071), calc(var(--ry) * -0.7071)); }
+  100%  { transform: translate(var(--rx), 0); }
+}
+@keyframes lb-orbit-twinkle { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }

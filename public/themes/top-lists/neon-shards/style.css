@@ -1,0 +1,181 @@
+/* Prism Top List (internal id: neon-shards) — a clean frosted-glass rank panel
+   with a prism leading edge + a light holographic sheen. Rewritten from the old
+   angular neon-HUD look to be lighter and more modern; the DOM + hooks are
+   unchanged so the shared renderer, the accent override (--rc/--rc2/--rg on
+   .ns-row[data-rank]) and avatars-only mode keep working. Pure CSS, no images. */
+@import url("https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;800;900&display=swap");
+
+:root {
+  --gold: #ffd34d; --gold-2: #ff9d2e; --gold-glow: rgba(255, 211, 77, 0.6);
+  --cyan: #22d3ff; --cyan-2: #4d7bff; --cyan-glow: rgba(34, 211, 255, 0.55);
+  --orange: #ff8a4d; --orange-2: #ff466e; --orange-glow: rgba(255, 138, 77, 0.55);
+  --violet: #b06dff; --violet-2: #7a3dff; --violet-glow: rgba(176, 109, 255, 0.55);
+  --green: #43f0a6; --green-2: #12d0c4; --green-glow: rgba(67, 240, 166, 0.5);
+  --red: #ff3d64; --red-glow: rgba(255, 61, 100, 0.7);
+  /* Prism spectrum used for the holographic sheen + avatar ring glint. */
+  --prism: linear-gradient(115deg, #ff5d8f, #ffb84d, #7be0ff, #b06dff, #43f0a6);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+#theme-wrapper { font-family: Tajawal, Cairo, sans-serif; width: 100%; min-height: 100%; display: flex; align-items: flex-start; direction: ltr; }
+#theme-wrapper[data-direction="rtl"] { justify-content: flex-end; }
+#theme-wrapper[data-direction="ltr"] { justify-content: flex-start; }
+.board { position: relative; width: 420px; flex-shrink: 0; margin: 24px 16px; }
+
+/* Rows flow in DOM order (the shared renderer fills fixed slots). */
+.ns-row { position: relative; width: 100%; margin: 0 0 14px; --avatar: 60px; --panel-h: 60px;
+  transition: transform 0.6s cubic-bezier(0.25, 1.2, 0.4, 1); will-change: transform; }
+.ns-row:last-child { margin-bottom: 0; }
+.ns-row[data-rank="1"] { --rc: var(--gold); --rc2: var(--gold-2); --rg: var(--gold-glow); }
+.ns-row[data-rank="2"] { --rc: var(--cyan); --rc2: var(--cyan-2); --rg: var(--cyan-glow); }
+.ns-row[data-rank="3"] { --rc: var(--orange); --rc2: var(--orange-2); --rg: var(--orange-glow); }
+.ns-row[data-rank="4"] { --rc: var(--violet); --rc2: var(--violet-2); --rg: var(--violet-glow); }
+.ns-row[data-rank="5"] { --rc: var(--green); --rc2: var(--green-2); --rg: var(--green-glow); }
+.ns-row[data-rank="6"] { --rc: #ff6db0; --rc2: #ff3d8f; --rg: rgba(255, 109, 176, 0.5); }
+.ns-row[data-rank="7"] { --rc: #6d9bff; --rc2: #3d6bff; --rg: rgba(109, 155, 255, 0.5); }
+.ns-row[data-rank="8"] { --rc: #9be24d; --rc2: #5fc000; --rg: rgba(155, 226, 77, 0.45); }
+.ns-row[data-rank="9"] { --rc: #ff7a7a; --rc2: #ff4757; --rg: rgba(255, 122, 122, 0.5); }
+.ns-row[data-rank="10"] { --rc: #cfe0ff; --rc2: #9fb0d8; --rg: rgba(207, 224, 255, 0.45); }
+
+.ns-row-inner { position: relative; height: 74px; display: flex; align-items: center; }
+#theme-wrapper[data-direction="rtl"] .ns-row-inner { flex-direction: row; direction: rtl; }
+
+/* Old neon-HUD clutter — retired for the cleaner look, but kept in the DOM so the
+   renderer + avatars-only accent rule still resolve them. */
+.energy-bridge, .shard-echo, .tail-ticks, .embers, .speed-lines, .hud-corner, .spark, .edge-glow { display: none !important; }
+
+/* Frosted glass panel behind the name/score. */
+.shard {
+  /* Avatar side sits at 0: the pill's rounded end cap (radius = panel-h/2 =
+     30px) lies exactly under the 60px avatar circle, so the avatar fully covers
+     that corner. The TRAILING side is inset 24px so the floating score pill
+     (12px inset) straddles the bar's end — back at the corner like before. */
+  position: absolute; left: 0; right: 24px; height: var(--panel-h);
+  width: auto; border-radius: 999px; overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0) 42%),
+    linear-gradient(100deg, color-mix(in srgb, var(--rc) 24%, rgba(14, 15, 24, 0.92)) 0%, rgba(13, 14, 22, 0.9) 46%, rgba(13, 14, 22, 0.82) 100%);
+  border: 1px solid color-mix(in srgb, var(--rc) 34%, transparent);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45), 0 0 16px -2px var(--rg), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transform-origin: right center; transform: scaleX(0);
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s;
+}
+.ns-row.entered .shard { transform: scaleX(1); }
+/* Leading-edge stripe removed per request. */
+.shard::before { display: none; }
+/* Holographic sheen sweep (single transform, GPU-light). */
+.shard::after {
+  content: ""; position: absolute; top: 0; bottom: 0; width: 60%; left: -60%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.16) 45%, rgba(255, 255, 255, 0.28) 50%, transparent 62%);
+  mix-blend-mode: screen; animation: prismSweep 5.5s ease-in-out infinite; will-change: transform;
+}
+.ns-row[data-rank="1"] .shard::after { animation-duration: 4s; }
+/* The sheen is 60% of the bar wide and parked 60% off its leading edge, so it
+   has to travel its own width + the bar (~270% of itself) to clear the far end.
+   A fixed 360px used to stall it two-thirds across the plate for the rest of
+   the cycle — the pause now happens off-screen, past the trailing cap. */
+@keyframes prismSweep { 0% { transform: translateX(0); } 55%, 100% { transform: translateX(270%); } }
+
+/* Big translucent rank watermark at the trailing end of the panel. */
+.ghost-rank {
+  position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+  font-size: calc(var(--panel-h) * 0.92); font-weight: 900; line-height: 1; font-style: normal;
+  color: color-mix(in srgb, var(--rc) 20%, transparent);
+  text-shadow: 0 0 18px color-mix(in srgb, var(--rc) 22%, transparent);
+  -webkit-text-stroke: 0; pointer-events: none; z-index: 1; letter-spacing: -2px;
+}
+
+/* Avatar with a prism-glint ring. */
+.avatar-wrap { position: relative; z-index: 3; width: var(--avatar); height: var(--avatar); flex-shrink: 0;
+  display: grid; place-items: center; transform: scale(0); transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s; }
+.ns-row.entered .avatar-wrap { transform: scale(1); }
+.avatar-frame { position: absolute; inset: -2px; border-radius: 50%; padding: 3px;
+  background: conic-gradient(from 140deg, var(--rc), #fff 20%, var(--rc2), var(--rc) 70%, #fff 88%, var(--rc));
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2px));
+  animation: ringSpin 6s linear infinite; filter: drop-shadow(0 0 5px var(--rg)); }
+@keyframes ringSpin { to { transform: rotate(360deg); } }
+.avatar-wrap > .avatar-img { position: relative; z-index: 2; width: calc(100% - 8px); height: calc(100% - 8px);
+  border-radius: 50%; object-fit: cover; background: #0c0c16; border: 2px solid rgba(0, 0, 0, 0.6);
+  box-shadow: 0 0 16px -2px var(--rg); }
+/* Retired spinning arcs + scan line (kept in DOM). */
+.orbit, .pulse-ring, .mega-ring { display: none; }
+.avatar-wrap::after { display: none; }
+
+.rank-badge { position: absolute; bottom: -6px; right: -6px; z-index: 4; min-width: 24px; height: 22px; padding: 0 6px;
+  display: grid; place-items: center; font-size: 0.8rem; font-weight: 900; color: var(--badge-fg, #0b0b14);
+  background: var(--badge-bg, linear-gradient(135deg, #fff -10%, var(--rc) 55%, var(--rc2) 130%));
+  border-radius: 8px; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.5), 0 0 8px var(--badge-glow, var(--rg));
+  transition: background 0.4s, color 0.4s; }
+.ns-row[data-rank="1"] .rank-badge { height: 26px; min-width: 28px; font-size: 0.92rem; }
+
+.crown { position: absolute; top: -60px; left: 50%; width: 70px; height: 70px; object-fit: contain; z-index: 5;
+  display: block; border: 0; border-radius: 0; background: transparent; box-shadow: none;
+  transform: translateX(-50%) scale(0); transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s;
+  filter: drop-shadow(0 0 9px var(--rg)); pointer-events: none; }
+.crown path:nth-child(1) { fill: var(--rc); }
+.crown path:nth-child(2) { fill: var(--rc2); }
+.ns-row[data-rank="1"] .crown { transform: translateX(-50%) scale(1); animation: crownBob 2.6s ease-in-out infinite; }
+@keyframes crownBob { 0%, 100% { transform: translateX(-50%) translateY(0) rotate(-4deg); } 50% { transform: translateX(-50%) translateY(-4px) rotate(4deg); } }
+
+.meta { position: relative; z-index: 2; flex: 1 1 0; min-width: 0; display: flex; flex-direction: column;
+  justify-content: center; gap: 5px; padding-left: 20px; padding-right: 92px; height: var(--panel-h);
+  opacity: 0; transform: translateX(18px); transition: opacity 0.4s 0.3s, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.3s; }
+.ns-row.entered .meta { opacity: 1; transform: translateX(0); }
+.name-wrap { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; min-width: 0; width: 100%; }
+.name-line { display: flex; align-items: center; gap: 6px; min-width: 0; width: 100%; }
+.name { font-size: 1.12rem; font-weight: 900; letter-spacing: 0.2px; white-space: nowrap; overflow: hidden;
+  text-overflow: ellipsis; color: #fff; -webkit-text-fill-color: #fff; max-width: 100%;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 8px var(--rg)); }
+.ns-row[data-rank="1"] .name { font-size: 1.2rem; }
+.power-vein { position: relative; width: min(100%, 172px); height: 3px; border-radius: 99px;
+  background: rgba(255, 255, 255, 0.1); overflow: hidden; }
+.power-vein i { position: absolute; left: 0; top: 0; bottom: 0; width: 66%; border-radius: 99px;
+  background: linear-gradient(90deg, var(--rc2), var(--rc), #fff); box-shadow: 0 0 8px var(--rg); }
+.ns-row[data-rank="1"] .power-vein i { width: 100%; }
+.ns-row[data-rank="2"] .power-vein i { width: 82%; }
+.ns-row[data-rank="3"] .power-vein i { width: 68%; }
+.trend { font-size: 0.72rem; font-weight: 900; flex-shrink: 0; opacity: 0; }
+.trend.up { color: var(--green); }
+.trend.down { color: var(--red); }
+
+/* Clean glass score pill at the trailing end. */
+.score { position: absolute; z-index: 4; right: 12px; top: 50%; transform: translateY(-50%) scale(0.9);
+  display: flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 11px;
+  background: linear-gradient(120deg, color-mix(in srgb, var(--rc) 20%, rgba(8, 9, 15, 0.94)), rgba(8, 9, 15, 0.9));
+  border: 1px solid color-mix(in srgb, var(--score-panel-border, var(--rc)) 55%, transparent);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45), 0 0 12px -2px var(--score-panel-glow, var(--rg));
+  opacity: 0; transition: opacity 0.4s 0.45s, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.45s; }
+.ns-row.entered .score { opacity: 1; transform: translateY(-50%) scale(1); }
+.score-inner { display: flex; align-items: center; gap: 6px; }
+.score-num { font-size: 1.02rem; font-weight: 900; font-variant-numeric: tabular-nums;
+  color: var(--score-color, #fff); text-shadow: 0 0 10px var(--score-glow, var(--rg)); letter-spacing: 0.4px; }
+.score .heart-ico { width: 0.95em; height: 0.95em; flex-shrink: 0; }
+.score .heart-ico.icon-heart { color: #ff2d55; filter: drop-shadow(0 0 6px rgba(255, 45, 85, 0.9));
+  animation: heartbeat 1.3s ease-in-out infinite; }
+@keyframes heartbeat { 0%, 100% { transform: scale(1); } 14% { transform: scale(1.22); } 28% { transform: scale(1); } 42% { transform: scale(1.1); } 56% { transform: scale(1); } }
+
+/* Light entrance beat + hit flash retained (renderer toggles .beat). */
+.hit-flash { position: absolute; inset: 0; border-radius: 999px; opacity: 0; pointer-events: none;
+  background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.28) 50%, transparent 70%); }
+.ns-row.beat .hit-flash { animation: hitSweep 0.55s ease-out 1; }
+@keyframes hitSweep { 0% { opacity: 0; transform: translateX(50%); } 25% { opacity: 1; } 100% { opacity: 0; transform: translateX(-60%); } }
+.ns-row.beat .score-num { animation: scoreKick 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 1; }
+@keyframes scoreKick { 0% { transform: scale(1); } 40% { transform: scale(1.28); color: #fff; } 100% { transform: scale(1); } }
+
+/* Widget-type icon switch. */
+#theme-wrapper[data-widget-type="top_gifters"] .icon-heart { display: none; }
+#theme-wrapper[data-widget-type="top_likes"] .icon-coin { display: none; }
+
+/* ── RTL mirror ─────────────────────────────────────────────────────── */
+#theme-wrapper[data-direction="rtl"] .shard { left: 24px; right: 0; transform-origin: left center; }
+#theme-wrapper[data-direction="rtl"] .shard::before { right: auto; left: 0; }
+#theme-wrapper[data-direction="rtl"] .shard::after { animation-name: prismSweepRtl; }
+@keyframes prismSweepRtl { 0% { transform: translateX(270%); } 55%, 100% { transform: translateX(0); } }
+#theme-wrapper[data-direction="rtl"] .ghost-rank { right: auto; left: 16px; }
+#theme-wrapper[data-direction="rtl"] .meta { padding-left: 92px; padding-right: 20px; align-items: flex-end; }
+#theme-wrapper[data-direction="rtl"] .name-wrap { align-items: flex-end; }
+#theme-wrapper[data-direction="rtl"] .power-vein i { left: auto; right: 0; background: linear-gradient(270deg, var(--rc2), var(--rc), #fff); }
+#theme-wrapper[data-direction="rtl"] .score { right: auto; left: 12px; }
+#theme-wrapper[data-direction="rtl"] .rank-badge { right: auto; left: -6px; }

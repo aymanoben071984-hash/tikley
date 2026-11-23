@@ -1,0 +1,354 @@
+/* Metro Line — the board as a transit line, read top to bottom.
+ *
+ * The idea: a leaderboard is a route, and the people on it are the stops. One
+ * rail runs down the whole board and threads THROUGH every station, so the
+ * ranks are visibly one line rather than a stack of separate rows — which is
+ * what every other vertical design is. A light runs the line end to end like a
+ * train on the route, and each stop is a station sign: the name on the board,
+ * the count on the platform strip under it.
+ *
+ * THE OVERLAY IS TRANSPARENT, so the signs carry their own dark surface and the
+ * rail carries its own glow — light drawn on nothing is invisible on stream.
+ *
+ * Overlay rules honoured (project standing notes):
+ *  - NO filter / backdrop-filter. TikTok LIVE Studio drops them or paints an
+ *    opaque box.
+ *  - Keyframes never touch .rank-bar itself — the likes<->coins switch writes an
+ *    inline transform on the ROW and a row animation clobbers it. Every moving
+ *    part here is a CHILD of the row, or the rail, which is not a row at all.
+ *  - Motion is transform/opacity only, so it composites instead of repainting.
+ */
+
+:host {
+    display: block;
+}
+
+.wrapper {
+    position: relative;
+    width: 520px;
+    font-family: "Rajdhani", "Orbitron", "Segoe UI", sans-serif;
+    color: #fff;
+    /* Where the rail runs. Every stop, the rail and the train read this, so the
+       whole line moves together if it is ever re-tuned. */
+    --rail-x: 44px;
+    --rail-w: 5px;
+}
+
+.leaderboard-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 14px 0 18px;
+}
+
+/* ── the line ────────────────────────────────────────────────────────────── */
+
+/* The rail is a sibling of the rows, not part of them: it has to run behind
+   every stop from the first to the last, and a row that hides (rank 8 on a
+   top-5 board) must not take a piece of the line with it. */
+.ml-rail {
+    position: absolute;
+    top: 26px;
+    bottom: 26px;
+    left: calc(var(--rail-x) - var(--rail-w) / 2);
+    width: var(--rail-w);
+    border-radius: var(--rail-w);
+    background: linear-gradient(
+        180deg,
+        transparent 0%,
+        color-mix(in srgb, var(--line-color) 70%, transparent) 6%,
+        var(--line-color) 50%,
+        color-mix(in srgb, var(--line-color) 70%, transparent) 94%,
+        transparent 100%
+    );
+    box-shadow: 0 0 16px -1px color-mix(in srgb, var(--line-color) 80%, transparent);
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* The train: a bright segment that runs the line, then waits out of sight
+   before the next run. Continuous travel would read as a loading bar. */
+.ml-train {
+    position: absolute;
+    left: -1px;
+    right: -1px;
+    height: 22%;
+    border-radius: var(--rail-w);
+    background: linear-gradient(180deg, transparent, #ffffff 45%, color-mix(in srgb, var(--line-color) 70%, white) 60%, transparent);
+    transform: translateY(-140%);
+    animation: ml-train 7s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+    will-change: transform;
+}
+
+/* ── a station ───────────────────────────────────────────────────────────── */
+
+.rank-bar {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding-left: 6px;
+    /* The knobs the switch choreography drives. */
+    --tr-y: 0px;
+    --rank-base-scale: 1;
+    transform: translateY(var(--tr-y)) scale(var(--rank-base-scale));
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.rank-bar.tr-switch-out-up { --tr-y: -60px; }
+.rank-bar.tr-switch-out-down { --tr-y: 60px; }
+
+/* One colour for the whole LINE — that is what a metro line is — and the rank
+   is told by the stop's size and its route tile, not by five different hues.
+   A picked accent replaces the line colour (accentOverrideCss). */
+.wrapper,
+.rank-bar { --line-color: #4fc3f7; --rank-color: #4fc3f7; }
+.rank-1 { --rank-color: #ffd479; }
+.rank-2 { --rank-color: #e3ecf7; }
+.rank-3 { --rank-color: #f0a97a; }
+
+/* The stop itself sits ON the rail — the photo is the station dot. */
+/* One fixed width for every stop — the winner's photo grows INSIDE it. Sizing
+   the column itself pushed rank 1's sign right and left the signs' left edges
+   ragged down the board. */
+.ml-stop {
+    position: relative;
+    flex: 0 0 auto;
+    width: 78px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* The ring of light around the stop, and the reason the rail appears to pass
+   BEHIND the photo rather than under the whole row. */
+.ml-halo {
+    position: absolute;
+    inset: -7px;
+    border-radius: 50%;
+    background: radial-gradient(circle, color-mix(in srgb, var(--rank-color) 45%, transparent) 0%, transparent 68%);
+    opacity: 0.85;
+    animation: ml-halo 3.6s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.rank-2 .ml-halo { animation-delay: -0.5s; }
+.rank-3 .ml-halo { animation-delay: -1s; }
+.rank-4 .ml-halo { animation-delay: -1.5s; }
+.rank-5 .ml-halo { animation-delay: -2s; }
+
+.avatar-wrapper {
+    position: relative;
+    z-index: 2;
+    box-sizing: border-box;
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    padding: 3px;
+    background: linear-gradient(180deg, #ffffff 0%, var(--rank-color) 34%, color-mix(in srgb, var(--rank-color) 30%, #05070c) 100%);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.55);
+}
+
+.rank-1 .avatar-wrapper {
+    width: 66px;
+    height: 66px;
+}
+
+.avatar-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #0b0e14;
+}
+
+/* The route tile — a metro line number, square with a clipped corner, not the
+   round badge every other board uses. */
+.ml-route {
+    position: absolute;
+    right: -2px;
+    bottom: -3px;
+    z-index: 3;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 5px;
+    border-radius: 5px;
+    background: var(--rank-color);
+    color: #05070c;
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+/* ── the station sign ────────────────────────────────────────────────────── */
+
+.ml-sign {
+    position: relative;
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 9px 14px 9px 16px;
+    border-radius: 4px 12px 12px 4px;
+    /* The sign is the LINE's colour, not a neutral dark — which is what makes
+       the colour picker reach the name and the count's ground and not just the
+       rail. --line-color rather than --rank-color on purpose: a metro line's
+       signs match the line end to end; the medal hues stay on the route tile,
+       the platform edge and the number.
+       Mixed INTO near-black rather than laid over it, so a white name keeps its
+       contrast on any colour a streamer picks, including a pale one. */
+    background: linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--line-color) 22%, rgba(10, 14, 23, 0.94)) 0%,
+        color-mix(in srgb, var(--line-color) 13%, rgba(9, 12, 20, 0.82)) 62%,
+        color-mix(in srgb, var(--line-color) 7%, rgba(8, 11, 18, 0.6)) 100%
+    );
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+/* The platform edge: the coloured strip a station sign hangs off. */
+.ml-sign::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    border-radius: 4px 0 0 4px;
+    background: linear-gradient(180deg, color-mix(in srgb, var(--rank-color) 60%, white), var(--rank-color));
+    box-shadow: 0 0 10px -2px var(--rank-color);
+}
+
+/* The connector: the short arm from the stop to its sign, so the sign belongs
+   to that station instead of floating beside it. */
+.ml-sign::after {
+    content: "";
+    position: absolute;
+    left: -14px;
+    top: 50%;
+    width: 14px;
+    height: 2px;
+    margin-top: -1px;
+    background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--rank-color) 70%, transparent));
+    pointer-events: none;
+}
+
+.player-name {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+}
+
+.rank-1 .player-name {
+    font-size: 19px;
+}
+
+.score {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.score-value {
+    font-size: 17px;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--rank-color);
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 0 10px color-mix(in srgb, var(--rank-color) 40%, transparent), 0 1px 2px rgba(0, 0, 0, 0.9);
+}
+
+.rank-1 .score-value {
+    font-size: 19px;
+}
+
+/* ── coin vs heart: driven only by the host's data-widget-type ───────────── */
+
+.icon-heart,
+.icon-coin {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+.icon-heart {
+    display: none;
+    color: #ff3b6b;
+    font-style: normal;
+    line-height: 1;
+}
+
+.icon-heart::before {
+    content: "♥";
+    font-size: 15px;
+}
+
+#theme-wrapper[data-widget-type="top_likes"] .icon-heart { display: inline-block; }
+#theme-wrapper[data-widget-type="top_likes"] .icon-coin { display: none; }
+#theme-wrapper[data-widget-type="top_gifters"] .icon-heart { display: none; }
+#theme-wrapper[data-widget-type="top_gifters"] .icon-coin { display: inline-block; }
+
+/* ── visible-rank counts ─────────────────────────────────────────────────── */
+
+/* The renderer hides the rows it does not need; the rail is a sibling, so it
+   still has to be told where the line ends. Rows 6-10 are the common cut. */
+.leaderboard-container[data-visible-ranks="1"] .rank-bar:not(.rank-1) { display: none; }
+.leaderboard-container[data-visible-ranks="1"] .ml-rail { display: none; }
+.leaderboard-container[data-visible-ranks="3"] .rank-bar:not(.rank-1):not(.rank-2):not(.rank-3) { display: none; }
+.leaderboard-container[data-visible-ranks="5"] .rank-6,
+.leaderboard-container[data-visible-ranks="5"] .rank-7,
+.leaderboard-container[data-visible-ranks="5"] .rank-8,
+.leaderboard-container[data-visible-ranks="5"] .rank-9,
+.leaderboard-container[data-visible-ranks="5"] .rank-10 { display: none; }
+
+/* ── motion ──────────────────────────────────────────────────────────────── */
+
+@keyframes ml-train {
+    0% { transform: translateY(-140%); }
+    62%, 100% { transform: translateY(520%); }
+}
+
+@keyframes ml-halo {
+    0%, 100% { opacity: 0.55; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.06); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ml-train,
+    .ml-halo {
+        animation: none;
+    }
+}
+
+/* ── Right-to-left (2026-09-19). The row art is painted with the photo on the
+   left and its pieces sit at absolute offsets, so the whole list is MIRRORED
+   (scaleX(-1) on the container — never on a row: the rows' float keyframes
+   own their transform) and every piece a viewer reads (photo, name, count,
+   badge, crown) is flipped back the right way round. Names then read from the
+   photo outward. */
+#theme-wrapper[data-direction="rtl"] .leaderboard-container { transform: scaleX(-1); }
+#theme-wrapper[data-direction="rtl"] .avatar-img { transform: scaleX(-1); }
+#theme-wrapper[data-direction="rtl"] .ml-route { transform: scaleX(-1); }
+#theme-wrapper[data-direction="rtl"] .player-name { transform: scaleX(-1); }
+#theme-wrapper[data-direction="rtl"] .score { transform: scaleX(-1); }
+/* Right-aligned only — not direction:rtl, which put a Latin name's ellipsis at its START. */
+#theme-wrapper[data-direction="rtl"] .player-name { text-align: right; }
