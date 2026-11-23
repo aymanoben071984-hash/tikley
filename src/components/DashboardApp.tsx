@@ -212,7 +212,7 @@ export function DashboardApp({ initialSection = "overview", initialGame }: Dashb
   const [darkMode, setDarkMode] = useState<boolean>(true);
   const [showPaletteMenu, setShowPaletteMenu] = useState<boolean>(false);
   const [showNotifMenu, setShowNotifMenu] = useState<boolean>(false);
-  const [autoStreamSim, setAutoStreamSim] = useState<boolean>(true);
+  const [autoStreamSim, setAutoStreamSim] = useState<boolean>(false);
   const [editingHandle, setEditingHandle] = useState<boolean>(false);
   const [handleInput, setHandleInput] = useState<string>("@yourname");
   const [toastMsg, setToastMsg] = useState<string | null>(null);
@@ -299,7 +299,7 @@ export function DashboardApp({ initialSection = "overview", initialGame }: Dashb
 
   // Gentle Test Mode sample event flow
   useEffect(() => {
-    if (!autoStreamSim || data?.profile?.connectionStatus === "disconnected") {
+    if (!autoStreamSim || data?.profile?.connectionStatus !== "live") {
       return;
     }
     const timer = setInterval(() => {

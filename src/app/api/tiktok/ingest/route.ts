@@ -1,3 +1,7 @@
+import { db } from "@/db";
+import { streamerProfiles } from "@/db/schema";
+import { ensureSeeded } from "@/lib/seed";
+import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 export async function POST(request: Request) {
@@ -6,9 +10,18 @@ export async function POST(request: Request) {
   if (request.headers.get("authorization") !== `Bearer ${secret}`) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   let body: Record<string, unknown>;
   try { body = await request.json() as Record<string, unknown>; } catch { return NextResponse.json({ error: "Invalid JSON" }, { status: 400 }); }
+  await ensureSeeded();
+  if (body.eventType === "live_state") {
+    const status = body.status === "live" ? "live" : "waiting";
+    const [profile] = await db.select().from(streamerProfiles).limit(1);
+    if (profile) await db.update(streamerProfiles).set({ connectionStatus: status, updatedAt: new Date() }).where(eq(streamerProfiles.id, profile.id));
+    return NextResponse.json({ status });
+  }
   const allowed = new Set(["gift", "like", "follow", "join", "chat", "share"]);
   const eventType = typeof body.eventType === "string" ? body.eventType : "";
   if (!allowed.has(eventType)) return NextResponse.json({ error: "Unsupported eventType" }, { status: 400 });
+  const [profile] = await db.select().from(streamerProfiles).limit(1);
+  if (profile && profile.connectionStatus !== "live") await db.update(streamerProfiles).set({ connectionStatus: "live", updatedAt: new Date() }).where(eq(streamerProfiles.id, profile.id));
   const payload: Record<string, unknown> = {
     eventType,
     username: typeof body.username === "string" ? body.username.slice(0, 80) : "TikTok user",

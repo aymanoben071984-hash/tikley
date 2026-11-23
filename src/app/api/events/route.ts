@@ -16,6 +16,8 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   try {
     await ensureSeeded();
+    const [profile] = await db.select().from(streamerProfiles).limit(1);
+    if (profile?.connectionStatus !== "live") return NextResponse.json({ events: [], live: false });
     const events = await db
       .select()
       .from(liveEvents)
@@ -33,6 +35,8 @@ export async function POST(request: Request) {
     await ensureSeeded();
     const body = (await request.json()) as Record<string, unknown>;
 
+    const [profile] = await db.select().from(streamerProfiles).limit(1);
+    if (profile?.connectionStatus !== "live") return NextResponse.json({ error: "LIVE is not active" }, { status: 409 });
     const eventType = String(body.eventType || "gift");
     const randomRef =
       REFERENCE_AVATARS[Math.floor(Math.random() * REFERENCE_AVATARS.length)];
@@ -105,7 +109,6 @@ export async function POST(request: Request) {
       })
       .returning();
 
-    const [profile] = await db.select().from(streamerProfiles).limit(1);
     if (profile) {
       await db
         .update(streamerProfiles)
