@@ -6,7 +6,7 @@ import logging
 import aiohttp
 
 from TikTokLive import TikTokLiveClient
-from TikTokLive.events import LikeEvent, CommentEvent, GiftEvent, FollowEvent, ShareEvent, JoinEvent
+from TikTokLive.events import ConnectEvent, LikeEvent, CommentEvent, GiftEvent, FollowEvent, ShareEvent, JoinEvent
 from TikTokLive.client.errors import UserOfflineError
 
 logging.basicConfig(level=logging.INFO)
@@ -19,6 +19,12 @@ if not HANDLE or not APP_URL or not TOKEN:
     sys.exit("Set TIKTOK_USERNAME, TIKLEY_APP_URL and TIKTOK_INGEST_TOKEN.")
 
 client = TikTokLiveClient(unique_id=HANDLE)
+# Enable library-level diagnostics to expose room resolution and websocket failures.
+client.logger.setLevel(logging.DEBUG)
+
+@client.on(ConnectEvent)
+async def on_connect(event):
+    log.info("CONNECTED to LIVE @%s; room_id=%s", HANDLE, getattr(client, "room_id", None))
 
 async def send(payload):
     async with aiohttp.ClientSession() as session:
