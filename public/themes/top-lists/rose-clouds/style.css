@@ -1,0 +1,354 @@
+/* Rose Clouds — ten framed rows from ONE drawn plate (rose ring on the left,
+   gold rails, winged heart right). The avatar sits BEHIND the art and shows
+   through the ring's transparent window; the rank number and the champagne
+   crown (row 1 only) are CSS. All animation is transform/opacity only (GPU).
+   Measured off the art (2172x724): ring window centre (17.1%, 44.8%),
+   window ~15% of width; rails band y 36%..66%; right decoration from ~77%. */
+.wrapper {
+  width: 100%;
+  min-height: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rows-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  /* NOT 100% like the flatter row themes. This art is ~3:1 per row (the rose
+     cluster makes it tall) where Auria/Celestial/Cosmic are ~7.9:1, so
+     full-width rows made a TEN-row board ~1890px tall in an 800px source —
+     double every other 10-rank design (classic 736, Lumen 601, basic 910).
+     Narrowing the column shrinks each row proportionally; with the overlap
+     below, ten rows land at ~950px — in family. */
+  /* An INTRINSIC cap, not a percentage: a percentage is self-referential (the
+     board would always paint 62% of whatever stage it gets, so it could never
+     fill its declared design width and every preview scaled it down). This px
+     cap is the board's natural size — LEADERBOARD_DESIGN_WIDTH["rose-clouds"]
+     matches it, so previews scale it to fill, and a narrower OBS source just
+     shrinks it (width:100% still applies below the cap). */
+  width: 100%;
+  max-width: 470px;
+  margin-inline: auto;
+  padding: 6px 4px;
+}
+
+.rank-unit {
+  position: relative;
+  width: 100%;
+  opacity: 1;
+  --tr-y: 0px;
+  transform: translateY(var(--tr-y));
+  transition: transform 0.55s ease, opacity 0.55s ease;
+  /* Overlap ONLY the art's transparent sky. Deeper than this and each row's
+     clouds wash across the next row's name lane (and its avatar), which is what
+     the height fix must not cost. */
+  margin-top: -10%;
+  /* Text below sizes in cqw (% of the row's own width) so a narrower board or a
+     small OBS source scales the names/scores with the art instead of bursting
+     out of the lane. */
+  container-type: inline-size;
+  animation: row-float 5s ease-in-out infinite;
+  will-change: transform;
+}
+
+.rank-unit:first-child { margin-top: 0; }
+.rank-2 { animation-delay: -0.5s; }
+.rank-3 { animation-delay: -1s; }
+.rank-4 { animation-delay: -1.5s; }
+.rank-5 { animation-delay: -2s; }
+.rank-6 { animation-delay: -2.5s; }
+.rank-7 { animation-delay: -3s; }
+.rank-8 { animation-delay: -3.5s; }
+.rank-9 { animation-delay: -4s; }
+.rank-10 { animation-delay: -4.5s; }
+
+@keyframes row-float {
+  0%, 100% { transform: translateY(var(--tr-y)); }
+  50% { transform: translateY(calc(var(--tr-y) - 3px)); }
+}
+
+/* Dataset-switch (renderer adds these; the float shares the transform, so the
+   switch simply parks it and drives --tr-y through the transition). */
+.rank-unit.tr-switch-out-up { --tr-y: -60px; opacity: 0; animation: none; transform: translateY(var(--tr-y)); }
+.rank-unit.tr-switch-out-down { --tr-y: 60px; opacity: 0; animation: none; transform: translateY(var(--tr-y)); }
+.rank-unit.tr-switch-in-from-up { --tr-y: -60px; opacity: 0; animation: none; transform: translateY(var(--tr-y)); }
+.rank-unit.tr-switch-in-from-down { --tr-y: 60px; opacity: 0; animation: none; transform: translateY(var(--tr-y)); }
+.rank-unit.tr-switch-in-rank1-from-down { --tr-y: 80px; opacity: 0; animation: none; transform: translateY(var(--tr-y)); }
+
+.row-plate {
+  display: block;
+  width: 100%;
+  height: auto;
+  position: relative;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Avatar behind the plate — the ring's transparent window masks it. */
+.avatar-circle {
+  position: absolute;
+  left: 17.1%;
+  top: 44.8%;
+  transform: translate(-50%, -50%);
+  width: 16.2%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #000;
+  z-index: 1;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Champagne crown — the TOP ONE only, seated on the rose ring's crest. */
+.crown-top {
+  position: absolute;
+  left: 17.1%;
+  bottom: 88%;
+  width: 19%;
+  max-width: none;
+  object-fit: contain;
+  pointer-events: none;
+  z-index: 4;
+  transform: translateX(-50%);
+  animation: crown-bob 4s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes crown-bob {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-5px); }
+}
+
+/* Rank number — gold badge on the ring's lower-right edge (the art ships no
+   drawn numbers, and ten rows need them at a glance). */
+.rank-badge {
+  position: absolute;
+  left: 23.2%;
+  top: 58%;
+  z-index: 4;
+  min-width: 2.9%;
+  aspect-ratio: 1 / 1;
+  padding: 0 0.5%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: linear-gradient(160deg, #e2c258, #8b6b1f);
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  color: #fff;
+  font-family: "Montserrat", "Segoe UI", sans-serif;
+  font-size: 3.4cqw;
+  font-weight: 900;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+}
+
+/* Soft dark fill between the gold rails so names stay readable over any stream
+   background (the art's lane is transparent). Static — never repaints. */
+.bar-fill {
+  position: absolute;
+  /* The fill sits behind the PNG, so it can span the complete transparent lane
+     while the artwork itself cleanly masks the roses, pearls and gold edges. */
+  left: 25%;
+  right: 13.5%;
+  top: 39%;
+  bottom: 36%;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(52, 26, 36, 0.32), rgba(28, 12, 20, 0.4));
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Name + score on the lane. */
+.bar-zone {
+  position: absolute;
+  /* Keep both labels inside the straight middle rail: the floral cluster owns
+     the left section, while the winged-heart end leaves more usable room. */
+  left: 36.5%;
+  right: 17.5%;
+  top: 36%;
+  bottom: 33%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  z-index: 4;
+}
+
+.player-name {
+  font-family: "Tajawal", "Segoe UI", Tahoma, sans-serif;
+  color: #ffffff;
+  font-size: 4.6cqw;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  text-shadow:
+    0 1px 3px #000,
+    0 0 10px rgba(0, 0, 0, 0.9),
+    0 0 14px rgba(255, 190, 210, 0.45);
+}
+
+.rank-1 .player-name { font-size: 5cqw; }
+
+.support-value-box,
+.score {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.score-value {
+  color: #ffd9a8;
+  font-size: 4.4cqw;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  font-family: "Montserrat", "Segoe UI", sans-serif;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.85);
+}
+
+.rank-1 .score-value { font-size: 4.8cqw; }
+
+.icon-heart,
+.icon-coin {
+  width: 4.1cqw;
+  height: 4.1cqw;
+  object-fit: contain;
+}
+
+.icon-heart { fill: #ff2d55; filter: drop-shadow(0 0 8px rgba(182, 0, 0, 0.8)); }
+.icon-coin { filter: drop-shadow(0 0 8px rgba(255, 172, 51, 0.9)); }
+
+.icon-heart { animation: heartBeat 1s ease-in-out infinite; will-change: transform; }
+.icon-coin { animation: coinRotate 5s linear infinite; will-change: transform; }
+
+@keyframes heartBeat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+@keyframes coinRotate {
+  from { transform: rotateY(0deg); }
+  to { transform: rotateY(360deg); }
+}
+
+/* Light sweep across the lane — moved by transform only. */
+.row-shine {
+  position: absolute;
+  left: 25%;
+  right: 13.5%;
+  top: 39%;
+  bottom: 36%;
+  border-radius: 999px;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.row-shine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(255, 235, 245, 0.16) 50%, transparent 60%);
+  transform: translateX(-130%);
+  animation: row-shine 6s ease-in-out infinite;
+  will-change: transform;
+}
+
+.rank-2 .row-shine::after { animation-delay: 0.4s; }
+.rank-3 .row-shine::after { animation-delay: 0.8s; }
+.rank-4 .row-shine::after { animation-delay: 1.2s; }
+.rank-5 .row-shine::after { animation-delay: 1.6s; }
+.rank-6 .row-shine::after { animation-delay: 2s; }
+.rank-7 .row-shine::after { animation-delay: 2.4s; }
+.rank-8 .row-shine::after { animation-delay: 2.8s; }
+.rank-9 .row-shine::after { animation-delay: 3.2s; }
+.rank-10 .row-shine::after { animation-delay: 3.6s; }
+
+@keyframes row-shine {
+  0% { transform: translateX(-130%); }
+  40%, 100% { transform: translateX(230%); }
+}
+
+[data-widget-type="top_likes"] .icon-coin { display: none; }
+[data-widget-type="top_gifters"] .icon-heart { display: none; }
+
+[data-visible-ranks="1"] .rank-2, [data-visible-ranks="1"] .rank-3, [data-visible-ranks="1"] .rank-4, [data-visible-ranks="1"] .rank-5, [data-visible-ranks="1"] .rank-6, [data-visible-ranks="1"] .rank-7, [data-visible-ranks="1"] .rank-8, [data-visible-ranks="1"] .rank-9, [data-visible-ranks="1"] .rank-10 { display: none !important; }
+[data-visible-ranks="2"] .rank-3, [data-visible-ranks="2"] .rank-4, [data-visible-ranks="2"] .rank-5, [data-visible-ranks="2"] .rank-6, [data-visible-ranks="2"] .rank-7, [data-visible-ranks="2"] .rank-8, [data-visible-ranks="2"] .rank-9, [data-visible-ranks="2"] .rank-10 { display: none !important; }
+[data-visible-ranks="3"] .rank-4, [data-visible-ranks="3"] .rank-5, [data-visible-ranks="3"] .rank-6, [data-visible-ranks="3"] .rank-7, [data-visible-ranks="3"] .rank-8, [data-visible-ranks="3"] .rank-9, [data-visible-ranks="3"] .rank-10 { display: none !important; }
+[data-visible-ranks="4"] .rank-5, [data-visible-ranks="4"] .rank-6, [data-visible-ranks="4"] .rank-7, [data-visible-ranks="4"] .rank-8, [data-visible-ranks="4"] .rank-9, [data-visible-ranks="4"] .rank-10 { display: none !important; }
+[data-visible-ranks="5"] .rank-6, [data-visible-ranks="5"] .rank-7, [data-visible-ranks="5"] .rank-8, [data-visible-ranks="5"] .rank-9, [data-visible-ranks="5"] .rank-10 { display: none !important; }
+[data-visible-ranks="6"] .rank-7, [data-visible-ranks="6"] .rank-8, [data-visible-ranks="6"] .rank-9, [data-visible-ranks="6"] .rank-10 { display: none !important; }
+[data-visible-ranks="7"] .rank-8, [data-visible-ranks="7"] .rank-9, [data-visible-ranks="7"] .rank-10 { display: none !important; }
+[data-visible-ranks="8"] .rank-9, [data-visible-ranks="8"] .rank-10 { display: none !important; }
+[data-visible-ranks="9"] .rank-10 { display: none !important; }
+
+/* ---- Living neon edge (2026-09-07; same build as Auria/Celestial/Cosmic) ----
+   A layer under the plate, MASKED by the plate PNG itself and grown 2px past
+   it (6px softer halo behind), filled by a forever-spinning conic gradient, so
+   the ring is the artwork's own outline — no box padding or margin. Transform
+   only; z 0 < avatar 1 < plate 2, so just the overhang shows. */
+.row-neon {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  --plate: url("/themes/top-lists/rose-clouds/row.png");
+  --neon-1: #ff7ab8; --neon-2: #ffd36b; --neon-3: #fff6fa;
+  filter: drop-shadow(0 0 6px rgba(255,150,200,0.5));
+}
+.row-neon > i {
+  position: absolute; overflow: hidden; display: block;
+  -webkit-mask-image: var(--plate); mask-image: var(--plate);
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-position: center; mask-position: center;
+}
+.row-neon .neon-line { inset: -2px; }
+.row-neon .neon-halo { inset: -6px; opacity: 0.38; }
+.row-neon > i::before {
+  content: ""; position: absolute; left: 50%; top: 50%;
+  width: 110%; height: 0; padding-bottom: 110%;
+  background: conic-gradient(from 0deg, var(--neon-1), var(--neon-2) 30%, var(--neon-3) 50%, var(--neon-2) 70%, var(--neon-1));
+  transform: translate(-50%, -50%) rotate(0deg);
+  animation: neon-spin 6s linear infinite;
+  will-change: transform;
+}
+.row-neon .neon-halo::before { animation-duration: 9s; animation-direction: reverse; }
+.rank-2 .row-neon > i::before { animation-delay: -0.6s; }
+.rank-3 .row-neon > i::before { animation-delay: -1.2s; }
+.rank-4 .row-neon > i::before { animation-delay: -1.8s; }
+.rank-5 .row-neon > i::before { animation-delay: -2.4s; }
+.rank-6 .row-neon > i::before { animation-delay: -3.0s; }
+.rank-7 .row-neon > i::before { animation-delay: -3.6s; }
+.rank-8 .row-neon > i::before { animation-delay: -4.2s; }
+.rank-9 .row-neon > i::before { animation-delay: -4.8s; }
+.rank-10 .row-neon > i::before { animation-delay: -5.4s; }
+@keyframes neon-spin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* ── Right-to-left (2026-09-19). The row art is painted with the photo on the
+   left and its pieces sit at absolute offsets, so the whole list is MIRRORED
+   (scaleX(-1) on the container — never on a row: the rows' float keyframes
+   own their transform) and every piece a viewer reads (photo, name, count,
+   badge, crown) is flipped back the right way round. Names then read from the
+   photo outward. */
+#theme-wrapper[data-direction="rtl"] .rows-container { transform: scaleX(-1); }
+#theme-wrapper[data-direction="rtl"] .avatar-img { transform: scaleX(-1); }
+#theme-wrapper[data-direction="rtl"] .crown-top { transform: translateX(-50%) scaleX(-1); }
+#theme-wrapper[data-direction="rtl"] .rank-badge { transform: scaleX(-1); }
+#theme-wrapper[data-direction="rtl"] .player-name { transform: scaleX(-1); }
+#theme-wrapper[data-direction="rtl"] .score { transform: scaleX(-1); }
+/* Right-aligned only — not direction:rtl, which put a Latin name's ellipsis at its START. */
+#theme-wrapper[data-direction="rtl"] .player-name { text-align: right; }
