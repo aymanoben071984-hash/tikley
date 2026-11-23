@@ -1,0 +1,171 @@
+/* Basic Scroll (2026-10-30) — Basic's "Clean Slate" rows in an auto-scrolling
+   column. Same row anatomy and contract as basic/style.css (kept in step by
+   hand); the scroll lives at the end: a fixed-height .viewport, a .track that
+   holds the list and its runtime clone, and ONE transform animation. */
+
+.wrapper {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Sora', 'Cairo', system-ui, Arial, sans-serif;
+  color: #fff;
+  direction: ltr;
+}
+#theme-wrapper[data-direction="rtl"] { direction: rtl; }
+#theme-wrapper[data-direction="ltr"] { direction: ltr; }
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  /* 4px top/bottom so list + clone meet with the same 8px rhythm as the rows */
+  padding: 4px 12px;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.ts-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+  padding: 4px 6px;
+  border-radius: 12px;
+  transition: background 0.3s ease;
+}
+.ts-row.is-hidden { display: none !important; }
+
+.avatar-section {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.crown {
+  font-size: 0.9rem;
+  line-height: 1;
+  margin-bottom: 3px;
+}
+.crown.crown-gold { color: #ffd23f; filter: drop-shadow(0 0 6px rgba(255,210,63,0.7)); }
+.crown.crown-silver { color: #dfe5f0; filter: drop-shadow(0 0 6px rgba(216,224,240,0.6)); }
+.crown.crown-bronze { color: #e8893c; filter: drop-shadow(0 0 6px rgba(232,137,60,0.6)); }
+.crown.crown-placeholder { visibility: hidden; }
+
+/* Squared avatar frame with a thin gradient ring. */
+.avatar-frame {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  padding: 2px;
+  background: linear-gradient(145deg, rgba(255,255,255,0.35), rgba(255,255,255,0.08));
+  box-shadow: 0 4px 14px -6px rgba(0,0,0,0.6);
+}
+.ts-row[data-rank="1"] .avatar-frame { background: linear-gradient(145deg, #ffe08a, #f0a52e); }
+.ts-row[data-rank="2"] .avatar-frame { background: linear-gradient(145deg, #f2f5fb, #b7c0d2); }
+.ts-row[data-rank="3"] .avatar-frame { background: linear-gradient(145deg, #f0aa6a, #c76a24); }
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  background: rgba(40,46,58,0.8);
+}
+
+/* Rank badge = a five-point STAR (2026-09-19, was a round chip). The star is
+   the element's own box cut by clip-path, so the per-rank gradients below
+   still paint it; the number sits in the star's core. A border cannot follow
+   a clip-path, so the rank colour carries the edge instead. */
+.rank-badge {
+  position: absolute;
+  bottom: -9px;
+  inset-inline-start: -9px;
+  background: linear-gradient(145deg, #4b5566, #262c38);
+  color: #fff;
+  font-family: 'Sora', 'Cairo', sans-serif;
+  font-weight: 800;
+  font-size: 0.58rem;
+  font-variant-numeric: tabular-nums;
+  width: 28px;
+  height: 28px;
+  border-radius: 0;
+  clip-path: polygon(50% 0%, 62% 34%, 98% 36%, 70% 58%, 79% 93%, 50% 73%, 21% 93%, 30% 58%, 2% 36%, 38% 34%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 0 0;
+  border: 0;
+  line-height: 1;
+}
+.rank-badge.rank-1 { background: linear-gradient(145deg,#f0a52e,#c07d12); border-color: #ffd23f; color:#2a1c00; }
+.rank-badge.rank-2 { background: linear-gradient(145deg,#c3cbd8,#8a94a6); border-color: #eef2f8; color:#1a2130; }
+.rank-badge.rank-3 { background: linear-gradient(145deg,#d1793a,#9a521d); border-color: #f0aa6a; }
+
+.info {
+  flex: 1 1 0%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 4px;
+  text-align: start;
+}
+
+.name {
+  font-family: 'Sora', 'Cairo', sans-serif;
+  font-size: 1.16rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  color: #f4f7fc;
+  letter-spacing: 0.2px;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.85);
+  line-height: 1.25;
+}
+.ts-row[data-rank="1"] .name { color: #fff; }
+
+.score {
+  font-family: 'Rajdhani', 'Sora', sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #b9c4d6;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.85);
+  line-height: 1.2;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+}
+.score-value { color: inherit; font-variant-numeric: tabular-nums; }
+.score .icon-coin { width: 1.05rem; height: 1.05rem; flex-shrink: 0; filter: drop-shadow(0 1px 3px rgba(240,160,20,0.4)); }
+.score .icon-heart { color: #ff5c7a; font-size: 0.98rem; filter: drop-shadow(0 0 4px rgba(255,60,90,0.6)); }
+
+.wrapper[data-widget-type="top_gifters"] .icon-heart { display: none; }
+.wrapper[data-widget-type="top_likes"] .icon-coin { display: none; }
+
+/* ── The scroll ─────────────────────────────────────────────────────────── */
+/* The window: a CONSTANT 400px (about five rows) whatever the row count, so
+   the OBS source never changes size; faded at both ends so rows glide in and
+   out instead of popping. The motion itself is a Web Animations transform on
+   .track, started by the renderer — it always runs, there is nothing to
+   switch on. */
+.viewport {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 24px, #000 calc(100% - 24px), transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 24px, #000 calc(100% - 24px), transparent 100%);
+}
+.track {
+  display: flex;
+  flex-direction: column;
+  will-change: transform;
+}
