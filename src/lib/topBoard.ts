@@ -418,6 +418,7 @@ export function getBoardMeta(type: BoardType) {
 export function rankBoard(avatars: AvatarPreset[], type: BoardType, maxRows: number) {
   return [...avatars]
     .map((a) => ({ preset: a, value: getBoardValue(a, type) }))
+    .filter((row) => row.value > 0)
     .sort((x, y) => y.value - x.value)
     .slice(0, maxRows);
 }
