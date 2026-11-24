@@ -1,0 +1,28 @@
+name: TikTok worker validation
+
+on:
+  push:
+    branches:
+      - fix/worker-live-ingestion-reliability
+  pull_request:
+    branches:
+      - feature/tiktok-live-connector
+
+permissions:
+  contents: read
+
+jobs:
+  validate-worker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install worker dependencies
+        run: python -m pip install -r worker/requirements.txt
+      - name: Durable spool regression tests
+        run: python -m unittest worker.test_event_spool -v
+      - name: Python syntax
+        run: python -m py_compile worker/tiktok_live_worker.py worker/test_event_spool.py
