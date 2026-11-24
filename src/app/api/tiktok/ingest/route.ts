@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { db } from "@/db";
 import { streamerProfiles } from "@/db/schema";
 import { ensureSeeded } from "@/lib/seed";
@@ -53,8 +54,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Missing real user identity/avatar" }, { status: 400 });
   }
   if (eventType === "gift") {
-    payload.giftId = typeof body.giftId === "string" ? body.giftId.trim().slice(0, 48) : "";
-    payload.giftName = typeof body.giftName === "string" ? body.giftName.trim().slice(0, 80) : "";
+    const giftName = typeof body.giftName === "string" ? body.giftName.trim().slice(0, 80) : "";
+    const providerGiftId = typeof body.giftId === "string" ? body.giftId.trim().slice(0, 48) : "";
+    // Some TikTokLive versions omit gift.id on the event object. Keep the event ingestible without pretending it is a Tikley catalog gift.
+    payload.giftId = providerGiftId || (giftName
+      ? "provider:" + createHash("sha256").update(giftName.toLowerCase()).digest("hex").slice(0, 32)
+      : "");
+    payload.giftName = giftName || "TikTok gift";
     payload.coins = Math.max(0, Math.min(2_000_000_000, Math.floor(Number(body.coins) || 0)));
   }
   if (eventType === "like") payload.likes = Math.max(0, Math.min(2_000_000_000, Math.floor(Number(body.likes) || 0)));
