@@ -16,19 +16,19 @@ async def waiting(): await send({"eventType":"live_state","status":"waiting"})
 def fields(e):
  u=getattr(e,"user",None); return {"username":getattr(u,"unique_id",None) or getattr(u,"nickname","TikTok user"),"displayName":getattr(u,"nickname","TikTok user"),"avatarUrl":getattr(getattr(u,"avatar",None),"url","") or ""}
 @client.on(LikeEvent)
-async def like(e): await live(); await send({**fields(e),"eventType":"like","likes":int(getattr(e,"count",0) or 0),"message":"sent likes"})
+async def like(e):\n f=fields(e)\n if not f: return\n await live(); await send({**f,"eventType":"like","likes":int(getattr(e,"count",0) or 0),"message":"sent likes"})
 @client.on(CommentEvent)
-async def comment(e): await live(); await send({**fields(e),"eventType":"chat","message":str(getattr(e,"comment",""))})
+async def comment(e):\n f=fields(e)\n if not f: return\n await live(); await send({**f,"eventType":"chat","message":str(getattr(e,"comment",""))})
 @client.on(GiftEvent)
 async def gift(e):
- await live(); g=getattr(e,"gift",None); n=getattr(g,"name","gift") or "gift"; c=int(getattr(g,"diamond_count",0) or 0)*int(getattr(e,"repeat_count",1) or 1)
- await send({**fields(e),"eventType":"gift","giftId":str(getattr(g,"id","rose")),"coins":c,"message":f"sent {n}"})
+ f=fields(e)\n if not f: return\n await live(); g=getattr(e,"gift",None); n=getattr(g,"name","gift") or "gift"; c=int(getattr(g,"diamond_count",0) or 0)*int(getattr(e,"repeat_count",1) or 1)
+ await send({**f,"eventType":"gift","giftId":str(getattr(g,"id","rose")),"coins":c,"message":f"sent {n}"})
 @client.on(FollowEvent)
-async def follow(e): await live(); await send({**fields(e),"eventType":"follow","message":"followed the LIVE!"})
+async def follow(e):\n f=fields(e)\n if not f: return\n await live(); await send({**f,"eventType":"follow","message":"followed the LIVE!"})
 @client.on(ShareEvent)
-async def share(e): await live(); await send({**fields(e),"eventType":"share","message":"shared the LIVE stream!"})
+async def share(e):\n f=fields(e)\n if not f: return\n await live(); await send({**f,"eventType":"share","message":"shared the LIVE stream!"})
 @client.on(JoinEvent)
-async def join(e): await live(); await send({**fields(e),"eventType":"join","message":"joined the LIVE!"})
+async def join(e):\n f=fields(e)\n if not f: return\n await live(); await send({**f,"eventType":"join","message":"joined the LIVE!"})
 if __name__=="__main__":
  while True:
   try: log.info("Connecting to @%s",HANDLE); client.run()

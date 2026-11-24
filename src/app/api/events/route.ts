@@ -5,7 +5,7 @@ import {
   streamerProfiles,
   widgetConfigs,
 } from "@/db/schema";
-import { GIFT_CATALOG, REFERENCE_AVATARS, getAvatarByUsername } from "@/lib/catalog";
+import { GIFT_CATALOG } from "@/lib/catalog";
 import { ensureSeeded } from "@/lib/seed";
 import { evaluateGiftActions } from "@/lib/giftActionsServer";
 import { desc, eq, sql } from "drizzle-orm";
@@ -38,28 +38,15 @@ export async function POST(request: Request) {
     const [profile] = await db.select().from(streamerProfiles).limit(1);
     if (profile?.connectionStatus !== "live") return NextResponse.json({ error: "LIVE is not active" }, { status: 409 });
     const eventType = String(body.eventType || "gift");
-    const randomRef =
-      REFERENCE_AVATARS[Math.floor(Math.random() * REFERENCE_AVATARS.length)];
-
-    const displayName =
-      typeof body.displayName === "string" && body.displayName.trim()
-        ? body.displayName.trim()
-        : randomRef.name;
-
-    const username =
-      typeof body.username === "string" && body.username.trim()
-        ? body.username.trim()
-        : randomRef.handle;
-
-    const avatarUrl =
-      typeof body.avatarUrl === "string" && body.avatarUrl.trim()
-        ? body.avatarUrl.trim()
-        : randomRef.url || getAvatarByUsername(username);
-
-    const avatarFrame =
-      typeof body.avatarFrame === "string" && body.avatarFrame.trim()
-        ? body.avatarFrame.trim()
-        : randomRef.defaultFrame;
+    const username = typeof body.username === "string" ? body.username.trim() : "";
+    if (!username || username.length > 80) {
+      return NextResponse.json({ error: "A real TikTok username is required for LIVE events." }, { status: 400 });
+    }
+    const displayName = typeof body.displayName === "string" && body.displayName.trim()
+      ? body.displayName.trim().slice(0, 120) : username;
+    const avatarUrl = typeof body.avatarUrl === "string" ? body.avatarUrl.trim().slice(0, 2000) : "";
+    const avatarFrame = typeof body.avatarFrame === "string" && body.avatarFrame.trim()
+      ? body.avatarFrame.trim().slice(0, 80) : "ember-dragon";
 
     let giftId: string | null = null;
     let giftName: string | null = null;
