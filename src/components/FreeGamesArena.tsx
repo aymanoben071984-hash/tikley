@@ -519,7 +519,7 @@ export function GameOverlayStage({
     const dancers = (state.dancers as Array<{
       name: string; avatar: string; frame: string; score: number; action: string; lastGift?: string;
     }>) || [];
-    const visibleDancers = dancers.length > 0 ? dancers : partyAvatars.slice(0, 8).map((av) => ({
+    const visibleDancers: Array<{ name: string; avatar: string; frame: string; score: number; action: string; lastGift?: string }> = dancers.length > 0 ? dancers : partyAvatars.slice(0, 8).map((av) => ({
       name: av.displayName, avatar: av.avatarUrl, frame: av.frameSlug, score: 0, action: "dance",
     }));
     const actionLabel: Record<string, string> = {
