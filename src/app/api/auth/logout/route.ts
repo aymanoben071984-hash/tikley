@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { revokeSession, SESSION_COOKIE } from "@/lib/auth";
+import { isSameOrigin, revokeSession, SESSION_COOKIE } from "@/lib/auth";
 
 export const runtime = "nodejs";
 export async function POST(request: Request) {
