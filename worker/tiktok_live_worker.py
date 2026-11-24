@@ -2,6 +2,7 @@
 import os
 import sys
 import time
+import asyncio
 import logging
 import aiohttp
 
@@ -9,7 +10,7 @@ from TikTokLive import TikTokLiveClient
 from TikTokLive.events import ConnectEvent, LikeEvent, CommentEvent, GiftEvent, FollowEvent, ShareEvent, JoinEvent
 from TikTokLive.client.errors import UserOfflineError
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, stream=sys.stdout, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 log = logging.getLogger("tikley-worker")
 
 HANDLE = os.environ.get("TIKTOK_USERNAME", "").strip().lstrip("@")
@@ -19,23 +20,30 @@ if not HANDLE or not APP_URL or not TOKEN:
     sys.exit("Set TIKTOK_USERNAME, TIKLEY_APP_URL and TIKTOK_INGEST_TOKEN.")
 
 client = TikTokLiveClient(unique_id=HANDLE)
-# Enable library-level diagnostics to expose room resolution and websocket failures.
-client.logger.setLevel(logging.DEBUG)
+# Keep protocol frames out of production logs; they are verbose diagnostics, not application errors.
+client.logger.setLevel(logging.INFO)
 
 
 async def send(payload):
-    async with aiohttp.ClientSession() as session:
-        async with session.post(
-            APP_URL + "/api/tiktok/ingest",
-            json=payload,
-            headers={"Authorization": "Bearer " + TOKEN},
-            timeout=aiohttp.ClientTimeout(total=15),
-        ) as response:
-            if response.status >= 300:
-                detail = await response.text()
-                log.warning("Ingestion returned %s: %s", response.status, detail[:500])
-                return False
-            return True
+    event_type = str(payload.get("eventType", "unknown"))
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(
+                APP_URL + "/api/tiktok/ingest",
+                json=payload,
+                headers={"Authorization": "Bearer " + TOKEN},
+                timeout=aiohttp.ClientTimeout(total=25, connect=10, sock_read=20),
+            ) as response:
+                if response.status >= 300:
+                    detail = await response.text()
+                    log.warning("Ingestion rejected eventType=%s status=%s: %s", event_type, response.status, detail[:500])
+                    return False
+                log.info("Ingestion accepted eventType=%s status=%s", event_type, response.status)
+                return True
+    except (aiohttp.ClientError, asyncio.TimeoutError) as exc:
+        # Do not let transient API/network failures escape an async TikTok event callback.
+        log.warning("Ingestion transport failure eventType=%s error=%s", event_type, type(exc).__name__)
+        return False
 
 
 @client.on(ConnectEvent)
