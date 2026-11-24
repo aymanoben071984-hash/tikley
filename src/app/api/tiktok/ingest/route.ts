@@ -40,6 +40,7 @@ export async function POST(request: Request) {
   const sourceEventId = typeof body.sourceEventId === "string" && /^[a-zA-Z0-9:_-]{1,128}$/.test(body.sourceEventId)
     ? body.sourceEventId
     : null;
+  if (!sourceEventId) return NextResponse.json({ error: "Valid sourceEventId is required" }, { status: 400 });
   const payload: Record<string, unknown> = {
     eventType,
     sourceEventId,
@@ -53,9 +54,9 @@ export async function POST(request: Request) {
   }
   if (eventType === "gift") {
     payload.giftId = typeof body.giftId === "string" ? body.giftId.slice(0, 48) : "";
-    payload.coins = Math.max(0, Math.floor(Number(body.coins) || 0));
+    payload.coins = Math.max(0, Math.min(2_000_000_000, Math.floor(Number(body.coins) || 0)));
   }
-  if (eventType === "like") payload.likes = Math.max(0, Math.floor(Number(body.likes) || 0));
+  if (eventType === "like") payload.likes = Math.max(0, Math.min(2_000_000_000, Math.floor(Number(body.likes) || 0)));
 
   const origin = new URL(request.url).origin;
   const response = await fetch(origin + "/api/events", {
