@@ -19,6 +19,20 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     timeout-minutes: 35
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: ci
+          POSTGRES_PASSWORD: ci
+          POSTGRES_DB: tikley_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ci -d tikley_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -27,8 +41,10 @@ jobs:
           cache: npm
       - name: Install locked dependencies
         run: npm ci
-      - name: Security unit tests
+      - name: Security unit and PostgreSQL concurrency tests
         run: npm test
+        env:
+          TEST_DATABASE_URL: postgresql://ci:ci@127.0.0.1:5432/tikley_test
       - name: TypeScript
         run: npm run typecheck
       - name: Lint security surface
