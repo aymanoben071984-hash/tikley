@@ -46,12 +46,14 @@ export async function POST(request: Request) {
     eventType,
     sourceEventId,
     username: typeof body.username === "string" && body.username.trim() ? body.username.trim().replace(/^@/, "").slice(0, 80) : "",
-    displayName: typeof body.displayName === "string" && body.displayName.trim() ? body.displayName.trim().slice(0, 120) : "",
+    displayName: typeof body.displayName === "string" && body.displayName.trim()
+      ? body.displayName.trim().slice(0, 120)
+      : (typeof body.username === "string" ? body.username.trim().replace(/^@/, "").slice(0, 80) : ""),
     avatarUrl: typeof body.avatarUrl === "string" ? body.avatarUrl.slice(0, 2000) : "",
     message: typeof body.message === "string" ? body.message.slice(0, 2000) : "",
   };
-  if (!payload.username || !payload.displayName || !payload.avatarUrl) {
-    return NextResponse.json({ error: "Missing real user identity/avatar" }, { status: 400 });
+  if (!payload.username || !payload.displayName) {
+    return NextResponse.json({ error: "Missing TikTok user identity" }, { status: 400 });
   }
   if (eventType === "gift") {
     const giftName = typeof body.giftName === "string" ? body.giftName.trim().slice(0, 80) : "";

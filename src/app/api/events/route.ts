@@ -55,8 +55,8 @@ export async function POST(request: Request) {
     const rawDisplayName = typeof body.displayName === "string" && body.displayName.trim() ? body.displayName.trim().slice(0, 120) : "";
     const displayName = rawDisplayName || (isAdmin ? "Tikley Test Viewer" : username);
     const rawAvatarUrl = typeof body.avatarUrl === "string" ? body.avatarUrl.trim().slice(0, 2000) : "";
-    const avatarUrl = rawAvatarUrl || (isAdmin ? "/avatars/a1.png" : "");
-    if (!avatarUrl) return NextResponse.json({ error: "Real avatar URL required" }, { status: 400 });
+    // Keep events even when TikTok omits an avatar; preserve known real avatars on leaderboard profiles.
+    const avatarUrl = rawAvatarUrl || "/avatars/a1.png";
     const avatarFrame = typeof body.avatarFrame === "string" && body.avatarFrame.trim() ? body.avatarFrame.trim().slice(0, 80) : "ember-dragon";
     let giftId: string | null = null;
     let giftName: string | null = null;
@@ -134,19 +134,37 @@ export async function POST(request: Request) {
 
       const shares = eventType === "share" ? 1 : 0;
       if (coins > 0 || likes > 0 || shares > 0) {
+        // TikTok sends usernames without "@", while seeded/manual presets store "@handle".
+        // Match both forms case-insensitively so real scores update the correct profile.
         const [preset] = await tx.select({ id: avatarPresets.id })
           .from(avatarPresets)
-          .where(eq(avatarPresets.tiktokUsername, username))
+          .where(sql`lower(ltrim(${avatarPresets.tiktokUsername}, '@')) = ${username.toLowerCase()}`)
           .for("update")
           .limit(1);
         if (preset) {
           await tx.update(avatarPresets).set({
+            displayName,
+            ...(rawAvatarUrl ? { avatarUrl: rawAvatarUrl } : {}),
             coinsTotal: sql`${avatarPresets.coinsTotal} + ${coins}`,
             weeklyCoins: sql`${avatarPresets.weeklyCoins} + ${coins}`,
             allTimeCoins: sql`${avatarPresets.allTimeCoins} + ${coins}`,
             likesTotal: sql`${avatarPresets.likesTotal} + ${likes}`,
             sharesTotal: sql`${avatarPresets.sharesTotal} + ${shares}`,
           }).where(eq(avatarPresets.id, preset.id));
+        } else {
+          // New real viewers need a profile row; otherwise TopBoard only sees demo seed profiles.
+          await tx.insert(avatarPresets).values({
+            displayName,
+            tiktokUsername: `@${username}`,
+            avatarUrl,
+            frameSlug: avatarFrame,
+            coinsTotal: coins,
+            likesTotal: likes,
+            sharesTotal: shares,
+            weeklyCoins: coins,
+            allTimeCoins: coins,
+            isPinned: false,
+          });
         }
 
         if (coins > 0) {
