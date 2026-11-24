@@ -95,6 +95,7 @@ export const gameConfigs = pgTable("game_configs", {
 
 export const liveEvents = pgTable("live_events", {
   id: serial("id").primaryKey(),
+  sourceEventId: varchar("source_event_id", { length: 128 }).unique(),
   eventType: varchar("event_type", { length: 32 }).notNull(), // gift | follow | join | chat | like | share | effect
   username: varchar("username", { length: 80 }).notNull(),
   displayName: varchar("display_name", { length: 120 }).notNull(),
