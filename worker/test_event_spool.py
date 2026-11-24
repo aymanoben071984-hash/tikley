@@ -1,6 +1,6 @@
+import asyncio
 import importlib.util
 import os
-import sqlite3
 import sys
 import tempfile
 import types
@@ -14,19 +14,21 @@ WORKER_PATH = Path(__file__).with_name("tiktok_live_worker.py")
 def install_tiktok_stubs():
     root = types.ModuleType("TikTokLive")
     root.__path__ = []
+
     class FakeClient:
         def __init__(self, **kwargs):
             pass
+
         def on(self, event_type):
             return lambda handler: handler
+
         def run(self):
             pass
-    root.TikTokLiveClient = FakeClient
 
+    root.TikTokLiveClient = FakeClient
     events = types.ModuleType("TikTokLive.events")
     for name in ("LikeEvent", "CommentEvent", "GiftEvent", "FollowEvent", "ShareEvent", "JoinEvent"):
         setattr(events, name, type(name, (), {}))
-
     client = types.ModuleType("TikTokLive.client")
     client.__path__ = []
     errors = types.ModuleType("TikTokLive.client.errors")
@@ -67,51 +69,42 @@ class DurableReplayAfterLostResponseTest(unittest.TestCase):
                 "coins": 25,
             }
 
-            # Worker process A persists the event before attempting delivery.
-            worker_a = load_worker(spool, "tikley_worker_process_a")
-            worker_a.enqueue(event)
-            queued = worker_a.next_pending()
-            self.assertIsNotNone(queued)
-            self.assertEqual(queued[0], event["sourceEventId"])
-
-            # The server commits the event, but the connection drops before
-            # the worker receives an HTTP response. Therefore no ACK is sent.
             server_committed_ids = set()
             server_counter = {"gift_coins": 0}
-
             first_attempt = {"value": True}
-            def server_accept(payload):
+
+            async def simulated_delivery(payload):
+                # Model the server's UNIQUE(source_event_id) transaction.
                 event_id = payload["sourceEventId"]
                 if event_id not in server_committed_ids:
                     server_committed_ids.add(event_id)
                     server_counter["gift_coins"] += payload["coins"]
+
                 if first_attempt["value"]:
                     first_attempt["value"] = False
-                    # Commit happened, but the HTTP response was lost.
-                    raise TimeoutError("server committed; response connection was lost")
-                # The retry sees the same idempotency key and returns 200.
-                return 200
+                    # Server committed, but all HTTP response retries time out.
+                    return "pending", 0, "response lost after server commit"
+                return "delivered", 200, ""
 
-            with self.assertRaises(TimeoutError):
-                server_accept(event)
+            # Process A: enqueue, attempt delivery, and lose the response.
+            worker_a = load_worker(spool, "tikley_worker_process_a")
+            worker_a.enqueue(event)
+            worker_a.deliver = simulated_delivery
+            asyncio.run(worker_a.drain_spool())
 
-            # Abrupt process death: deliberately do not call acknowledge().
+            queued = worker_a.next_pending()
+            self.assertIsNotNone(queued, "no ACK means event must remain in SQLite")
+            self.assertEqual(queued[0], event["sourceEventId"])
             del worker_a
 
-            # Worker process B starts with the same persistent SQLite volume.
+            # Process B: same persistent volume, same provider event ID.
             worker_b = load_worker(spool, "tikley_worker_process_b")
-            replay = worker_b.next_pending()
-            self.assertIsNotNone(replay, "unacknowledged event must survive worker restart")
-            replay_event = __import__("json").loads(replay[1])
+            worker_b.deliver = simulated_delivery
+            asyncio.run(worker_b.drain_spool())
 
-            # Server receives the same provider event ID again. Its unique
-            # idempotency key makes the retry a no-op and returns success.
-            self.assertEqual(server_accept(replay_event), 200)
-            worker_b.acknowledge(replay[0])
-
-            self.assertEqual(len(server_committed_ids), 1)
-            self.assertEqual(server_counter["gift_coins"], 25)
-            self.assertIsNone(worker_b.next_pending(), "event should be removed only after successful ACK")
+            self.assertEqual(len(server_committed_ids), 1, "server must persist one logical event")
+            self.assertEqual(server_counter["gift_coins"], 25, "replay must not double-count coins")
+            self.assertIsNone(worker_b.next_pending(), "ACK must remove the event after successful retry")
 
 
 if __name__ == "__main__":
