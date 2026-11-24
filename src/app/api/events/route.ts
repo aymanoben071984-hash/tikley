@@ -37,7 +37,8 @@ export async function POST(request: Request) {
 
     const [profile] = await db.select().from(streamerProfiles).limit(1);
     if (profile?.connectionStatus !== "live") return NextResponse.json({ error: "LIVE is not active" }, { status: 409 });
-    const eventType = String(body.eventType || "gift");
+    const eventType = String(body.eventType || "");
+    if (!["gift", "like", "follow", "join", "chat", "share", "effect"].includes(eventType)) return NextResponse.json({ error: "Unsupported event type" }, { status: 400 });
     const username = typeof body.username === "string" ? body.username.trim() : "";
     if (!username || username.length > 80) {
       return NextResponse.json({ error: "A real TikTok username is required for LIVE events." }, { status: 400 });
@@ -45,6 +46,7 @@ export async function POST(request: Request) {
     const displayName = typeof body.displayName === "string" && body.displayName.trim()
       ? body.displayName.trim().slice(0, 120) : username;
     const avatarUrl = typeof body.avatarUrl === "string" ? body.avatarUrl.trim().slice(0, 2000) : "";
+    if (!avatarUrl) return NextResponse.json({ error: "A real TikTok avatar URL is required." }, { status: 400 });
     const avatarFrame = typeof body.avatarFrame === "string" && body.avatarFrame.trim()
       ? body.avatarFrame.trim().slice(0, 80) : "ember-dragon";
 
@@ -57,20 +59,21 @@ export async function POST(request: Request) {
     const effectKey = typeof body.effectKey === "string" ? body.effectKey : null;
 
     if (eventType === "gift") {
-      const requestedGift = String(body.giftId || "rose");
+      const requestedGift = String(body.giftId || "");
       const found =
-        GIFT_CATALOG.find((g) => g.id === requestedGift) ?? GIFT_CATALOG[0];
+        GIFT_CATALOG.find((g) => g.id === requestedGift);
+      if (!found) return NextResponse.json({ error: "Unknown gift id" }, { status: 400 });
       giftId = found.id;
       giftName = found.name;
       giftIcon = found.icon;
-      if (!coins || coins <= 0) coins = found.coins;
+      if (!coins || coins <= 0) return NextResponse.json({ error: "Gift coin value is required" }, { status: 400 });
       if (!message) message = `Sent ${found.name} (${coins.toLocaleString()} coins)!`;
     } else if (eventType === "follow") {
       if (!message) message = "followed the LIVE!";
     } else if (eventType === "join") {
       if (!message) message = "joined the LIVE!";
     } else if (eventType === "like") {
-      if (!likes || likes <= 0) likes = 50;
+      if (!likes || likes <= 0) return NextResponse.json({ error: "Like count is required" }, { status: 400 });
       if (!message) message = `sent ${likes} likes ❤️`;
     } else if (eventType === "share") {
       if (!message) message = "shared the LIVE stream!";
