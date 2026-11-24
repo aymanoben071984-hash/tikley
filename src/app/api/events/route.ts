@@ -2,6 +2,7 @@ import { db } from "@/db";
 import { avatarPresets, liveEvents, streamerProfiles, widgetConfigs } from "@/db/schema";
 import { GIFT_CATALOG } from "@/lib/catalog";
 import { ensureSeeded } from "@/lib/seed";
+import { getSessionUser } from "@/lib/auth";
 import { evaluateGiftActions } from "@/lib/giftActionsServer";
 import { desc, eq, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
@@ -19,6 +20,10 @@ export async function GET() {
   }
 }
 export async function POST(request: Request) {
+  const workerSecret = process.env.TIKTOK_INGEST_TOKEN;
+  const workerAuthorized = Boolean(workerSecret && request.headers.get("authorization") === `Bearer ${workerSecret}`);
+  const admin = workerAuthorized ? null : await getSessionUser(request);
+  if (!workerAuthorized && admin?.role !== "admin") return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   try {
     await ensureSeeded();
     const body = await request.json() as Record<string, unknown>;
