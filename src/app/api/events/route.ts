@@ -70,14 +70,26 @@ export async function POST(request: Request) {
     }
 
     if (eventType === "gift") {
-      const found = GIFT_CATALOG.find((gift) => gift.id === String(body.giftId || ""));
-      if (!found) return NextResponse.json({ error: "Unknown gift id" }, { status: 400 });
-      giftId = found.id;
-      giftName = found.name;
-      giftIcon = found.icon;
-      if (coins <= 0 && isAdmin) coins = found.coins;
+      const suppliedGiftId = typeof body.giftId === "string" ? body.giftId.trim().slice(0, 48) : "";
+      const found = GIFT_CATALOG.find((gift) => gift.id === suppliedGiftId);
+      if (found) {
+        giftId = found.id;
+        giftName = found.name;
+        giftIcon = found.icon;
+        if (coins <= 0 && isAdmin) coins = found.coins;
+      } else if (workerAuthorized && suppliedGiftId) {
+        // TikTok provider IDs are not Tikley catalog IDs. Preserve the provider ID
+        // and actual name; do not mislabel an unknown gift as a Rose or another asset.
+        giftId = suppliedGiftId;
+        giftName = typeof body.giftName === "string" && body.giftName.trim()
+          ? body.giftName.trim().slice(0, 120)
+          : "TikTok gift";
+        giftIcon = null;
+      } else {
+        return NextResponse.json({ error: "Unknown gift id" }, { status: 400 });
+      }
       if (coins <= 0) return NextResponse.json({ error: "Gift coin value required" }, { status: 400 });
-      if (!message) message = `Sent ${found.name} (${coins.toLocaleString()} coins)!`;
+      if (!message) message = `Sent ${giftName} (${coins.toLocaleString()} coins)!`;
     } else if (eventType === "follow") {
       if (!message) message = "followed the LIVE!";
     } else if (eventType === "join") {
