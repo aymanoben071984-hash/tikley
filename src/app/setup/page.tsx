@@ -39,7 +39,7 @@ export default function SetupPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-tikley-bootstrap-token": token,
+          "x-tikley-bootstrap-secret": token,
         },
         body: JSON.stringify({ email: ADMIN_EMAIL, password }),
       });
