@@ -199,5 +199,30 @@ class ProviderGiftPayloadTest(unittest.TestCase):
             self.assertEqual(payload["giftName"], "Mystery Gift")
             self.assertEqual(payload["coins"], 0)
 
+class EventUserIdentityTest(unittest.TestCase):
+    def test_missing_avatar_does_not_drop_liker_identity(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            worker = load_worker(Path(tmp) / "spool.sqlite3", "tikley_worker_missing_avatar")
+            event = types.SimpleNamespace(
+                user=types.SimpleNamespace(unique_id="real_viewer", nickname="Real Viewer"),
+                msg_id="like-no-avatar-001",
+            )
+            fields = worker.event_fields(event)
+            self.assertIsNotNone(fields)
+            self.assertEqual(fields["username"], "real_viewer")
+            self.assertEqual(fields["displayName"], "Real Viewer")
+            self.assertEqual(fields["avatarUrl"], "")
+            self.assertEqual(fields["sourceEventId"], "like-no-avatar-001")
+
+    def test_missing_nickname_falls_back_to_username(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            worker = load_worker(Path(tmp) / "spool.sqlite3", "tikley_worker_missing_nickname")
+            event = types.SimpleNamespace(
+                user=types.SimpleNamespace(unique_id="real_viewer"),
+                msg_id="like-no-name-001",
+            )
+            fields = worker.event_fields(event)
+            self.assertEqual(fields["displayName"], "real_viewer")
+
 if __name__ == "__main__":
     unittest.main()
