@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { db } from "@/db";
 import { avatarPresets, liveEvents, streamerProfiles, widgetConfigs } from "@/db/schema";
 import { GIFT_CATALOG } from "@/lib/catalog";
@@ -38,21 +39,34 @@ export async function POST(request: Request) {
     await ensureSeeded();
     const body = await request.json() as Record<string, unknown>;
     const eventType = String(body.eventType || "");
-    if (!["gift", "like", "follow", "join", "chat", "share"].includes(eventType)) {
+    if (!["gift", "like", "follow", "join", "chat", "share", "effect"].includes(eventType)) {
+      return NextResponse.json({ error: "Unsupported event type" }, { status: 400 });
+    }
+    if (eventType === "effect" && workerAuthorized) {
+      return NextResponse.json({ error: "Effects can only be triggered by an administrator" }, { status: 403 });
+    }
+
+    const isAdmin = admin?.role === "admin";
+    if (!workerAuthorized && !isAdmin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    const rawUsername = typeof body.username === "string" ? body.username.trim().replace(/^@/, "") : "";
+    const username = rawUsername || (isAdmin ? "tikley_test" : "");
+    if (!username || username.length > 80) return NextResponse.json({ error: "Real username required" }, { status: 400 });
+    const rawDisplayName = typeof body.displayName === "string" && body.displayName.trim() ? body.displayName.trim().slice(0, 120) : "";
+    const displayName = rawDisplayName || (isAdmin ? "Tikley Test Viewer" : username);
+    const rawAvatarUrl = typeof body.avatarUrl === "string" ? body.avatarUrl.trim().slice(0, 2000) : "";
+    const avatarUrl = rawAvatarUrl || (isAdmin ? "/avatars/a1.png" : "");
+    if (!avatarUrl) return NextResponse.json({ error: "Real avatar URL required" }, { status: 400 });
       return NextResponse.json({ error: "Unsupported event type" }, { status: 400 });
     }
 
-    const username = typeof body.username === "string" ? body.username.trim().replace(/^@/, "") : "";
-    if (!username || username.length > 80) return NextResponse.json({ error: "Real username required" }, { status: 400 });
-    const displayName = typeof body.displayName === "string" && body.displayName.trim() ? body.displayName.trim().slice(0, 120) : username;
-    const avatarUrl = typeof body.avatarUrl === "string" ? body.avatarUrl.trim().slice(0, 2000) : "";
-    if (!avatarUrl) return NextResponse.json({ error: "Real avatar URL required" }, { status: 400 });
+
 
     const avatarFrame = typeof body.avatarFrame === "string" && body.avatarFrame.trim() ? body.avatarFrame.trim().slice(0, 80) : "ember-dragon";
     let giftId: string | null = null;
     let giftName: string | null = null;
     let giftIcon: string | null = null;
-    const coins = Math.max(0, Math.min(2_000_000_000, Math.floor(Number(body.coins) || 0)));
+    let coins = Math.max(0, Math.min(2_000_000_000, Math.floor(Number(body.coins) || 0)));
     const likes = Math.max(0, Math.min(2_000_000_000, Math.floor(Number(body.likes) || 0)));
     let message = typeof body.message === "string" ? body.message.slice(0, 2000) : "";
     const effectKey = typeof body.effectKey === "string" ? body.effectKey.slice(0, 48) : null;
@@ -63,6 +77,7 @@ export async function POST(request: Request) {
       giftId = found.id;
       giftName = found.name;
       giftIcon = found.icon;
+      if (coins <= 0 && isAdmin) coins = found.coins;
       if (coins <= 0) return NextResponse.json({ error: "Gift coin value required" }, { status: 400 });
       if (!message) message = `Sent ${found.name} (${coins.toLocaleString()} coins)!`;
     } else if (eventType === "follow") {
@@ -76,9 +91,10 @@ export async function POST(request: Request) {
       message = "shared the LIVE stream!";
     }
 
-    const sourceEventId = typeof body.sourceEventId === "string" && /^[a-zA-Z0-9:_-]{1,128}$/.test(body.sourceEventId)
+    const suppliedSourceEventId = typeof body.sourceEventId === "string" && /^[a-zA-Z0-9:_-]{1,128}$/.test(body.sourceEventId)
       ? body.sourceEventId
       : null;
+    const sourceEventId = suppliedSourceEventId || (isAdmin ? `admin-test:${randomUUID()}` : null);
     if (!sourceEventId) return NextResponse.json({ error: "Valid sourceEventId is required for idempotent ingestion" }, { status: 400 });
 
     // The event row and every persisted counter/goal update commit or roll back together.
