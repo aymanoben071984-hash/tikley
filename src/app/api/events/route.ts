@@ -54,7 +54,14 @@ export async function POST(request: Request) {
     else if(eventType==="join"){ if(!message) message="joined the LIVE!"; }
     else if(eventType==="like"){ if(likes<=0) return NextResponse.json({error:"Like count required"}, {status:400}); if(!message) message=`sent ${likes} likes ❤️`; }
     else if(eventType==="share"){ if(!message) message="shared the LIVE stream!"; }
-    const [created]=await db.insert(liveEvents).values({eventType,username,displayName,avatarUrl,avatarFrame,giftId,giftName,giftIcon,coins,likes,message,effectKey}).returning();
+    const sourceEventId = typeof body.sourceEventId === "string" && /^[a-zA-Z0-9:_-]{1,128}$/.test(body.sourceEventId)
+      ? body.sourceEventId
+      : null;
+    const [created] = await db.insert(liveEvents)
+      .values({ sourceEventId, eventType, username, displayName, avatarUrl, avatarFrame, giftId, giftName, giftIcon, coins, likes, message, effectKey })
+      .onConflictDoNothing({ target: liveEvents.sourceEventId })
+      .returning();
+    if (!created) return NextResponse.json({ duplicate: true }, { status: 200 });
     await db.update(streamerProfiles).set({
       sessionCoins:profile.sessionCoins+coins, sessionGifts:profile.sessionGifts+(eventType==="gift"?1:0),
       sessionNewFollowers:profile.sessionNewFollowers+(eventType==="follow"?1:0),sessionLikes:profile.sessionLikes+likes,
