@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { authUsers } from "@/db/schema";
-import { createSession, SESSION_COOKIE, SESSION_TTL_SECONDS } from "@/lib/auth";
+import { createSession, SESSION_COOKIE } from "@/lib/auth";
 import { verifyPassword } from "@/lib/password";
 
 export const runtime = "nodejs";
