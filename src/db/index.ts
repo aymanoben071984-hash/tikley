@@ -41,6 +41,7 @@ type Database = ReturnType<typeof createDb>;
 const globalForDb = globalThis as typeof globalThis & {
   __olPool?: Pool;
   __olDb?: Database;
+  __olLockPool?: Pool;
 };
 
 /** The shared pg Pool (created on first use, reused across warm invocations). */
