@@ -11,9 +11,9 @@ export async function GET() {
   try {
     await ensureSeeded();
     const [profile] = await db.select().from(streamerProfiles).limit(1);
-    if (profile?.connectionStatus !== "live") return NextResponse.json({ events: [], live: false });
+    if (profile?.connectionStatus !== "live") return NextResponse.json({ events: [], live: false }, { headers: { "Cache-Control": "no-store, max-age=0" } });
     const events = await db.select().from(liveEvents).orderBy(desc(liveEvents.id)).limit(40);
-    return NextResponse.json({ events, live: true });
+    return NextResponse.json({ events, live: true }, { headers: { "Cache-Control": "no-store, max-age=0" } });
   } catch (error) {
     console.error("GET /api/events failed:", error);
     return NextResponse.json({ error: "Failed to fetch events" }, { status: 500 });
