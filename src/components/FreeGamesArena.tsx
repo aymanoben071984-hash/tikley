@@ -29,7 +29,7 @@ import {
   Trophy,
   Zap,
 } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 interface GameOverlayStageProps {
   gameSlug: string;
@@ -770,6 +770,118 @@ export function FreeGamesArena({
     await onSaveGame(selectedSlug, { stateJson: statePatch, cardTheme });
     notifyOverlayChannel({ type: "game-update", gameSlug: selectedSlug });
   };
+
+  // Apply newly received TikTok LIVE events to the active game. The first
+  // event snapshot is treated as history so old events are never replayed.
+  const processedLiveEventIds = useRef<Set<number>>(new Set());
+  const liveEventSnapshotReady = useRef(false);
+
+  useEffect(() => {
+    if (!liveEventSnapshotReady.current) {
+      events.forEach((event) => processedLiveEventIds.current.add(event.id));
+      liveEventSnapshotReady.current = true;
+      return;
+    }
+
+    const freshEvents = events
+      .filter((event) => !processedLiveEventIds.current.has(event.id))
+      .sort((a, b) => a.id - b.id);
+    if (freshEvents.length === 0) return;
+
+    freshEvents.forEach((event) => processedLiveEventIds.current.add(event.id));
+    if (processedLiveEventIds.current.size > 600) {
+      const retained = [...processedLiveEventIds.current].slice(-300);
+      processedLiveEventIds.current = new Set(retained);
+    }
+
+    const next = { ...currentState };
+    let changed = false;
+      const addParticipant = (list: Array<{ name: string; avatar: string; frame: string; [key: string]: unknown }>, event: LiveEvent) => {
+      const name = event.displayName || event.username || "LIVE viewer";
+      const existing = list.find((item) => item.name.toLowerCase() === name.toLowerCase());
+      if (existing) return { list, participant: existing };
+      const participant = {
+        name,
+        avatar: event.avatarUrl || "/avatars/a1.png",
+        frame: event.avatarFrame || "ember-dragon",
+      };
+      return { list: [...list, participant], participant };
+    };
+
+    for (const event of freshEvents) {
+      const kind = String(event.eventType || "").toLowerCase();
+      const name = event.displayName || event.username || "LIVE viewer";
+      const coins = Math.max(0, Number(event.coins || 0));
+      const likes = Math.max(0, Number(event.likes || 0));
+      const message = String(event.message || "").trim();
+      const normalizedMessage = message.toLowerCase();
+
+      if (selectedSlug === "coin-battle" && kind === "gift") {
+        const contenders = (next.contenders as Array<{ name: string; avatar: string; frame: string; coins: number }>) || [];
+        const found = contenders.find((item) => item.name.toLowerCase() === name.toLowerCase());
+        next.contenders = found
+          ? contenders.map((item) => item.name.toLowerCase() === name.toLowerCase() ? { ...item, coins: item.coins + coins } : item)
+          : [...contenders, { name, avatar: event.avatarUrl || "/avatars/a1.png", frame: event.avatarFrame || "ember-dragon", coins }];
+        changed = true;
+      }
+
+      if (selectedSlug === "team-battle" && (kind === "gift" || kind === "like")) {
+        const score = kind === "gift" ? coins : likes;
+        const bucket = Array.from(name).reduce((sum, char) => sum + char.charCodeAt(0), 0) % 2;
+        const key = bucket === 0 ? "redScore" : "blueScore";
+        next[key] = Number(next[key] || 0) + score;
+        changed = changed || score > 0;
+      }
+
+      if (selectedSlug === "avatar-race" && (kind === "gift" || kind === "like" || kind === "join")) {
+        const racers = (next.racers as Array<{ name: string; avatar: string; frame: string; progress: number }>) || [];
+        const result = addParticipant(racers, event);
+        const boost = kind === "gift" ? Math.max(2, Math.ceil(coins / 20)) : kind === "like" ? Math.max(1, Math.ceil(likes / 100)) : 0;
+        next.racers = result.list.map((r) => r.name.toLowerCase() === name.toLowerCase()
+          ? { ...r, progress: Math.min(100, Number(r.progress || 0) + boost) }
+          : r);
+        changed = true;
+      }
+
+      if (selectedSlug === "live-quiz" && kind === "chat" && /^[a-d]$/i.test(message)) {
+        const option = message.toUpperCase().charCodeAt(0) - 65;
+        const votes = (next.votes as Record<string, number>) || {};
+        next.votes = { ...votes, [option]: Number(votes[option] || 0) + 1 };
+        changed = true;
+      }
+
+      if (selectedSlug === "word-scramble" && kind === "chat") {
+        const answer = String(next.word || "").trim().toLowerCase();
+        const guess = normalizedMessage.replace(/^!guess\s*/, "").replace(/^!word\s*/, "");
+        if (answer && guess === answer && !next.solvedBy) {
+          next.solvedBy = name;
+          changed = true;
+        }
+      }
+
+      if (selectedSlug === "boss-raid" && (kind === "gift" || kind === "like")) {
+        const damage = kind === "gift" ? coins : Math.ceil(likes / 10);
+        if (damage > 0) {
+          next.hp = Math.max(0, Number(next.hp ?? next.maxHp ?? 10000) - damage);
+          next.mvp = name;
+          changed = true;
+        }
+      }
+
+      if (selectedSlug === "hot-potato" && (kind === "gift" || (kind === "chat" && /^!pass$/i.test(message)))) {
+        next.holder = name;
+        next.holderAvatar = event.avatarUrl || "/avatars/a1.png";
+        next.holderFrame = event.avatarFrame || "ember-dragon";
+        changed = true;
+      }
+    }
+
+    if (changed) {
+      void onSaveGame(selectedSlug, { stateJson: next }).then(() => {
+        notifyOverlayChannel({ type: "game-update", gameSlug: selectedSlug });
+      });
+    }
+  }, [events, selectedSlug]);
 
   const handleCopyGameOverlay = (slug: string, title: string) => {
     onCopyUrl(`/overlay/game/${slug}`, title);
