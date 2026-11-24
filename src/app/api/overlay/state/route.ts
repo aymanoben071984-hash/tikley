@@ -26,7 +26,7 @@ export async function GET(request: Request) {
     if (clientId && !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(clientId)) {
       return NextResponse.json({ error: "Invalid clientId" }, { status: 400 });
     }
-    if (!/^[a-z0-9_-]{1,80}$/i.test(target)) {
+    if (!/^[a-z0-9_-]+(?:\/[a-z0-9_-]+)?$/i.test(target)) {
       return NextResponse.json({ error: "Invalid overlay target" }, { status: 400 });
     }
     const ua = (request.headers.get("user-agent") || "").slice(0, 256);
