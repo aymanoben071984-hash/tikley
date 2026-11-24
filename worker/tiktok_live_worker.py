@@ -285,14 +285,24 @@ async def on_comment(event):
 def gift_payload(fields, event):
     """Build a provider-faithful gift event; the API maps catalog IDs separately."""
     gift = getattr(event, "gift", None)
-    name = getattr(gift, "name", "gift") or "gift"
+    name = str(getattr(gift, "name", None) or getattr(event, "gift_name", None) or "TikTok gift")[:80]
     repeat = max(1, int(getattr(event, "repeat_count", 1) or 1))
     diamonds = max(0, int(getattr(gift, "diamond_count", 0) or 0))
+    raw_gift_id = (
+        getattr(gift, "id", None)
+        or getattr(event, "gift_id", None)
+        or getattr(event, "giftId", None)
+    )
+    # Keep a non-empty provider namespace when SDK variants omit gift.id.
+    # This is intentionally not mapped to a Tikley catalog asset.
+    gift_id = str(raw_gift_id)[:48] if raw_gift_id is not None else (
+        "provider:" + hashlib.sha256(name.casefold().encode("utf-8")).hexdigest()[:32]
+    )
     return {
         **fields,
         "eventType": "gift",
-        "giftId": str(getattr(gift, "id", "")),
-        "giftName": str(name)[:80],
+        "giftId": gift_id,
+        "giftName": name,
         "coins": min(2_000_000_000, diamonds * repeat),
         "message": f"sent {name}",
     }
