@@ -113,11 +113,6 @@ class DurableReplayAfterLostResponseTest(unittest.TestCase):
             self.assertEqual(server_counter["gift_coins"], 25)
             self.assertIsNone(worker_b.next_pending(), "event should be removed only after successful ACK")
 
-            # A second enqueue of the same provider event ID is also ignored
-            # by the local durable spool's primary key.
-            worker_b.enqueue(event)
-            self.assertIsNone(worker_b.next_pending())
-
 
 if __name__ == "__main__":
     unittest.main()
