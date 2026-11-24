@@ -54,7 +54,11 @@ jobs:
         env:
           DATABASE_URL: postgresql://ci:ci@127.0.0.1:5432/ci
           NEXT_TELEMETRY_DISABLED: 1
+      - name: Install worker test dependencies
+        run: python -m pip install -r worker/requirements.txt
+      - name: Worker durable spool restart test
+        run: python -m unittest worker.test_event_spool -v
       - name: Python worker syntax
-        run: python -m py_compile worker/tiktok_live_worker.py
+        run: python -m py_compile worker/tiktok_live_worker.py worker/test_event_spool.py
       - name: Docker image build
         run: docker build --pull -t tikley:hardening .
