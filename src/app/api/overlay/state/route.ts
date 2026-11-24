@@ -12,7 +12,7 @@ import { ensureSeeded } from "@/lib/seed";
 import { listTopBoards } from "@/lib/topBoardsServer";
 import { overlayDisplays } from "@/db/schema";
 import { normalizeDisplay } from "@/lib/overlayDisplay";
-import { count, desc, eq, inArray, lt } from "drizzle-orm";
+import { and, count, desc, eq, inArray, lt, notLike } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
@@ -69,7 +69,10 @@ export async function GET(request: Request) {
       db.select().from(overlayDisplays).where(eq(overlayDisplays.overlayKey, displayKey)).limit(1),
       db.selectDistinct({ username: liveEvents.username })
         .from(liveEvents)
-        .where(inArray(liveEvents.eventType, ["gift", "like", "share"])),
+        .where(and(
+          inArray(liveEvents.eventType, ["gift", "like", "share"]),
+          notLike(liveEvents.sourceEventId, "admin-test:%"),
+        )),
     ]);
     const liveHandles = new Set(leaderboardUsers.map((row) => row.username.trim().replace(/^@/, "").toLowerCase()));
     const topListAvatars = avatars.filter((avatar) =>
