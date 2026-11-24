@@ -1,0 +1,26 @@
+name: Security CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: ["security/credentials-auth-hardening"]
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run typecheck
+      - name: Lint security-related changes
+        run: npx eslint src/lib/auth.ts src/lib/password.ts src/proxy.ts src/app/login/page.tsx src/app/api/auth/bootstrap/route.ts src/app/api/auth/login/route.ts src/app/api/auth/logout/route.ts src/app/api/auth/session/route.ts src/app/api/events/route.ts src/app/api/quran/route.ts src/app/api/tiktok/ingest/route.ts
+      - run: npm run build

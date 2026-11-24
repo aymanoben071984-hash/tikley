@@ -2,6 +2,7 @@ import {
   boolean,
   integer,
   jsonb,
+  index,
   pgTable,
   serial,
   text,
@@ -207,3 +208,25 @@ export type OverlayHeartbeat = typeof overlayHeartbeats.$inferSelect;
 export type TopBoardRow = typeof topBoards.$inferSelect;
 export type GiftAction = typeof giftActions.$inferSelect;
 export type ActionQueueRow = typeof actionQueue.$inferSelect;
+
+
+export const authUsers = pgTable("auth_users", {
+  id: serial("id").primaryKey(),
+  email: varchar("email", { length: 254 }).notNull().unique(),
+  passwordHash: text("password_hash").notNull(),
+  role: varchar("role", { length: 24 }).notNull().default("admin"),
+  enabled: boolean("enabled").notNull().default(true),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+export const authSessions = pgTable("auth_sessions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => authUsers.id, { onDelete: "cascade" }),
+  tokenHash: varchar("token_hash", { length: 64 }).notNull().unique(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+}, (table) => ({
+  userIdIdx: index("auth_sessions_user_id_idx").on(table.userId),
+  expiresAtIdx: index("auth_sessions_expires_at_idx").on(table.expiresAt),
+}));

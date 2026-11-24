@@ -9,6 +9,7 @@ import {
   type QuranState,
 } from "@/lib/quran";
 import { ensureSeeded } from "@/lib/seed";
+import { getSessionUser, isSameOrigin } from "@/lib/auth";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
@@ -52,6 +53,14 @@ export async function GET() {
  *  - { progress: { rev, ayah, ended } }         an overlay reporting where it is
  */
 export async function PATCH(request: Request) {
+  let authBody: Record<string, unknown>;
+  try { authBody = await request.clone().json() as Record<string, unknown>; } catch { return NextResponse.json({ error: "Invalid JSON" }, { status: 400 }); }
+  const isOverlayProgress = Boolean(authBody.progress && typeof authBody.progress === "object" && !authBody.config && !authBody.command);
+  if (!isOverlayProgress) {
+    const user = await getSessionUser(request);
+    if (user?.role !== "admin") return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!isSameOrigin(request)) return NextResponse.json({ error: "Invalid request origin" }, { status: 403 });
+  }
   try {
     const body = (await request.json()) as Record<string, unknown>;
     const row = await readRow();
