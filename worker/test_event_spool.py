@@ -183,5 +183,21 @@ class ProviderGiftPayloadTest(unittest.TestCase):
             )
             self.assertEqual(worker.gift_payload(fields, event)["coins"], 2_000_000_000)
 
+    def test_provider_gift_without_id_gets_stable_non_catalog_fallback(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            worker = load_worker(Path(tmp) / "spool.sqlite3", "tikley_worker_gift_no_id")
+            fields = {"sourceEventId": "provider:gift:no-id"}
+            event = types.SimpleNamespace(
+                gift=types.SimpleNamespace(name="Mystery Gift", diamond_count=0),
+                repeat_count=1,
+            )
+            payload = worker.gift_payload(fields, event)
+            expected = "provider:" + __import__("hashlib").sha256(
+                "mystery gift".encode("utf-8")
+            ).hexdigest()[:32]
+            self.assertEqual(payload["giftId"], expected)
+            self.assertEqual(payload["giftName"], "Mystery Gift")
+            self.assertEqual(payload["coins"], 0)
+
 if __name__ == "__main__":
     unittest.main()
