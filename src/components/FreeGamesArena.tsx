@@ -538,8 +538,8 @@ export function GameOverlayStage({
             {visibleDancers.slice(0, 24).map((dancer, idx) => (
               <div
                 key={dancer.name}
-                className="flex min-w-0 flex-col items-center"
-                style={{ animation: dancer.action === "jump" || dancer.action === "float" ? "ol-dance-jump .65s ease-in-out infinite alternate" : "ol-dance-bounce .9s ease-in-out infinite alternate", animationDelay: `${idx * 0.07}s` }}
+                className={`flex min-w-0 flex-col items-center ${dancer.action === "jump" || dancer.action === "float" ? "animate-bounce" : "animate-ol-float"}`}
+                style={{ animationDelay: `${idx * 0.07}s` }}
               >
                 <div className={dancer.action === "spotlight" ? "rounded-full bg-amber-300/20 p-1 shadow-[0_0_25px_rgba(251,191,36,.8)]" : dancer.action === "aura" || dancer.action === "vip" ? "rounded-full bg-fuchsia-400/20 p-1 shadow-[0_0_20px_rgba(232,121,249,.7)]" : "p-1"}>
                   <FramedAvatar avatarUrl={dancer.avatar} frameSlug={dancer.frame} size={48} showSignatureFx={false} />
