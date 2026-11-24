@@ -58,6 +58,7 @@ def load_worker(spool_path, module_name):
     module = importlib.util.module_from_spec(spec)
     sys.modules[module_name] = module
     spec.loader.exec_module(module)
+    module.init_spool()
     return module
 
 
