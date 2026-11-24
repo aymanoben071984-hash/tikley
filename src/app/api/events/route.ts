@@ -157,7 +157,7 @@ export async function POST(request: Request) {
             displayName,
             tiktokUsername: `@${username}`,
             avatarUrl,
-            avatarFrame,
+            frameSlug: avatarFrame,
             coinsTotal: coins,
             likesTotal: likes,
             sharesTotal: shares,
