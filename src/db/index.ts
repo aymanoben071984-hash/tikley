@@ -65,24 +65,63 @@ export const db = new Proxy({} as Database, {
 });
 
 /**
- * Run `fn` while holding a Postgres advisory lock, so first-run seeding can't
- * happen twice when several serverless instances start at the same time.
+ * Advisory locks require a stable PostgreSQL session. The normal app URL may
+ * use Neon PgBouncer transaction pooling, which is unsafe for session locks.
+ * Keep ordinary queries pooled, but own advisory locks on a direct connection.
  */
+function getLockPool(): Pool {
+  if (!globalForDb.__olLockPool) {
+    const explicitDirect = process.env.DATABASE_URL_UNPOOLED || process.env.POSTGRES_URL_NON_POOLING;
+    const raw = explicitDirect || databaseUrl();
+    if (!raw) throw new Error("Database URL is not configured for advisory locks.");
+    let connectionString = raw;
+    if (!explicitDirect) {
+      const directUrl = new URL(raw);
+      directUrl.hostname = directUrl.hostname.replace("-pooler.", ".");
+      connectionString = directUrl.toString();
+    }
+    const pool = new Pool({
+      connectionString,
+      max: 2,
+      idleTimeoutMillis: 30_000,
+      connectionTimeoutMillis: 10_000,
+    });
+    pool.on("error", (err) => console.error("PostgreSQL advisory-lock pool error:", err.message));
+    globalForDb.__olLockPool = pool;
+  }
+  return globalForDb.__olLockPool;
+}
+
+/** Run fn while holding a session lock on a dedicated direct PostgreSQL connection. */
 export async function withAdvisoryLock<T>(key: number, fn: () => Promise<T>): Promise<T> {
-  const client = await getPool().connect();
+  const client = await getLockPool().connect();
+  let locked = false;
+  let destroyClient = false;
   try {
     await client.query("SELECT pg_advisory_lock($1)", [key]);
+    locked = true;
     return await fn();
   } finally {
-    try {
-      await client.query("SELECT pg_advisory_unlock($1)", [key]);
-    } catch {
-      /* the lock is released anyway when the session ends */
+    if (locked) {
+      try {
+        const result = await client.query<{ unlocked: boolean }>(
+          "SELECT pg_advisory_unlock($1) AS unlocked",
+          [key],
+        );
+        if (!result.rows[0]?.unlocked) {
+          console.error("PostgreSQL advisory lock was not released on its owning session:", key);
+          destroyClient = true;
+        }
+      } catch (error) {
+        console.error("Failed to release PostgreSQL advisory lock:", key, error);
+        destroyClient = true;
+      }
     }
-    client.release();
+    client.release(destroyClient);
   }
 }
 
-export const LOCK_SEED = 740_001;
-export const LOCK_TOP_BOARDS = 740_002;
-export const LOCK_GIFT_ACTIONS = 740_003;
+// New lock namespace bypasses sessions stranded by the previous pooled-session implementation.
+export const LOCK_SEED = 740_101;
+export const LOCK_TOP_BOARDS = 740_102;
+export const LOCK_GIFT_ACTIONS = 740_103;
