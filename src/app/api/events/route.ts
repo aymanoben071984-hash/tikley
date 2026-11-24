@@ -57,11 +57,6 @@ export async function POST(request: Request) {
     const rawAvatarUrl = typeof body.avatarUrl === "string" ? body.avatarUrl.trim().slice(0, 2000) : "";
     const avatarUrl = rawAvatarUrl || (isAdmin ? "/avatars/a1.png" : "");
     if (!avatarUrl) return NextResponse.json({ error: "Real avatar URL required" }, { status: 400 });
-      return NextResponse.json({ error: "Unsupported event type" }, { status: 400 });
-    }
-
-
-
     const avatarFrame = typeof body.avatarFrame === "string" && body.avatarFrame.trim() ? body.avatarFrame.trim().slice(0, 80) : "ember-dragon";
     let giftId: string | null = null;
     let giftName: string | null = null;
@@ -70,6 +65,9 @@ export async function POST(request: Request) {
     const likes = Math.max(0, Math.min(2_000_000_000, Math.floor(Number(body.likes) || 0)));
     let message = typeof body.message === "string" ? body.message.slice(0, 2000) : "";
     const effectKey = typeof body.effectKey === "string" ? body.effectKey.slice(0, 48) : null;
+    if (eventType === "effect" && !effectKey) {
+      return NextResponse.json({ error: "Effect key is required" }, { status: 400 });
+    }
 
     if (eventType === "gift") {
       const found = GIFT_CATALOG.find((gift) => gift.id === String(body.giftId || ""));
