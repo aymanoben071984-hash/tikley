@@ -37,7 +37,7 @@ export async function GET() {
       avatars,
       games,
       scenes,
-      events,
+      events: profile?.connectionStatus === "live" ? events : [],
       activeOverlays,
       boards,
     });
