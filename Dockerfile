@@ -1,8 +1,8 @@
-# Production image for OverlayLive (Next.js + PostgreSQL)
+# Reproducible production image for Tikley.
 FROM node:22-alpine AS deps
 WORKDIR /app
-COPY package.json package-lock.json* ./
-RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
+COPY package.json package-lock.json ./
+RUN npm ci
 
 FROM node:22-alpine AS build
 WORKDIR /app
@@ -18,5 +18,5 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 COPY --from=build /app ./
 EXPOSE 3000
-# Create/update the database tables, then start the app.
+# Retained until a complete reviewed baseline migration replaces schema push.
 CMD ["sh", "-c", "npx drizzle-kit push --config=drizzle.prod.config.ts --force && npm run start -- -p ${PORT:-3000}"]
