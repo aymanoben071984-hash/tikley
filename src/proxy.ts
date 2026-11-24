@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSessionUser } from "@/lib/auth";
+import { getSessionUser, isSameOrigin } from "@/lib/auth";
 
 const ADMIN_API_PATHS = new Set([
   "/api/actions",
@@ -20,7 +20,7 @@ export async function proxy(request: NextRequest) {
   if (!dashboardPage && !protectedApi) return NextResponse.next();
 
   const user = await getSessionUser(request);
-  if (user?.role === "admin") return NextResponse.next();
+  if (user?.role === "admin") {\n    if (protectedApi && !["GET", "HEAD", "OPTIONS"].includes(request.method) && !isSameOrigin(request)) {\n      return NextResponse.json({ error: "Invalid request origin" }, { status: 403 });\n    }\n    return NextResponse.next();\n  }
 
   if (dashboardPage) {
     const login = new URL("/login", request.url);
@@ -32,5 +32,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/api/:path*"],
+  matcher: [\n    "/dashboard/:path*",\n    "/api/actions", "/api/actions/test", "/api/avatars", "/api/dashboard",\n    "/api/games", "/api/scenes", "/api/top-boards", "/api/widgets", "/api/overlay-display",\n  ],
 };
