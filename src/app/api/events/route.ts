@@ -52,8 +52,8 @@ export async function POST(request: Request) {
     let giftId: string | null = null;
     let giftName: string | null = null;
     let giftIcon: string | null = null;
-    const coins = Math.max(0, Math.floor(Number(body.coins) || 0));
-    const likes = Math.max(0, Math.floor(Number(body.likes) || 0));
+    const coins = Math.max(0, Math.min(2_000_000_000, Math.floor(Number(body.coins) || 0)));
+    const likes = Math.max(0, Math.min(2_000_000_000, Math.floor(Number(body.likes) || 0)));
     let message = typeof body.message === "string" ? body.message.slice(0, 2000) : "";
     const effectKey = typeof body.effectKey === "string" ? body.effectKey.slice(0, 48) : null;
 
@@ -79,6 +79,7 @@ export async function POST(request: Request) {
     const sourceEventId = typeof body.sourceEventId === "string" && /^[a-zA-Z0-9:_-]{1,128}$/.test(body.sourceEventId)
       ? body.sourceEventId
       : null;
+    if (!sourceEventId) return NextResponse.json({ error: "Valid sourceEventId is required for idempotent ingestion" }, { status: 400 });
 
     // The event row and every persisted counter/goal update commit or roll back together.
     // Locking the single streamer row also serializes session-stat updates and LIVE state changes.
@@ -107,8 +108,8 @@ export async function POST(request: Request) {
         const [preset] = await tx.select({ id: avatarPresets.id })
           .from(avatarPresets)
           .where(eq(avatarPresets.tiktokUsername, username))
-          .limit(1)
-          .for("update");
+          .for("update")
+          .limit(1);
         if (preset) {
           await tx.update(avatarPresets).set({
             coinsTotal: sql`${avatarPresets.coinsTotal} + ${coins}`,
