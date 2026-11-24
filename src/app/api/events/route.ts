@@ -2,7 +2,7 @@ import { db } from "@/db";
 import { avatarPresets, liveEvents, streamerProfiles, widgetConfigs } from "@/db/schema";
 import { GIFT_CATALOG } from "@/lib/catalog";
 import { ensureSeeded } from "@/lib/seed";
-import { getSessionUser } from "@/lib/auth";
+import { getSessionUser, isSameOrigin } from "@/lib/auth";
 import { evaluateGiftActions } from "@/lib/giftActionsServer";
 import { desc, eq, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
@@ -20,10 +20,13 @@ export async function GET() {
   }
 }
 export async function POST(request: Request) {
+  const contentLength = Number(request.headers.get("content-length") || 0);
+  if (contentLength > 16 * 1024) return NextResponse.json({ error: "Payload too large" }, { status: 413 });
   const workerSecret = process.env.TIKTOK_INGEST_TOKEN;
   const workerAuthorized = Boolean(workerSecret && request.headers.get("authorization") === `Bearer ${workerSecret}`);
   const admin = workerAuthorized ? null : await getSessionUser(request);
   if (!workerAuthorized && admin?.role !== "admin") return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!workerAuthorized && !isSameOrigin(request)) return NextResponse.json({ error: "Invalid request origin" }, { status: 403 });
   try {
     await ensureSeeded();
     const body = await request.json() as Record<string, unknown>;
