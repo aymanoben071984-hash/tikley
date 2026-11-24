@@ -79,13 +79,18 @@ class DurableReplayAfterLostResponseTest(unittest.TestCase):
             server_committed_ids = set()
             server_counter = {"gift_coins": 0}
 
+            first_attempt = {"value": True}
             def server_accept(payload):
                 event_id = payload["sourceEventId"]
                 if event_id not in server_committed_ids:
                     server_committed_ids.add(event_id)
                     server_counter["gift_coins"] += payload["coins"]
-                # Simulate a lost response after the durable server-side commit.
-                raise TimeoutError("server committed; response connection was lost")
+                if first_attempt["value"]:
+                    first_attempt["value"] = False
+                    # Commit happened, but the HTTP response was lost.
+                    raise TimeoutError("server committed; response connection was lost")
+                # The retry sees the same idempotency key and returns 200.
+                return 200
 
             with self.assertRaises(TimeoutError):
                 server_accept(event)
@@ -100,12 +105,8 @@ class DurableReplayAfterLostResponseTest(unittest.TestCase):
             replay_event = __import__("json").loads(replay[1])
 
             # Server receives the same provider event ID again. Its unique
-            # idempotency key must make the retry a no-op.
-            server_accept_id = replay_event["sourceEventId"]
-            if server_accept_id not in server_committed_ids:
-                server_committed_ids.add(server_accept_id)
-                server_counter["gift_coins"] += replay_event["coins"]
-
+            # idempotency key makes the retry a no-op and returns success.
+            self.assertEqual(server_accept(replay_event), 200)
             worker_b.acknowledge(replay[0])
 
             self.assertEqual(len(server_committed_ids), 1)
