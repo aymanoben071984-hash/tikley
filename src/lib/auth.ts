@@ -20,7 +20,9 @@ function cookieValue(request: Request): string | null {
   const header = request.headers.get("cookie") || "";
   for (const part of header.split(";")) {
     const [name, ...value] = part.trim().split("=");
-    if (name === SESSION_COOKIE) {\n      try { return decodeURIComponent(value.join("=")); } catch { return null; }\n    }
+    if (name === SESSION_COOKIE) {
+      try { return decodeURIComponent(value.join("=")); } catch { return null; }
+    }
   }
   return null;
 }
