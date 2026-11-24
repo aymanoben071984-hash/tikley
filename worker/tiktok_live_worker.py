@@ -292,7 +292,7 @@ def gift_payload(fields, event):
         **fields,
         "eventType": "gift",
         "giftId": str(getattr(gift, "id", "")),
-        "giftName": str(name)[:120],
+        "giftName": str(name)[:80],
         "coins": min(2_000_000_000, diamonds * repeat),
         "message": f"sent {name}",
     }
