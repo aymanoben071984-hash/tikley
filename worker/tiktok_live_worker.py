@@ -13,7 +13,16 @@ TOKEN=os.environ.get("TIKTOK_INGEST_TOKEN","")
 SPOOL_PATH=Path(os.environ.get("TIKLEY_SPOOL_PATH","./tikley-event-spool.sqlite3"))
 if not HANDLE or not APP_URL or not TOKEN: sys.exit("Set TIKTOK_USERNAME, TIKLEY_APP_URL and TIKTOK_INGEST_TOKEN.")
 client=TikTokLiveClient(unique_id=HANDLE)
-delivery_lock=asyncio.Lock()
+delivery_lock=None
+delivery_lock_loop=None
+
+def get_delivery_lock():
+    global delivery_lock, delivery_lock_loop
+    loop=asyncio.get_running_loop()
+    if delivery_lock is None or delivery_lock_loop is not loop:
+        delivery_lock=asyncio.Lock()
+        delivery_lock_loop=loop
+    return delivery_lock
 
 def init_spool():
     SPOOL_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -88,7 +97,7 @@ async def deliver(payload):
     return "pending", 0, detail if "detail" in locals() else "retry budget exhausted"
 
 async def drain_spool():
-    async with delivery_lock:
+    async with get_delivery_lock():
         while True:
             row=next_pending()
             if not row: return
