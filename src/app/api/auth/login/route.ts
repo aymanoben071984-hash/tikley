@@ -1,7 +1,7 @@
-import { and, eq, gt } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { db } from "@/db";
-import { authLoginAttempts, authUsers } from "@/db/schema";
+import { authUsers } from "@/db/schema";
 import { createSession, SESSION_COOKIE, SESSION_TTL_SECONDS } from "@/lib/auth";
 import { verifyPassword } from "@/lib/password";
 
