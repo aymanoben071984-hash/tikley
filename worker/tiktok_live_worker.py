@@ -1,5 +1,5 @@
 """Tikley LIVE bridge worker: forwards only real events with usable identity fields."""
-import os, sys, time, logging, asyncio, aiohttp
+import os, sys, time, logging, asyncio, aiohttp, uuid
 from TikTokLive import TikTokLiveClient
 from TikTokLive.events import LikeEvent, CommentEvent, GiftEvent, FollowEvent, ShareEvent, JoinEvent
 from TikTokLive.client.errors import UserOfflineError
@@ -28,7 +28,10 @@ def fields(e):
     avatar_url=getattr(avatar,"url",None) or getattr(avatar,"url_list",None)
     if isinstance(avatar_url,(list,tuple)): avatar_url=avatar_url[0] if avatar_url else None
     if not username or not nickname or not avatar_url: return None
-    return {"username":str(username).lstrip("@"),"displayName":str(nickname),"avatarUrl":str(avatar_url)}
+    source_id = getattr(e, "msg_id", None) or getattr(e, "event_id", None)
+    if source_id is None:
+        source_id = uuid.uuid4().hex
+    return {"username":str(username).lstrip("@"),"displayName":str(nickname),"avatarUrl":str(avatar_url),"sourceEventId":str(source_id)[:128]}
 
 @client.on(LikeEvent)
 async def like(e):
