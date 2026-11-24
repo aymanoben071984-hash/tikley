@@ -1,4 +1,4 @@
-# Reproducible production image for Tikley.
+# Production image for Tikley (Next.js + PostgreSQL)
 FROM node:22-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
@@ -18,5 +18,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 COPY --from=build /app ./
 EXPOSE 3000
-# Retained until a complete reviewed baseline migration replaces schema push.
-CMD ["sh", "-c", "npx drizzle-kit push --config=drizzle.prod.config.ts --force && npm run start -- -p ${PORT:-3000}"]
+
+# Database schema changes must be reviewed and applied separately.
+# Never run drizzle-kit push automatically during service startup.
+CMD ["sh", "-c", "npm run start -- -p ${PORT:-3000}"]
