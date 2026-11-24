@@ -282,22 +282,27 @@ async def on_comment(event):
         await queue_event({**fields, "eventType": "chat", "message": str(getattr(event, "comment", ""))})
 
 
-@client.on(GiftEvent)
-async def on_gift(event):
-    fields = event_fields(event)
-    if not fields:
-        return
+def gift_payload(fields, event):
+    """Build a provider-faithful gift event; the API maps catalog IDs separately."""
     gift = getattr(event, "gift", None)
     name = getattr(gift, "name", "gift") or "gift"
     repeat = max(1, int(getattr(event, "repeat_count", 1) or 1))
     diamonds = max(0, int(getattr(gift, "diamond_count", 0) or 0))
-    await queue_event({
+    return {
         **fields,
         "eventType": "gift",
         "giftId": str(getattr(gift, "id", "")),
-        "coins": diamonds * repeat,
+        "giftName": str(name)[:120],
+        "coins": min(2_000_000_000, diamonds * repeat),
         "message": f"sent {name}",
-    })
+    }
+
+
+@client.on(GiftEvent)
+async def on_gift(event):
+    fields = event_fields(event)
+    if fields:
+        await queue_event(gift_payload(fields, event))
 
 
 @client.on(FollowEvent)
