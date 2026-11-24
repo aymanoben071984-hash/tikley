@@ -230,3 +230,10 @@ export const authSessions = pgTable("auth_sessions", {
   userIdIdx: index("auth_sessions_user_id_idx").on(table.userId),
   expiresAtIdx: index("auth_sessions_expires_at_idx").on(table.expiresAt),
 }));
+
+export const authLoginAttempts = pgTable("auth_login_attempts", {
+  keyHash: varchar("key_hash", { length: 64 }).primaryKey(),
+  attempts: integer("attempts").notNull().default(0),
+  windowEndsAt: timestamp("window_ends_at", { withTimezone: true }).notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
