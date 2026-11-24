@@ -8,6 +8,7 @@ import {
   text,
   timestamp,
   varchar,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 
 export const streamerProfiles = pgTable("streamer_profiles", {
@@ -95,7 +96,7 @@ export const gameConfigs = pgTable("game_configs", {
 
 export const liveEvents = pgTable("live_events", {
   id: serial("id").primaryKey(),
-  sourceEventId: varchar("source_event_id", { length: 128 }).unique(),
+  sourceEventId: varchar("source_event_id", { length: 128 }),
   eventType: varchar("event_type", { length: 32 }).notNull(), // gift | follow | join | chat | like | share | effect
   username: varchar("username", { length: 80 }).notNull(),
   displayName: varchar("display_name", { length: 120 }).notNull(),
@@ -109,7 +110,9 @@ export const liveEvents = pgTable("live_events", {
   message: text("message"),
   effectKey: varchar("effect_key", { length: 48 }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+}, (table) => ({
+  sourceEventIdUnique: uniqueIndex("live_events_source_event_id_uidx").on(table.sourceEventId),
+}));
 
 export interface SceneLayerItem {
   id: string;
