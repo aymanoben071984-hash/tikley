@@ -79,7 +79,7 @@ export async function GET(request: Request) {
       scenes,
       events,
       boards,
-    });
+    }, { headers: { "Cache-Control": "no-store, max-age=0" } });
   } catch (error) {
     console.error("GET /api/overlay/state failed:", error);
     return NextResponse.json({ error: "Overlay sync failed" }, { status: 500 });
