@@ -13,9 +13,31 @@ if not HANDLE or not APP_URL or not TOKEN: sys.exit("Set TIKTOK_USERNAME, TIKLEY
 client=TikTokLiveClient(unique_id=HANDLE)
 
 async def send(payload):
-    async with aiohttp.ClientSession() as s:
-        async with s.post(APP_URL+"/api/tiktok/ingest",json=payload,headers={"Authorization":"Bearer "+TOKEN},timeout=aiohttp.ClientTimeout(total=15)) as r:
-            if r.status>=300: log.warning("Ingestion %s: %s",r.status,await r.text())
+    # Keep one idempotency key in the payload across retries. If the server committed
+    # but the response was lost, the retry receives a duplicate acknowledgement.
+    timeout=aiohttp.ClientTimeout(total=15)
+    for attempt in range(4):
+        try:
+            async with aiohttp.ClientSession(timeout=timeout) as session:
+                async with session.post(
+                    APP_URL+"/api/tiktok/ingest",
+                    json=payload,
+                    headers={"Authorization":"Bearer "+TOKEN},
+                ) as response:
+                    if response.status < 300:
+                        await response.read()
+                        return
+                    detail=await response.text()
+                    retryable=response.status == 429 or response.status >= 500
+                    log.warning("Ingestion %s (attempt %s): %s",response.status,attempt+1,detail[:500])
+                    if not retryable:
+                        return
+        except (aiohttp.ClientError, asyncio.TimeoutError) as exc:
+            log.warning("Ingestion transport error (attempt %s): %s",attempt+1,exc)
+        if attempt < 3:
+            await asyncio.sleep(min(2 ** attempt,8))
+    log.error("Dropping event after retry budget exhausted: type=%s id=%s",payload.get("eventType"),payload.get("sourceEventId"))
+
 async def live(): await send({"eventType":"live_state","status":"live"})
 async def waiting(): await send({"eventType":"live_state","status":"waiting"})
 
@@ -30,6 +52,8 @@ def fields(e):
     if not username or not nickname or not avatar_url: return None
     source_id = getattr(e, "msg_id", None) or getattr(e, "event_id", None)
     if source_id is None:
+        # Stable for this handler invocation and all its retries; provider event IDs
+        # are preferred whenever TikTokLive exposes one.
         source_id = uuid.uuid4().hex
     return {"username":str(username).lstrip("@"),"displayName":str(nickname),"avatarUrl":str(avatar_url),"sourceEventId":str(source_id)[:128]}
 
