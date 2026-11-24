@@ -1,4 +1,4 @@
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { db } from "@/db";
 import { avatarPresets, liveEvents, streamerProfiles, widgetConfigs } from "@/db/schema";
 import { GIFT_CATALOG } from "@/lib/catalog";
@@ -71,19 +71,20 @@ export async function POST(request: Request) {
 
     if (eventType === "gift") {
       const suppliedGiftId = typeof body.giftId === "string" ? body.giftId.trim().slice(0, 48) : "";
+      const suppliedGiftName = typeof body.giftName === "string" ? body.giftName.trim().slice(0, 80) : "";
+      const providerGiftName = suppliedGiftName || "TikTok gift";
+      const providerFallbackId = "provider:" + createHash("sha256").update(providerGiftName.toLowerCase()).digest("hex").slice(0, 32);
       const found = GIFT_CATALOG.find((gift) => gift.id === suppliedGiftId);
       if (found) {
         giftId = found.id;
         giftName = found.name;
         giftIcon = found.icon;
         if (coins <= 0 && isAdmin) coins = found.coins;
-      } else if (workerAuthorized && suppliedGiftId) {
-        // TikTok provider IDs are not Tikley catalog IDs. Preserve the provider ID
-        // and actual name; do not mislabel an unknown gift as a Rose or another asset.
-        giftId = suppliedGiftId;
-        giftName = typeof body.giftName === "string" && body.giftName.trim()
-          ? body.giftName.trim().slice(0, 80)
-          : "TikTok gift";
+      } else if (workerAuthorized) {
+        // TikTok provider IDs may be absent in some SDK event variants. Preserve
+        // the provider ID when present; otherwise use a stable name-derived ID.
+        giftId = suppliedGiftId || providerFallbackId;
+        giftName = providerGiftName;
         giftIcon = null;
       } else {
         return NextResponse.json({ error: "Unknown gift id" }, { status: 400 });
