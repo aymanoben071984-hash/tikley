@@ -48,12 +48,34 @@ async def on_connect(event):
         log.error("Tikley API did not confirm LIVE state for @%s; incoming events may be rejected", HANDLE)
 
 
+def _avatar_url(user):
+    """TikTokLive exposes user images as ImageModel objects (usually avatar_thumb)."""
+    for field in ("avatar_thumb", "avatar_medium", "avatar_large", "avatar"):
+        image = getattr(user, field, None)
+        if image is None:
+            continue
+        urls = getattr(image, "url_list", None)
+        if isinstance(urls, (list, tuple)):
+            for url in urls:
+                if isinstance(url, str) and url.startswith(("https://", "http://")):
+                    return url
+        url = getattr(image, "url", None)
+        if isinstance(url, str) and url.startswith(("https://", "http://")):
+            return url
+    return ""
+
+
 def user_fields(event):
     user = getattr(event, "user", None)
+    if user is None:
+        return {"username": "", "displayName": "", "avatarUrl": ""}
+    username = getattr(user, "unique_id", None)
+    nickname = getattr(user, "nickname", None)
     return {
-        "username": getattr(user, "unique_id", None) or getattr(user, "nickname", "TikTok user"),
-        "displayName": getattr(user, "nickname", "TikTok user"),
-        "avatarUrl": getattr(getattr(user, "avatar", None), "url", "") or "",
+        # Never fabricate a username: the API requires a real TikTok identity.
+        "username": username.strip().lstrip("@") if isinstance(username, str) else "",
+        "displayName": nickname.strip() if isinstance(nickname, str) and nickname.strip() else (username or ""),
+        "avatarUrl": _avatar_url(user),
     }
 
 
