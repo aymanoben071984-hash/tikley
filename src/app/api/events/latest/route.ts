@@ -37,7 +37,7 @@ export async function GET(request: Request) {
             at: new Date(row.createdAt).getTime(),
           }
         : null,
-    });
+    }, { headers: { "Cache-Control": "no-store, max-age=0" } });
   } catch (error) {
     console.error("GET /api/events/latest failed:", error);
     return NextResponse.json({ error: "Failed to load latest event" }, { status: 500 });
