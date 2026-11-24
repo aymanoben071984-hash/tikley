@@ -29,7 +29,8 @@ export async function POST(request: Request) {
     avatarUrl: typeof body.avatarUrl === "string" ? body.avatarUrl.slice(0, 2000) : "",
     message: typeof body.message === "string" ? body.message.slice(0, 2000) : "",
   };
-  if (!payload.username || !payload.displayName || !payload.avatarUrl) return NextResponse.json({ error: "Missing real user identity/avatar" }, { status: 400 });\n  if (eventType === "gift") { payload.giftId = typeof body.giftId === "string" ? body.giftId.slice(0, 48) : "rose"; payload.coins = Math.max(0, Math.floor(Number(body.coins) || 0)); }
+  if (!payload.username || !payload.displayName || !payload.avatarUrl) return NextResponse.json({ error: "Missing real user identity/avatar" }, { status: 400 });
+  if (eventType === "gift") { payload.giftId = typeof body.giftId === "string" ? body.giftId.slice(0, 48) : "rose"; payload.coins = Math.max(0, Math.floor(Number(body.coins) || 0)); }
   if (eventType === "like") payload.likes = Math.max(0, Math.floor(Number(body.likes) || 0));
   const origin = new URL(request.url).origin;
   const response = await fetch(origin + "/api/events", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(payload), cache: "no-store" });
