@@ -21,15 +21,15 @@ export async function POST(request: Request) {
   const eventType = typeof body.eventType === "string" ? body.eventType : "";
   if (!allowed.has(eventType)) return NextResponse.json({ error: "Unsupported eventType" }, { status: 400 });
   const [profile] = await db.select().from(streamerProfiles).limit(1);
-  if (profile && profile.connectionStatus !== "live") await db.update(streamerProfiles).set({ connectionStatus: "live", updatedAt: new Date() }).where(eq(streamerProfiles.id, profile.id));
+  if (!profile || profile.connectionStatus !== "live") return NextResponse.json({ error: "LIVE session is not confirmed" }, { status: 409 });
   const payload: Record<string, unknown> = {
     eventType,
-    username: typeof body.username === "string" ? body.username.slice(0, 80) : "TikTok user",
-    displayName: typeof body.displayName === "string" ? body.displayName.slice(0, 120) : "TikTok user",
+    username: typeof body.username === "string" && body.username.trim() ? body.username.trim().replace(/^@/, "").slice(0, 80) : "",
+    displayName: typeof body.displayName === "string" && body.displayName.trim() ? body.displayName.trim().slice(0, 120) : "",
     avatarUrl: typeof body.avatarUrl === "string" ? body.avatarUrl.slice(0, 2000) : "",
     message: typeof body.message === "string" ? body.message.slice(0, 2000) : "",
   };
-  if (eventType === "gift") { payload.giftId = typeof body.giftId === "string" ? body.giftId.slice(0, 48) : "rose"; payload.coins = Math.max(0, Math.floor(Number(body.coins) || 0)); }
+  if (!payload.username || !payload.displayName || !payload.avatarUrl) return NextResponse.json({ error: "Missing real user identity/avatar" }, { status: 400 });\n  if (eventType === "gift") { payload.giftId = typeof body.giftId === "string" ? body.giftId.slice(0, 48) : "rose"; payload.coins = Math.max(0, Math.floor(Number(body.coins) || 0)); }
   if (eventType === "like") payload.likes = Math.max(0, Math.floor(Number(body.likes) || 0));
   const origin = new URL(request.url).origin;
   const response = await fetch(origin + "/api/events", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(payload), cache: "no-store" });
