@@ -56,7 +56,16 @@ export function isSameOrigin(request: Request): boolean {
   const origin = request.headers.get("origin");
   if (!origin) return false;
   try {
-    return new URL(origin).origin === new URL(request.url).origin;
+    const originUrl = new URL(origin);
+    // Railway terminates TLS at its edge and forwards the original host/protocol.
+    // Compare against the public origin rather than the internal container URL.
+    const forwardedHost = request.headers.get("x-forwarded-host")?.split(",")[0]?.trim();
+    const host = forwardedHost || request.headers.get("host");
+    const forwardedProto = request.headers.get("x-forwarded-proto")?.split(",")[0]?.trim();
+    const protocol = forwardedProto ? `${forwardedProto.replace(/:$/, "")}:` : new URL(request.url).protocol;
+    if (!host) return false;
+    return originUrl.host.toLowerCase() === host.toLowerCase()
+      && originUrl.protocol === protocol;
   } catch {
     return false;
   }
