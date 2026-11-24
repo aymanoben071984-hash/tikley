@@ -1,37 +1,64 @@
-import { timingSafeEqual } from "node:crypto";
+import { createHash, timingSafeEqual } from "node:crypto";
+import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { db, withAdvisoryLock } from "@/db";
 import { authUsers } from "@/db/schema";
 import { hashPassword } from "@/lib/password";
+import { isSameOrigin } from "@/lib/auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-function secretMatches(provided: string, expected: string): boolean {
-  const a = Buffer.from(provided);
-  const b = Buffer.from(expected);
-  return a.length === b.length && timingSafeEqual(a, b);
+const ADMIN_EMAIL = "aymanoben071984@gmail.com";
+const BOOTSTRAP_LOCK = 740_004;
+
+function tokenMatches(candidate: string, expected: string): boolean {
+  const a = createHash("sha256").update(candidate).digest();
+  const b = createHash("sha256").update(expected).digest();
+  return timingSafeEqual(a, b);
+}
+
+export async function GET() {
+  try {
+    const [existing] = await db.select({ id: authUsers.id }).from(authUsers).limit(1);
+    return NextResponse.json({ available: !existing });
+  } catch {
+    return NextResponse.json({ error: "Setup status unavailable" }, { status: 503 });
+  }
 }
 
 export async function POST(request: Request) {
-  const secret = process.env.TIKLEY_BOOTSTRAP_SECRET;
-  if (!secret || !request.headers.get("x-tikley-bootstrap-secret") || !secretMatches(request.headers.get("x-tikley-bootstrap-secret")!, secret)) {
+  if (!isSameOrigin(request)) return NextResponse.json({ error: "Invalid request origin" }, { status: 403 });
+
+  const expected = process.env.TIKLEY_BOOTSTRAP_SECRET;
+  const provided = request.headers.get("x-tikley-bootstrap-secret") || "";
+  if (!expected || expected.length < 32 || !provided || provided.length > 256 || !tokenMatches(provided, expected)) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
+
+  const contentLength = Number(request.headers.get("content-length") || 0);
+  if (contentLength > 8 * 1024) return NextResponse.json({ error: "Payload too large" }, { status: 413 });
+
   let body: { email?: unknown; password?: unknown };
-  try { body = await request.json(); } catch { return NextResponse.json({ error: "Invalid JSON" }, { status: 400 }); }
+  try { body = await request.json(); } catch { return NextResponse.json({ error: "Invalid request" }, { status: 400 }); }
+
   const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
   const password = typeof body.password === "string" ? body.password : "";
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254 || password.length < 14 || password.length > 256) {
-    return NextResponse.json({ error: "Use a valid email and a password of at least 14 characters" }, { status: 400 });
+  if (email !== ADMIN_EMAIL || password.length < 14 || password.length > 128) {
+    return NextResponse.json({ error: "Use the configured admin email and a password of 14–128 characters." }, { status: 400 });
   }
-  const result = await withAdvisoryLock(740_004, async () => {
-    const [existing] = await db.select({ id: authUsers.id }).from(authUsers).limit(1);
-    if (existing) return null;
-    const passwordHash = await hashPassword(password);
-    const [user] = await db.insert(authUsers).values({ email, passwordHash, role: "admin" }).returning({ id: authUsers.id, email: authUsers.email });
-    return user;
-  });
-  if (!result) return NextResponse.json({ error: "Bootstrap already completed" }, { status: 409 });
-  return NextResponse.json({ created: true, user: result }, { status: 201 });
+
+  try {
+    const created = await withAdvisoryLock(BOOTSTRAP_LOCK, async () => {
+      const [existing] = await db.select({ id: authUsers.id }).from(authUsers).limit(1);
+      if (existing) return false;
+      const passwordHash = await hashPassword(password);
+      await db.insert(authUsers).values({ email: ADMIN_EMAIL, passwordHash, role: "admin", enabled: true });
+      return true;
+    });
+    if (!created) return NextResponse.json({ error: "First-admin setup is permanently closed." }, { status: 409 });
+    return NextResponse.json({ ok: true }, { status: 201 });
+  } catch {
+    return NextResponse.json({ error: "Unable to create the first admin account." }, { status: 500 });
+  }
 }
