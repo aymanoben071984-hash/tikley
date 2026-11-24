@@ -1,4 +1,4 @@
-import { db, withAdvisoryLock } from "@/db";
+import { db, LOCK_OVERLAY_HEARTBEATS, withAdvisoryLock } from "@/db";
 import {
   avatarPresets,
   gameConfigs,
@@ -37,7 +37,7 @@ export async function GET(request: Request) {
         : "Browser Source";
 
     if (clientId) {
-      await withAdvisoryLock(740_005, async () => {
+      await withAdvisoryLock(LOCK_OVERLAY_HEARTBEATS, async () => {
         const now = new Date();
         // Bound attacker-controlled heartbeat rows and keep only recently active clients.
         await db.delete(overlayHeartbeats).where(lt(overlayHeartbeats.lastSeenAt, new Date(now.getTime() - 24 * 60 * 60 * 1000)));
