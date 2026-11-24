@@ -23,11 +23,10 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const clientId = searchParams.get("clientId");
     const target = searchParams.get("target") || "scene";
-    const allowedTargets = new Set(["scene", "alerts", "goals", "events", "leaderboard", "games"]);
     if (clientId && !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(clientId)) {
       return NextResponse.json({ error: "Invalid clientId" }, { status: 400 });
     }
-    if (!allowedTargets.has(target)) {
+    if (!/^[a-z0-9_-]{1,80}$/i.test(target)) {
       return NextResponse.json({ error: "Invalid overlay target" }, { status: 400 });
     }
     const ua = (request.headers.get("user-agent") || "").slice(0, 256);
