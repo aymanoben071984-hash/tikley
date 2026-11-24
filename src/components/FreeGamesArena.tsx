@@ -796,19 +796,7 @@ export function FreeGamesArena({
 
     const next = { ...currentState };
     let changed = false;
-      const addParticipant = (list: Array<{ name: string; avatar: string; frame: string; [key: string]: unknown }>, event: LiveEvent) => {
-      const name = event.displayName || event.username || "LIVE viewer";
-      const existing = list.find((item) => item.name.toLowerCase() === name.toLowerCase());
-      if (existing) return { list, participant: existing };
-      const participant = {
-        name,
-        avatar: event.avatarUrl || "/avatars/a1.png",
-        frame: event.avatarFrame || "ember-dragon",
-      };
-      return { list: [...list, participant], participant };
-    };
-
-    for (const event of freshEvents) {
+      for (const event of freshEvents) {
       const kind = String(event.eventType || "").toLowerCase();
       const name = event.displayName || event.username || "LIVE viewer";
       const coins = Math.max(0, Number(event.coins || 0));
@@ -835,9 +823,15 @@ export function FreeGamesArena({
 
       if (selectedSlug === "avatar-race" && (kind === "gift" || kind === "like" || kind === "join")) {
         const racers = (next.racers as Array<{ name: string; avatar: string; frame: string; progress: number }>) || [];
-        const result = addParticipant(racers, event);
+        const exists = racers.some((r) => r.name.toLowerCase() === name.toLowerCase());
+        const roster = exists ? racers : [...racers, {
+          name,
+          avatar: event.avatarUrl || "/avatars/a1.png",
+          frame: event.avatarFrame || "ember-dragon",
+          progress: 0,
+        }];
         const boost = kind === "gift" ? Math.max(2, Math.ceil(coins / 20)) : kind === "like" ? Math.max(1, Math.ceil(likes / 100)) : 0;
-        next.racers = result.list.map((r) => r.name.toLowerCase() === name.toLowerCase()
+        next.racers = roster.map((r) => r.name.toLowerCase() === name.toLowerCase()
           ? { ...r, progress: Math.min(100, Number(r.progress || 0) + boost) }
           : r);
         changed = true;
@@ -881,7 +875,7 @@ export function FreeGamesArena({
         notifyOverlayChannel({ type: "game-update", gameSlug: selectedSlug });
       });
     }
-  }, [events, selectedSlug]);
+  }, [events, selectedSlug, currentState, onSaveGame]);
 
   const handleCopyGameOverlay = (slug: string, title: string) => {
     onCopyUrl(`/overlay/game/${slug}`, title);
