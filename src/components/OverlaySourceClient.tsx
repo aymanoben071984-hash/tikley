@@ -39,6 +39,7 @@ interface OverlayStatePayload {
   profile: StreamerProfile;
   widgets: WidgetConfig[];
   avatars: AvatarPreset[];
+  topListAvatars?: AvatarPreset[];
   games: GameConfig[];
   scenes: LinkScene[];
   events: LiveEvent[];
@@ -137,7 +138,7 @@ export function OverlaySourceClient({ type, subId }: OverlaySourceClientProps) {
     return <div className="fixed inset-0 bg-transparent" />;
   }
 
-  const { profile, widgets, avatars, games, scenes, events } = state;
+  const { profile, widgets, avatars, topListAvatars, games, scenes, events } = state;
 
   const renderContent = () => {
     if (type === "quran") {
@@ -193,6 +194,7 @@ export function OverlaySourceClient({ type, subId }: OverlaySourceClientProps) {
             widgets={widgets}
             profile={profile}
             avatars={avatars}
+            topListAvatars={topListAvatars}
             events={events}
           />
         </div>
@@ -204,7 +206,7 @@ export function OverlaySourceClient({ type, subId }: OverlaySourceClientProps) {
       if (!board || !board.enabled) return null;
       return (
         <div className="absolute inset-0 flex items-center justify-center p-6">
-          <TopBoard settings={normalizeBoardSettings(board.settings)} avatars={avatars} />
+          <TopBoard settings={normalizeBoardSettings(board.settings)} avatars={topListAvatars ?? avatars} />
         </div>
       );
     }
