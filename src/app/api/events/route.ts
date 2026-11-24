@@ -82,7 +82,7 @@ export async function POST(request: Request) {
         // and actual name; do not mislabel an unknown gift as a Rose or another asset.
         giftId = suppliedGiftId;
         giftName = typeof body.giftName === "string" && body.giftName.trim()
-          ? body.giftName.trim().slice(0, 120)
+          ? body.giftName.trim().slice(0, 80)
           : "TikTok gift";
         giftIcon = null;
       } else {
