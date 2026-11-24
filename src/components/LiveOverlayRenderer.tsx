@@ -146,11 +146,21 @@ export function OverlayWidgetView({
           </div>
         </div>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={latestGift.giftIcon || GIFT_CATALOG[0].icon}
-          alt={latestGift.giftName || "Gift"}
-          className="h-16 w-16 shrink-0 object-contain drop-shadow-[0_6px_16px_rgba(251,191,36,0.55)] animate-ol-float"
-        />
+        {latestGift.giftIcon ? (
+          <img
+            src={latestGift.giftIcon}
+            alt={latestGift.giftName || "Gift"}
+            className="h-16 w-16 shrink-0 object-contain drop-shadow-[0_6px_16px_rgba(251,191,36,0.55)] animate-ol-float"
+          />
+        ) : (
+          <span
+            role="img"
+            aria-label={latestGift.giftName || "TikTok gift"}
+            className="grid h-16 w-16 shrink-0 place-items-center text-4xl"
+          >
+            🎁
+          </span>
+        )}
       </div>
     );
   }
