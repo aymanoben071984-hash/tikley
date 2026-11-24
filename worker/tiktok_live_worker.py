@@ -1,5 +1,5 @@
 """Tikley LIVE bridge worker: forwards real events through a durable local outbox."""
-import os, sys, time, logging, asyncio, aiohttp, uuid, sqlite3, json
+import os, sys, time, logging, asyncio, aiohttp, uuid, sqlite3, json, hashlib, re
 from pathlib import Path
 from TikTokLive import TikTokLiveClient
 from TikTokLive.events import LikeEvent, CommentEvent, GiftEvent, FollowEvent, ShareEvent, JoinEvent
@@ -142,7 +142,10 @@ def fields(e):
     if source_id is None:
         # Stable for this handler invocation and its retries; provider IDs are preferred.
         source_id=uuid.uuid4().hex
-    return {"username":str(username).lstrip("@"),"displayName":str(nickname),"avatarUrl":str(avatar_url),"sourceEventId":str(source_id)[:128]}
+    source_id=str(source_id)
+    if not re.fullmatch(r"[A-Za-z0-9:_-]{1,128}",source_id):
+        source_id=hashlib.sha256(source_id.encode("utf-8")).hexdigest()
+    return {"username":str(username).lstrip("@"),"displayName":str(nickname),"avatarUrl":str(avatar_url),"sourceEventId":source_id}
 
 @client.on(LikeEvent)
 async def like(e):
