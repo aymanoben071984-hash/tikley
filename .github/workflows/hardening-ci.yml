@@ -1,0 +1,42 @@
+name: Security and deployment validation
+
+on:
+  push:
+    branches:
+      - hardening/full-security-operations
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hardening-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Security unit tests
+        run: npm test
+      - name: TypeScript
+        run: npm run typecheck
+      - name: Lint security surface
+        run: npx eslint src/lib/auth.ts src/lib/password.ts src/proxy.ts src/app/login/page.tsx src/app/api/auth src/app/api/events/route.ts src/app/api/quran/route.ts src/app/api/tiktok/ingest/route.ts
+      - name: Next.js production build
+        run: npm run build
+        env:
+          DATABASE_URL: postgresql://ci:ci@127.0.0.1:5432/ci
+          NEXT_TELEMETRY_DISABLED: 1
+      - name: Docker image build
+        run: docker build --pull -t tikley:hardening .
