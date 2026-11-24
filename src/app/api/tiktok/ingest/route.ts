@@ -33,7 +33,7 @@ export async function POST(request: Request) {
   if (eventType === "gift") { payload.giftId = typeof body.giftId === "string" ? body.giftId.slice(0, 48) : ""; payload.coins = Math.max(0, Math.floor(Number(body.coins) || 0)); }
   if (eventType === "like") payload.likes = Math.max(0, Math.floor(Number(body.likes) || 0));
   const origin = new URL(request.url).origin;
-  const response = await fetch(origin + "/api/events", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(payload), cache: "no-store" });
+  const response = await fetch(origin + "/api/events", { method: "POST", headers: { "content-type": "application/json", authorization: `Bearer ${secret}` }, body: JSON.stringify(payload), cache: "no-store" });
   const result = await response.json().catch(() => ({}));
   return NextResponse.json(result, { status: response.status });
 }
