@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - hardening/full-security-operations
+      - fix/tiktoklive-blocked-and-ingestion
   pull_request:
     branches:
       - main
