@@ -57,7 +57,16 @@ export function OverlaySourceClient({ type, subId }: OverlaySourceClientProps) {
   const clientIdRef = useRef<string>("");
 
   useEffect(() => {
-    clientIdRef.current = `ol-${Math.random().toString(36).slice(2, 10)}`;
+    const createClientId = () => {
+      if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+        return crypto.randomUUID();
+      }
+      return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+        const r = Math.floor(Math.random() * 16);
+        return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
+      });
+    };
+    clientIdRef.current = createClientId();
     document.documentElement.classList.add("obs-transparent");
     return () => {
       document.documentElement.classList.remove("obs-transparent");
