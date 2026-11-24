@@ -31,6 +31,7 @@ interface OverlayWidgetViewProps {
   widget?: WidgetConfig;
   profile?: StreamerProfile;
   avatars: AvatarPreset[];
+  topListAvatars?: AvatarPreset[];
   events: LiveEvent[];
   compact?: boolean;
 }
@@ -40,6 +41,7 @@ export function OverlayWidgetView({
   widget,
   profile,
   avatars,
+  topListAvatars,
   events,
   compact = false,
 }: OverlayWidgetViewProps) {
@@ -52,7 +54,7 @@ export function OverlayWidgetView({
     return (
       <TopBoard
         settings={normalizeBoardSettings(settings.board)}
-        avatars={avatars}
+        avatars={topListAvatars ?? avatars}
         compact={compact}
       />
     );
@@ -392,6 +394,7 @@ interface SceneCanvasRendererProps {
   widgets: WidgetConfig[];
   profile?: StreamerProfile;
   avatars: AvatarPreset[];
+  topListAvatars?: AvatarPreset[];
   events: LiveEvent[];
   showSafeZone?: boolean;
   selectedLayerId?: string | null;
@@ -403,6 +406,7 @@ export function SceneCanvasRenderer({
   widgets,
   profile,
   avatars,
+  topListAvatars,
   events,
   showSafeZone = false,
   selectedLayerId,
@@ -441,6 +445,7 @@ export function SceneCanvasRenderer({
                 widget={w}
                 profile={profile}
                 avatars={avatars}
+                topListAvatars={topListAvatars}
                 events={events}
                 compact
               />
