@@ -88,7 +88,9 @@ export async function POST(request: Request) {
       } else {
         return NextResponse.json({ error: "Unknown gift id" }, { status: 400 });
       }
-      if (coins <= 0) return NextResponse.json({ error: "Gift coin value required" }, { status: 400 });
+      // TikTok may report valid free/zero-diamond gifts. Keep them as events;
+      // admin-triggered test gifts still require a positive catalog coin value.
+      if (coins <= 0 && !workerAuthorized) return NextResponse.json({ error: "Gift coin value required" }, { status: 400 });
       if (!message) message = `Sent ${giftName} (${coins.toLocaleString()} coins)!`;
     } else if (eventType === "follow") {
       if (!message) message = "followed the LIVE!";
