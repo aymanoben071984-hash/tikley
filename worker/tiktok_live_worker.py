@@ -199,11 +199,15 @@ async def mark_waiting():
 
 
 def avatar_url_for(user):
-    for field in ("avatar_thumb", "avatar_medium", "avatar_large", "avatar"):
+    for field in ("avatar_thumb", "avatar_medium", "avatar_large", "avatar", "avatarThumb", "avatarMedium", "avatarLarger", "profile_picture", "profilePicture"):
         image = getattr(user, field, None)
         if image is None:
             continue
-        urls = getattr(image, "url_list", None)
+        if isinstance(image, str) and image.startswith(("https://", "http://")):
+            return image
+        urls = getattr(image, "url_list", None) or getattr(image, "urlList", None)
+        if isinstance(urls, str):
+            urls = [urls]
         if isinstance(urls, (list, tuple)):
             for url in urls:
                 if isinstance(url, str) and url.startswith(("https://", "http://")):
@@ -219,14 +223,17 @@ def event_fields(event):
     if user is None:
         return None
 
-    username = getattr(user, "unique_id", None)
-    nickname = getattr(user, "nickname", None)
+    username = getattr(user, "unique_id", None) or getattr(user, "uniqueId", None) or getattr(user, "username", None)
+    nickname = getattr(user, "nickname", None) or getattr(user, "display_name", None) or getattr(user, "displayName", None)
     avatar_url = avatar_url_for(user)
     if not isinstance(username, str) or not username.strip():
         return None
-    if not isinstance(nickname, str) or not nickname.strip() or not avatar_url:
-        log.warning("Skipping event with incomplete TikTok user identity/avatar")
-        return None
+    if not isinstance(nickname, str) or not nickname.strip():
+        nickname = username.strip().lstrip("@")
+    if not avatar_url:
+        # Do not discard likes/gifts just because one TikTok SDK variant omits the avatar.
+        # The app stores a local fallback for this event and keeps any previously-known real photo.
+        log.warning("TikTok user avatar missing; retaining event with local avatar fallback")
 
     provider_id = getattr(event, "msg_id", None) or getattr(event, "event_id", None)
     source_id = str(provider_id) if provider_id is not None else uuid.uuid4().hex
