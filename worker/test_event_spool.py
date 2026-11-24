@@ -154,5 +154,34 @@ class DurableReplayAfterLostResponseTest(unittest.TestCase):
             self.assertIsNotNone(worker.next_pending())
 
 
+
+class ProviderGiftPayloadTest(unittest.TestCase):
+    def test_provider_gift_id_name_and_coin_total_are_preserved(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            worker = load_worker(Path(tmp) / "spool.sqlite3", "tikley_worker_gift_payload")
+            fields = {
+                "sourceEventId": "provider:gift:001",
+                "username": "viewer",
+                "displayName": "Viewer",
+                "avatarUrl": "https://example.test/avatar.png",
+            }
+            gift = types.SimpleNamespace(id=5655, name="Galaxy", diamond_count=100)
+            event = types.SimpleNamespace(gift=gift, repeat_count=3)
+            payload = worker.gift_payload(fields, event)
+            self.assertEqual(payload["giftId"], "5655")
+            self.assertEqual(payload["giftName"], "Galaxy")
+            self.assertEqual(payload["coins"], 300)
+            self.assertEqual(payload["sourceEventId"], "provider:gift:001")
+
+    def test_gift_coin_total_is_clamped_and_never_negative(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            worker = load_worker(Path(tmp) / "spool.sqlite3", "tikley_worker_gift_bounds")
+            fields = {"sourceEventId": "provider:gift:002"}
+            event = types.SimpleNamespace(
+                gift=types.SimpleNamespace(id=1, name="Test", diamond_count=2_000_000_000),
+                repeat_count=2,
+            )
+            self.assertEqual(worker.gift_payload(fields, event)["coins"], 2_000_000_000)
+
 if __name__ == "__main__":
     unittest.main()
