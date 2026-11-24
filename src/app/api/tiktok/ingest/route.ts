@@ -54,7 +54,7 @@ export async function POST(request: Request) {
   }
   if (eventType === "gift") {
     payload.giftId = typeof body.giftId === "string" ? body.giftId.trim().slice(0, 48) : "";
-    payload.giftName = typeof body.giftName === "string" ? body.giftName.trim().slice(0, 120) : "";
+    payload.giftName = typeof body.giftName === "string" ? body.giftName.trim().slice(0, 80) : "";
     payload.coins = Math.max(0, Math.min(2_000_000_000, Math.floor(Number(body.coins) || 0)));
   }
   if (eventType === "like") payload.likes = Math.max(0, Math.min(2_000_000_000, Math.floor(Number(body.likes) || 0)));
