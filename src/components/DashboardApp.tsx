@@ -238,6 +238,7 @@ export function DashboardApp({ initialSection = "overview", initialGame }: Dashb
   const fetchDashboard = useCallback(async () => {
     try {
       const res = await fetch("/api/dashboard", { cache: "no-store" });
+      if (res.status === 401) { window.location.assign("/login"); return; }
       if (!res.ok) return;
       const json = (await res.json()) as DashboardPayload;
       setData(json);
