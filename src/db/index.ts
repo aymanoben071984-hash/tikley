@@ -125,3 +125,4 @@ export async function withAdvisoryLock<T>(key: number, fn: () => Promise<T>): Pr
 export const LOCK_SEED = 740_101;
 export const LOCK_TOP_BOARDS = 740_102;
 export const LOCK_GIFT_ACTIONS = 740_103;
+export const LOCK_OVERLAY_HEARTBEATS = 740_105;
