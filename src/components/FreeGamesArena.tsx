@@ -29,7 +29,7 @@ import {
   Trophy,
   Zap,
 } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 interface GameOverlayStageProps {
   gameSlug: string;
@@ -731,6 +731,24 @@ export function FreeGamesArena({
     initialSlug && FREE_GAMES_CATALOG.some((g) => g.slug === initialSlug) ? initialSlug : "breaking-news",
   );
   const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
+  const [storeSearch, setStoreSearch] = useState("");
+  const [storeCategory, setStoreCategory] = useState<string>("all");
+  const [storeFreeOnly, setStoreFreeOnly] = useState(true);
+  const storeCategories = [
+    { id: "all", label: "All games" },
+    { id: "quiz", label: "Quiz" },
+    { id: "battle", label: "Battles" },
+    { id: "wheel", label: "Wheels" },
+    { id: "race", label: "Racing" },
+    { id: "word", label: "Word games" },
+    { id: "arcade", label: "Arcade" },
+    { id: "news", label: "Stream tools" },
+  ];
+  const visibleGames = FREE_GAMES_CATALOG.filter((game) => {
+    const matchesCategory = storeCategory === "all" || game.category === storeCategory;
+    const searchable = `${game.title} ${game.subtitle} ${game.triggerLabel}`.toLowerCase();
+    return matchesCategory && searchable.includes(storeSearch.trim().toLowerCase()) && (!storeFreeOnly || game.isFree);
+  });
   const [newQText, setNewQText] = useState("");
   const [newOpts, setNewOpts] = useState<[string, string, string, string]>([
     "",
@@ -752,6 +770,112 @@ export function FreeGamesArena({
     await onSaveGame(selectedSlug, { stateJson: statePatch, cardTheme });
     notifyOverlayChannel({ type: "game-update", gameSlug: selectedSlug });
   };
+
+  // Apply newly received TikTok LIVE events to the active game. The first
+  // event snapshot is treated as history so old events are never replayed.
+  const processedLiveEventIds = useRef<Set<number>>(new Set());
+  const liveEventSnapshotReady = useRef(false);
+
+  useEffect(() => {
+    if (!liveEventSnapshotReady.current) {
+      events.forEach((event) => processedLiveEventIds.current.add(event.id));
+      liveEventSnapshotReady.current = true;
+      return;
+    }
+
+    const freshEvents = events
+      .filter((event) => !processedLiveEventIds.current.has(event.id))
+      .sort((a, b) => a.id - b.id);
+    if (freshEvents.length === 0) return;
+
+    freshEvents.forEach((event) => processedLiveEventIds.current.add(event.id));
+    if (processedLiveEventIds.current.size > 600) {
+      const retained = [...processedLiveEventIds.current].slice(-300);
+      processedLiveEventIds.current = new Set(retained);
+    }
+
+    const next = { ...currentState };
+    let changed = false;
+      for (const event of freshEvents) {
+      const kind = String(event.eventType || "").toLowerCase();
+      const name = event.displayName || event.username || "LIVE viewer";
+      const coins = Math.max(0, Number(event.coins || 0));
+      const likes = Math.max(0, Number(event.likes || 0));
+      const message = String(event.message || "").trim();
+      const normalizedMessage = message.toLowerCase();
+
+      if (selectedSlug === "coin-battle" && kind === "gift") {
+        const contenders = (next.contenders as Array<{ name: string; avatar: string; frame: string; coins: number }>) || [];
+        const found = contenders.find((item) => item.name.toLowerCase() === name.toLowerCase());
+        next.contenders = found
+          ? contenders.map((item) => item.name.toLowerCase() === name.toLowerCase() ? { ...item, coins: item.coins + coins } : item)
+          : [...contenders, { name, avatar: event.avatarUrl || "/avatars/a1.png", frame: event.avatarFrame || "ember-dragon", coins }];
+        changed = true;
+      }
+
+      if (selectedSlug === "team-battle" && (kind === "gift" || kind === "like")) {
+        const score = kind === "gift" ? coins : likes;
+        const bucket = Array.from(name).reduce((sum, char) => sum + char.charCodeAt(0), 0) % 2;
+        const key = bucket === 0 ? "redScore" : "blueScore";
+        next[key] = Number(next[key] || 0) + score;
+        changed = changed || score > 0;
+      }
+
+      if (selectedSlug === "avatar-race" && (kind === "gift" || kind === "like" || kind === "join")) {
+        const racers = (next.racers as Array<{ name: string; avatar: string; frame: string; progress: number }>) || [];
+        const exists = racers.some((r) => r.name.toLowerCase() === name.toLowerCase());
+        const roster = exists ? racers : [...racers, {
+          name,
+          avatar: event.avatarUrl || "/avatars/a1.png",
+          frame: event.avatarFrame || "ember-dragon",
+          progress: 0,
+        }];
+        const boost = kind === "gift" ? Math.max(2, Math.ceil(coins / 20)) : kind === "like" ? Math.max(1, Math.ceil(likes / 100)) : 0;
+        next.racers = roster.map((r) => r.name.toLowerCase() === name.toLowerCase()
+          ? { ...r, progress: Math.min(100, Number(r.progress || 0) + boost) }
+          : r);
+        changed = true;
+      }
+
+      if (selectedSlug === "live-quiz" && kind === "chat" && /^[a-d]$/i.test(message)) {
+        const option = message.toUpperCase().charCodeAt(0) - 65;
+        const votes = (next.votes as Record<string, number>) || {};
+        next.votes = { ...votes, [option]: Number(votes[option] || 0) + 1 };
+        changed = true;
+      }
+
+      if (selectedSlug === "word-scramble" && kind === "chat") {
+        const answer = String(next.word || "").trim().toLowerCase();
+        const guess = normalizedMessage.replace(/^!guess\s*/, "").replace(/^!word\s*/, "");
+        if (answer && guess === answer && !next.solvedBy) {
+          next.solvedBy = name;
+          changed = true;
+        }
+      }
+
+      if (selectedSlug === "boss-raid" && (kind === "gift" || kind === "like")) {
+        const damage = kind === "gift" ? coins : Math.ceil(likes / 10);
+        if (damage > 0) {
+          next.hp = Math.max(0, Number(next.hp ?? next.maxHp ?? 10000) - damage);
+          next.mvp = name;
+          changed = true;
+        }
+      }
+
+      if (selectedSlug === "hot-potato" && (kind === "gift" || (kind === "chat" && /^!pass$/i.test(message)))) {
+        next.holder = name;
+        next.holderAvatar = event.avatarUrl || "/avatars/a1.png";
+        next.holderFrame = event.avatarFrame || "ember-dragon";
+        changed = true;
+      }
+    }
+
+    if (changed) {
+      void onSaveGame(selectedSlug, { stateJson: next }).then(() => {
+        notifyOverlayChannel({ type: "game-update", gameSlug: selectedSlug });
+      });
+    }
+  }, [events, selectedSlug, currentState, onSaveGame]);
 
   const handleCopyGameOverlay = (slug: string, title: string) => {
     onCopyUrl(`/overlay/game/${slug}`, title);
@@ -1303,6 +1427,33 @@ export function FreeGamesArena({
         ))}
       </div>
 
+      {/* Searchable store controls. The original catalog remains untouched. */}
+      <section className="rounded-2xl border border-border bg-card p-4 sm:p-5">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h3 className="text-base font-black text-foreground">Game Store</h3>
+            <p className="mt-1 text-xs text-muted-foreground">Search and filter all existing Tikley games by category.</p>
+          </div>
+          <span className="rounded-xl border border-emerald-400/25 bg-emerald-500/10 px-3 py-2 text-xs font-extrabold text-emerald-300">{visibleGames.length} / {FREE_GAMES_CATALOG.length} · FREE</span>
+        </div>
+        <div className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
+          <label className="flex items-center gap-2 rounded-xl border border-border bg-secondary/30 px-3 py-2.5">
+            <span className="text-muted-foreground">⌕</span>
+            <input value={storeSearch} onChange={(event) => setStoreSearch(event.target.value)} placeholder="Search games, features or LIVE triggers..." aria-label="Search games" className="min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground" />
+            {storeSearch && <button type="button" onClick={() => setStoreSearch("")} className="text-xs font-bold text-brand-cyan">Clear</button>}
+          </label>
+          <button type="button" aria-pressed={storeFreeOnly} onClick={() => setStoreFreeOnly((value) => !value)} className={`rounded-xl border px-4 py-2.5 text-xs font-extrabold transition ${storeFreeOnly ? "border-emerald-400/40 bg-emerald-500/10 text-emerald-300" : "border-border bg-secondary/30 text-muted-foreground"}`}>
+            {storeFreeOnly ? "✓ Free games only" : "Show all access types"}
+          </button>
+        </div>
+        <div className="flex gap-2 overflow-x-auto pb-2">
+          {storeCategories.map((category) => {
+            const count = category.id === "all" ? FREE_GAMES_CATALOG.length : FREE_GAMES_CATALOG.filter((game) => game.category === category.id).length;
+            return <button key={category.id} type="button" aria-pressed={storeCategory === category.id} onClick={() => setStoreCategory(category.id)} className={`shrink-0 rounded-full border px-3.5 py-2 text-xs font-bold transition ${storeCategory === category.id ? "border-brand-cyan bg-brand-cyan/15 text-brand-cyan" : "border-border bg-secondary/30 text-muted-foreground hover:border-brand-cyan/40 hover:text-foreground"}`}>{category.label} <span className="ml-1 opacity-70">{count}</span></button>;
+          })}
+        </div>
+      </section>
+
       {/* All Live Overlays catalog */}
       <div>
         <div className="mb-3 flex items-center justify-between">
@@ -1315,7 +1466,7 @@ export function FreeGamesArena({
         </div>
 
         <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {FREE_GAMES_CATALOG.map((g) => {
+          {visibleGames.map((g) => {
             const active = selectedSlug === g.slug;
             return (
               <div
@@ -1373,6 +1524,14 @@ export function FreeGamesArena({
             );
           })}
         </div>
+        {visibleGames.length === 0 && (
+          <div className="mt-3 rounded-2xl border border-dashed border-border p-8 text-center">
+            <div className="text-2xl">🎮</div>
+            <p className="mt-2 text-sm font-bold text-foreground">No games match these filters</p>
+            <p className="mt-1 text-xs text-muted-foreground">Try another category or clear your search.</p>
+            <button type="button" onClick={() => { setStoreSearch(""); setStoreCategory("all"); setStoreFreeOnly(true); }} className="mt-3 rounded-lg bg-brand-cyan px-3 py-2 text-xs font-black text-slate-950">Reset filters</button>
+          </div>
+        )}
       </div>
     </div>
   );
