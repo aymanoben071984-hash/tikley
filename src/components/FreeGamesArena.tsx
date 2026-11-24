@@ -516,30 +516,45 @@ export function GameOverlayStage({
   }
 
   if (gameSlug === "neon-dance-floor") {
+    const dancers = (state.dancers as Array<{
+      name: string; avatar: string; frame: string; score: number; action: string; lastGift?: string;
+    }>) || [];
+    const visibleDancers = dancers.length > 0 ? dancers : partyAvatars.slice(0, 8).map((av) => ({
+      name: av.displayName, avatar: av.avatarUrl, frame: av.frameSlug, score: 0, action: "dance",
+    }));
+    const actionLabel: Record<string, string> = {
+      dance: "🪩 Dancing", jump: "⬆️ Jump", hug: "🤗 Hug", spin: "💫 Spin",
+      wave: "👋 Wave", aura: "✨ Aura", float: "🪽 Floating", spotlight: "🌟 Spotlight", vip: "👑 VIP",
+    };
     return (
-      <div className="mx-auto w-full max-w-lg rounded-2xl border border-fuchsia-500/40 bg-gradient-to-br from-purple-950/90 via-slate-950/95 to-cyan-950/90 p-4 backdrop-blur-md">
+      <div className="mx-auto w-full max-w-lg overflow-hidden rounded-2xl border border-fuchsia-500/40 bg-gradient-to-br from-purple-950/90 via-slate-950/95 to-cyan-950/90 p-4 backdrop-blur-md">
         <div className="mb-3 flex items-center justify-between text-xs font-black text-fuchsia-300">
-          <span>🪩 3D NEON AVATAR DANCE PARTY</span>
-          <span>🎵 {Number(state.bpm || 128)} BPM · !dance</span>
+          <span>🪩 NEON DANCE PARTY · {visibleDancers.length}/24</span>
+          <span>🎵 {Number(state.bpm || 128)} BPM</span>
         </div>
-        <div className="grid grid-cols-4 gap-3 rounded-xl border border-white/15 bg-[radial-gradient(circle_at_center,rgba(236,72,153,0.22),transparent_70%)] p-3">
-          {partyAvatars.slice(0, 8).map((av, idx) => (
-            <div
-              key={av.id}
-              className="flex flex-col items-center animate-ol-float"
-              style={{ animationDelay: `${idx * 0.22}s` }}
-            >
-              <FramedAvatar
-                avatarUrl={av.avatarUrl}
-                frameSlug={av.frameSlug}
-                size={54}
-                showSignatureFx={false}
-              />
-              <span className="mt-1 max-w-full truncate text-[10px] font-bold text-white">
-                {av.displayName}
-              </span>
-            </div>
-          ))}
+        <div className="relative min-h-44 overflow-hidden rounded-xl border border-white/15 bg-[radial-gradient(circle_at_center,rgba(236,72,153,0.28),transparent_55%),linear-gradient(135deg,rgba(30,27,75,.8),rgba(8,47,73,.8))] p-3">
+          <div className="pointer-events-none absolute inset-x-0 bottom-5 h-1 bg-gradient-to-r from-fuchsia-400 via-cyan-300 to-fuchsia-400 opacity-70 shadow-[0_0_22px_rgba(34,211,238,.8)]" />
+          <div className="relative grid grid-cols-4 gap-x-2 gap-y-4">
+            {visibleDancers.slice(0, 24).map((dancer, idx) => (
+              <div
+                key={dancer.name}
+                className="flex min-w-0 flex-col items-center"
+                style={{ animation: dancer.action === "jump" || dancer.action === "float" ? "ol-dance-jump .65s ease-in-out infinite alternate" : "ol-dance-bounce .9s ease-in-out infinite alternate", animationDelay: `${idx * 0.07}s` }}
+              >
+                <div className={dancer.action === "spotlight" ? "rounded-full bg-amber-300/20 p-1 shadow-[0_0_25px_rgba(251,191,36,.8)]" : dancer.action === "aura" || dancer.action === "vip" ? "rounded-full bg-fuchsia-400/20 p-1 shadow-[0_0_20px_rgba(232,121,249,.7)]" : "p-1"}>
+                  <FramedAvatar avatarUrl={dancer.avatar} frameSlug={dancer.frame} size={48} showSignatureFx={false} />
+                </div>
+                <span className="mt-1 max-w-full truncate text-[10px] font-bold text-white">{dancer.name}</span>
+                <span className="text-[9px] font-semibold text-cyan-200">{actionLabel[dancer.action] || "🪩 Dancing"}</span>
+                {dancer.lastGift && <span className="max-w-full truncate text-[8px] text-amber-200">🎁 {dancer.lastGift}</span>}
+              </div>
+            ))}
+          </div>
+          {visibleDancers.length === 0 && <div className="absolute inset-0 grid place-items-center text-xs font-semibold text-white/60">Waiting for viewers to join the dance floor…</div>}
+        </div>
+        <div className="mt-2 flex items-center justify-between text-[10px] text-white/65">
+          <span>Chat: !dance · !jump · !hug · !spin · !wave</span>
+          <span>❤️ {visibleDancers.reduce((sum, d) => sum + Number(d.score || 0), 0).toLocaleString()}</span>
         </div>
       </div>
     );
@@ -860,6 +875,36 @@ export function FreeGamesArena({
           next.mvp = name;
           changed = true;
         }
+      }
+
+      if (selectedSlug === "neon-dance-floor" && ["join", "follow", "share", "gift", "like", "chat"].includes(kind)) {
+        type Dancer = { name: string; avatar: string; frame: string; score: number; action: string; lastGift?: string };
+        const dancers = (next.dancers as Dancer[]) || [];
+        const existing = dancers.find((d) => d.name.toLowerCase() === name.toLowerCase());
+        const gift = String(event.giftName || "").toLowerCase();
+        const chatAction = normalizedMessage.replace(/^!/, "").split(/\\s+/)[0];
+        let action = kind === "gift" ? "aura" : kind === "like" ? "dance" : "dance";
+        if (kind === "chat" && ["dance", "jump", "hug", "spin", "wave"].includes(chatAction)) action = chatAction;
+        if (kind === "gift" && gift.includes("finger")) action = "float";
+        if (kind === "gift" && (gift.includes("donut") || gift.includes("doughnut"))) action = "spotlight";
+        if (kind === "gift" && gift.includes("cap")) action = "vip";
+        const score = kind === "gift" ? coins : kind === "like" ? Math.max(1, likes) : 0;
+        const dancer: Dancer = existing
+          ? { ...existing, score: existing.score + score, action, lastGift: kind === "gift" ? event.giftName || "Gift" : existing.lastGift }
+          : {
+              name,
+              avatar: event.avatarUrl || "/avatars/a1.png",
+              frame: event.avatarFrame || "ember-dragon",
+              score,
+              action,
+              lastGift: kind === "gift" ? event.giftName || "Gift" : undefined,
+            };
+        next.dancers = existing
+          ? dancers.map((d) => d.name.toLowerCase() === name.toLowerCase() ? dancer : d)
+          : [...dancers, dancer].slice(-24);
+        next.lastDancer = name;
+        next.lastAction = action;
+        changed = true;
       }
 
       if (selectedSlug === "hot-potato" && (kind === "gift" || (kind === "chat" && /^!pass$/i.test(message)))) {
