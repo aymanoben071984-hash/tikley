@@ -38,5 +38,7 @@ jobs:
         env:
           DATABASE_URL: postgresql://ci:ci@127.0.0.1:5432/ci
           NEXT_TELEMETRY_DISABLED: 1
+      - name: Python worker syntax
+        run: python -m py_compile worker/tiktok_live_worker.py
       - name: Docker image build
         run: docker build --pull -t tikley:hardening .
