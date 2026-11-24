@@ -16,7 +16,7 @@ const ADMIN_API_PATHS = new Set([
 export async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const dashboardPage = path === "/dashboard" || path.startsWith("/dashboard/");
-  const protectedApi = ADMIN_API_PATHS.has(path);
+  const protectedApi = ADMIN_API_PATHS.has(path) && !(path === "/api/overlay-display" && request.method === "GET");
   if (!dashboardPage && !protectedApi) return NextResponse.next();
 
   const user = await getSessionUser(request);
