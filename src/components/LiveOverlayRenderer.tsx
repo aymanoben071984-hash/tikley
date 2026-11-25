@@ -25,6 +25,8 @@ import {
   UserPlus,
 } from "lucide-react";
 import React from "react";
+import { useLocale } from "@/components/LocaleProvider";
+import { translateText } from "@/lib/i18n";
 
 interface OverlayWidgetViewProps {
   widgetKey: string;
@@ -45,6 +47,8 @@ export function OverlayWidgetView({
   events,
   compact = false,
 }: OverlayWidgetViewProps) {
+  const { locale } = useLocale();
+  const tx = (value: string) => translateText(locale, value);
   const primary = widget?.primaryColor || "#28c7fa";
   const secondary = widget?.secondaryColor || "#ff8a2b";
   const settings = (widget?.customSettings || {}) as Record<string, unknown>;
@@ -61,7 +65,7 @@ export function OverlayWidgetView({
   }
 
   if (widgetKey === "goals") {
-    const label = String(settings.label || "Daily Coin Goal");
+    const label = settings.label ? String(settings.label) : tx("Daily Coin Goal");
     const current = Number(settings.current ?? profile?.sessionCoins ?? 663);
     const target = Math.max(1, Number(settings.target || 1000));
     const pct = Math.min(100, Math.round((current / target) * 100));
@@ -135,15 +139,15 @@ export function OverlayWidgetView({
         <div className="min-w-0 flex-1">
           <div className="inline-flex items-center gap-1 rounded-full bg-amber-400/20 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-amber-300">
             <Sparkles className="h-3 w-3" />
-            {widgetKey === "gift-videos" ? "Cinema Gift Action" : "New Gift Alert"}
+            {widgetKey === "gift-videos" ? tx("Cinema Gift Action") : tx("New Gift Alert")}
           </div>
           <div className="mt-1 truncate text-base font-black text-white">
             <AnimatedOverlayName text={latestGift.displayName} animation="shimmer" />
           </div>
           <div className="text-xs font-semibold text-amber-200/90">
-            sent <span className="font-extrabold text-white">{latestGift.giftName || "Rose"}</span>{" "}
+            {tx("sent")} <span className="font-extrabold text-white">{latestGift.giftName || "Rose"}</span>{" "}
             <span className="text-amber-300">
-              (+{(latestGift.coins || 1).toLocaleString()} coins)
+              (+{(latestGift.coins || 1).toLocaleString()} {tx("coins")})
             </span>
           </div>
         </div>

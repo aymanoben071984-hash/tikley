@@ -10,6 +10,8 @@ import {
   type TickerSettings,
 } from "@/lib/eventTickers";
 import React from "react";
+import { useLocale } from "@/components/LocaleProvider";
+import { translateText } from "@/lib/i18n";
 
 const sc = (base: number, pct: number) => Math.round((base * pct) / 100);
 const alpha = (hex: string, a: string) => (/^#[0-9a-f]{6}$/i.test(hex) ? `${hex}${a}` : hex);
@@ -156,6 +158,8 @@ const ET_STYLES = `
 `;
 
 export function EventTicker({ event, data, settings: s, replayKey = 0 }: EventTickerProps) {
+  const { locale } = useLocale();
+  const tx = (value: string) => translateText(locale, value);
   const meta = TICKER_EVENTS.find((e) => e.id === event) ?? TICKER_EVENTS[0];
   const accent = s.accentColor;
   const vars = {
@@ -167,7 +171,7 @@ export function EventTicker({ event, data, settings: s, replayKey = 0 }: EventTi
     fontFamily: s.fontFamily,
   } as React.CSSProperties;
 
-  const message = s.message.trim() || meta.defaultMessage;
+  const message = s.message.trim() || tx(meta.defaultMessage);
   const vertical = ["vertical", "laurel", "sparkle", "solar-orbit", "heart-portal"].includes(s.design);
   const avatarSize = sc(vertical ? 128 : 104, s.avatarScale);
   const nameSize = sc(vertical ? 36 : 34, s.nameScale);
@@ -193,7 +197,7 @@ export function EventTicker({ event, data, settings: s, replayKey = 0 }: EventTi
             /* eslint-disable-next-line @next/next/no-img-element */
             <img src={data.giftIcon} alt="" style={{ width: "1.4em", height: "1.4em", objectFit: "contain" }} />
           )}
-          <span>{data.giftName ?? "Gift"}</span>
+          <span>{data.giftName ?? tx("Gift")}</span>
           {typeof data.coins === "number" && data.coins > 0 && (
             <span className="inline-flex items-center gap-1 text-amber-300">
               <TikTokCoin size={msgSize} /> {data.coins.toLocaleString()}
@@ -209,7 +213,7 @@ export function EventTicker({ event, data, settings: s, replayKey = 0 }: EventTi
 
   const label = s.label ? (
     <span className="re-event-label" style={{ position: vertical ? "absolute" : "relative", top: vertical ? -14 : undefined, left: vertical ? "50%" : undefined, translate: vertical ? "-50%" : undefined, padding: "5px 14px 4px", borderRadius: 999, fontSize: 12, alignSelf: "flex-start", marginBottom: vertical ? 0 : 6 }}>
-      {meta.icon} {meta.label}
+      {meta.icon} {tx(meta.label)}
     </span>
   ) : null;
 

@@ -91,6 +91,8 @@ import {
   Wifi,
 } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
+import { LanguageSwitcher, useLocale } from "@/components/LocaleProvider";
+import { translateText } from "@/lib/i18n";
 
 interface DashboardPayload {
   profile: StreamerProfile;
@@ -206,6 +208,8 @@ function getNavIcon(id: string) {
 }
 
 export function DashboardApp({ initialSection = "overview", initialGame }: DashboardAppProps) {
+  const { locale } = useLocale();
+  const tx = (value: string) => translateText(locale, value);
   const [data, setData] = useState<DashboardPayload | null>(null);
   const [activeSection, setActiveSection] = useState<string>(initialSection);
   const [sidebarExpanded, setSidebarExpanded] = useState<boolean>(true);
@@ -550,26 +554,7 @@ export function DashboardApp({ initialSection = "overview", initialGame }: Dashb
           </div>
 
           {/* Language EN with UK Flag */}
-          <button
-            type="button"
-            onClick={() => {
-              const order = ["en", "ar", "es", "tr", "de", "fr"];
-              const next = order[(order.indexOf(profile.locale) + 1) % order.length];
-              handleUpdateProfile({ locale: next });
-            }}
-            className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold text-muted-foreground hover:bg-secondary hover:text-foreground"
-          >
-            <span className="inline-block h-3.5 w-5 overflow-hidden rounded-[3px] ring-1 ring-white/20">
-              <svg viewBox="0 0 20 14" className="h-full w-full">
-                <rect width="20" height="14" fill="#012169" />
-                <path d="M0 0 20 14M20 0 0 14" stroke="#fff" strokeWidth="3" />
-                <path d="M0 0 20 14M20 0 0 14" stroke="#C8102E" strokeWidth="1.5" />
-                <path d="M10 0V14M0 7H20" stroke="#fff" strokeWidth="4.6" />
-                <path d="M10 0V14M0 7H20" stroke="#C8102E" strokeWidth="2.6" />
-              </svg>
-            </span>
-            <span className="uppercase">{profile.locale}</span>
-          </button>
+          <LanguageSwitcher value={profile.locale} compact onChange={(locale) => handleUpdateProfile({ locale })} />
 
           {/* Theme Toggle */}
           <button
@@ -611,7 +596,7 @@ export function DashboardApp({ initialSection = "overview", initialGame }: Dashb
                         className="h-3 w-3 rounded-full"
                         style={{ backgroundColor: item.hex }}
                       />
-                      {item.label}
+                      {tx(item.label)}
                     </span>
                     {profile.accentPreset === key && (
                       <Check className="h-3.5 w-3.5 text-brand-cyan" />
@@ -655,7 +640,7 @@ export function DashboardApp({ initialSection = "overview", initialGame }: Dashb
               }`}
             >
               <Lightbulb className="lo-hint-bulb h-4 w-4 shrink-0" />
-              {sidebarExpanded && <span>Guide · OBS &amp; LIVE Studio</span>}
+              {sidebarExpanded && <span>{tx("Guide · OBS & LIVE Studio")}</span>}
             </button>
 
             {SIDEBAR_NAV_ITEMS.map((item, idx) => {
@@ -671,7 +656,7 @@ export function DashboardApp({ initialSection = "overview", initialGame }: Dashb
                   )}
                   <button
                     type="button"
-                    title={item.label}
+                    title={tx(item.label)}
                     onClick={() => setActiveSection(item.id)}
                     className={`group relative flex items-center gap-3 rounded-xl px-2.5 py-2 text-xs font-bold transition ${
                       sidebarExpanded ? "justify-between" : "justify-center"
@@ -759,7 +744,7 @@ export function DashboardApp({ initialSection = "overview", initialGame }: Dashb
 
                       <div>
                         <h1 className="text-2xl font-black tracking-tight text-white sm:text-3xl">
-                          Welcome back, {firstName}
+                          {tx("Welcome back")}, {firstName}
                         </h1>
                         <p className="mt-1 text-xs text-slate-300/85 sm:text-sm">
                           {isLive
@@ -778,7 +763,7 @@ export function DashboardApp({ initialSection = "overview", initialGame }: Dashb
                         }}
                         className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/35 bg-amber-500/15 px-3.5 py-1.5 text-xs font-extrabold text-amber-300 hover:bg-amber-500/25"
                       >
-                        🦁 Fire Test Lion
+                        🦁 {tx("Fire Test Lion")}
                       </button>
                       <button
                         type="button"

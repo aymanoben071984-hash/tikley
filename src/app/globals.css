@@ -501,3 +501,17 @@ html.obs-transparent body {
   .lo-hint-fresh::after, .lo-hint-fresh .lo-hint-bulb, .popular-badge::after, .popular-flame { animation: none; }
   .lo-hint-fresh::after { opacity: 0; }
 }
+
+
+/* Locale-aware base direction. Component-specific positioning remains opt-in. */
+html[dir="rtl"] body {
+  direction: rtl;
+}
+html[dir="rtl"] input,
+html[dir="rtl"] textarea,
+html[dir="rtl"] select {
+  text-align: start;
+}
+html[dir="rtl"] .overlay-root {
+  direction: rtl;
+}

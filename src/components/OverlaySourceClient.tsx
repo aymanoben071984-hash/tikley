@@ -34,6 +34,8 @@ import {
 import { DisplayCanvas } from "@/components/DisplayCanvas";
 import { DISPLAY_DEFAULT, normalizeDisplay, parseFormatParam, type OverlayDisplay } from "@/lib/overlayDisplay";
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useLocale } from "@/components/LocaleProvider";
+import { normalizeLocale } from "@/lib/i18n";
 
 interface OverlayStatePayload {
   profile: StreamerProfile;
@@ -53,6 +55,7 @@ interface OverlaySourceClientProps {
 }
 
 export function OverlaySourceClient({ type, subId }: OverlaySourceClientProps) {
+  const { setLocale } = useLocale();
   const [state, setState] = useState<OverlayStatePayload | null>(null);
   const [previewBackdrop, setPreviewBackdrop] = useState<boolean>(false);
   const clientIdRef = useRef<string>("");
@@ -73,6 +76,10 @@ export function OverlaySourceClient({ type, subId }: OverlaySourceClientProps) {
       document.documentElement.classList.remove("obs-transparent");
     };
   }, []);
+
+  useEffect(() => {
+    if (state?.profile?.locale) setLocale(normalizeLocale(state.profile.locale));
+  }, [state?.profile?.locale, setLocale]);
 
   const targetLabel = subId ? `${type}/${subId}` : type;
   const [query] = useState(() => (typeof window !== "undefined" ? new URLSearchParams(window.location.search) : new URLSearchParams()));
