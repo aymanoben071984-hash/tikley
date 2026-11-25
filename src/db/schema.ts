@@ -23,6 +23,7 @@ export const streamerProfiles = pgTable("streamer_profiles", {
   connectionStatus: varchar("connection_status", { length: 32 })
     .notNull()
     .default("test_mode"), // "test_mode" | "waiting" | "live"
+  liveSessionId: varchar("live_session_id", { length: 64 }),
   followersCount: integer("followers_count").notNull().default(5453),
   followingCount: integer("following_count").notNull().default(354),
   likesCount: integer("likes_count").notNull().default(31900),
