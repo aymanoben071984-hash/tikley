@@ -91,6 +91,7 @@ import {
   Wifi,
 } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
+import { LanguageSwitcher } from "@/components/LocaleProvider";
 
 interface DashboardPayload {
   profile: StreamerProfile;
@@ -550,26 +551,7 @@ export function DashboardApp({ initialSection = "overview", initialGame }: Dashb
           </div>
 
           {/* Language EN with UK Flag */}
-          <button
-            type="button"
-            onClick={() => {
-              const order = ["en", "ar", "es", "tr", "de", "fr"];
-              const next = order[(order.indexOf(profile.locale) + 1) % order.length];
-              handleUpdateProfile({ locale: next });
-            }}
-            className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold text-muted-foreground hover:bg-secondary hover:text-foreground"
-          >
-            <span className="inline-block h-3.5 w-5 overflow-hidden rounded-[3px] ring-1 ring-white/20">
-              <svg viewBox="0 0 20 14" className="h-full w-full">
-                <rect width="20" height="14" fill="#012169" />
-                <path d="M0 0 20 14M20 0 0 14" stroke="#fff" strokeWidth="3" />
-                <path d="M0 0 20 14M20 0 0 14" stroke="#C8102E" strokeWidth="1.5" />
-                <path d="M10 0V14M0 7H20" stroke="#fff" strokeWidth="4.6" />
-                <path d="M10 0V14M0 7H20" stroke="#C8102E" strokeWidth="2.6" />
-              </svg>
-            </span>
-            <span className="uppercase">{profile.locale}</span>
-          </button>
+          <LanguageSwitcher value={profile.locale} compact onChange={(locale) => handleUpdateProfile({ locale })} />
 
           {/* Theme Toggle */}
           <button
