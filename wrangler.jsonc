@@ -3,7 +3,9 @@
   "name": "tikley",
   "main": ".open-next/worker.js",
   "compatibility_date": "2026-11-25",
-  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
   "upload_source_maps": true,
   "assets": {
     "directory": ".open-next/assets",
@@ -13,6 +15,7 @@
     "enabled": true
   },
   "vars": {
-    "NEXTJS_ENV": "production"
+    "NEXTJS_ENV": "production",
+    "PG_POOL_MAX": "1"
   }
 }
