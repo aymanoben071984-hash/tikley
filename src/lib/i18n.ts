@@ -76,6 +76,13 @@ const navigationTranslations: Record<string, Partial<Record<Locale, string>>> = 
   "TikTok Studio & OBS": { ar: "TikTok Studio وOBS", fr: "TikTok Studio et OBS", de: "TikTok Studio & OBS", tr: "TikTok Studio ve OBS", es: "TikTok Studio y OBS", it: "TikTok Studio e OBS" },
   "Settings": { ar: "الإعدادات", fr: "Paramètres", de: "Einstellungen", tr: "Ayarlar", es: "Configuración", it: "Impostazioni" },
 };
+
+const dashboardTranslations: Record<string, Partial<Record<Locale, string>>> = {
+  "Guide · OBS & LIVE Studio": { ar: "دليل OBS وLIVE Studio", fr: "Guide · OBS et LIVE Studio", de: "Anleitung · OBS & LIVE Studio", tr: "Rehber · OBS ve LIVE Studio", es: "Guía · OBS y LIVE Studio", it: "Guida · OBS e LIVE Studio" },
+  "Welcome back": { ar: "مرحباً بعودتك", fr: "Bon retour", de: "Willkommen zurück", tr: "Tekrar hoş geldiniz", es: "Bienvenido de nuevo", it: "Bentornato" },
+  "Fire Test Lion": { ar: "إطلاق هدية الأسد التجريبية", fr: "Tester le cadeau Lion", de: "Testgeschenk Löwe auslösen", tr: "Aslan test hediyesini gönder", es: "Probar regalo León", it: "Prova regalo Leone" },
+  "Test Mode is running — sample events are flowing to your overlays.": { ar: "الوضع التجريبي يعمل — يتم إرسال أحداث تجريبية إلى الشاشات.", fr: "Le mode test est actif — des événements de démonstration alimentent vos overlays.", de: "Der Testmodus läuft — Beispieldaten werden an deine Overlays gesendet.", tr: "Test modu çalışıyor — örnek etkinlikler katmanlarınıza aktarılıyor.", es: "El modo de prueba está activo: se envían eventos de ejemplo a tus overlays.", it: "La modalità test è attiva: gli eventi di esempio arrivano agli overlay." },
+};
 export function translateText(locale: Locale, source: string): string {
-  return phraseTranslations[source]?.[locale] ?? navigationTranslations[source]?.[locale] ?? source;
+  return phraseTranslations[source]?.[locale] ?? navigationTranslations[source]?.[locale] ?? dashboardTranslations[source]?.[locale] ?? source;
 }
