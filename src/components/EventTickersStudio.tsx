@@ -61,7 +61,7 @@ export function EventTickersStudio({ events, onFireEvent, onCopyUrl }: EventTick
 
   const [active, setActive] = useState<TickerEvent>("follow");
   const [all, setAll] = useState<Record<TickerEvent, TickerSettings>>(() =>
-    Object.fromEntries(TICKER_EVENTS.map((e) => {tx("[e.id, tickerDefaults(e.id)])) as Record")}<TickerEvent, TickerSettings>,
+    Object.fromEntries(TICKER_EVENTS.map((e) => [e.id, tickerDefaults(e.id)])) as Record<TickerEvent, TickerSettings>,
   );
   const [useLive, setUseLive] = useState(false);
   const [replayKey, setReplayKey] = useState(0);
@@ -69,7 +69,7 @@ export function EventTickersStudio({ events, onFireEvent, onCopyUrl }: EventTick
   const [origin, setOrigin] = useState("");
 
   useEffect(() => {
-    setAll(Object.fromEntries(TICKER_EVENTS.map((e) => {tx("[e.id, loadSettings(e.id)])) as Record")}<TickerEvent, TickerSettings>);
+    setAll(Object.fromEntries(TICKER_EVENTS.map((e) => [e.id, loadSettings(e.id)])) as Record<TickerEvent, TickerSettings>);
     setOrigin(window.location.origin);
   }, []);
 
