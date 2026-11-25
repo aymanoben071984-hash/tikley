@@ -76,7 +76,6 @@ const navigationTranslations: Record<string, Partial<Record<Locale, string>>> = 
   "TikTok Studio & OBS": { ar: "TikTok Studio وOBS", fr: "TikTok Studio et OBS", de: "TikTok Studio & OBS", tr: "TikTok Studio ve OBS", es: "TikTok Studio y OBS", it: "TikTok Studio e OBS" },
   "Settings": { ar: "الإعدادات", fr: "Paramètres", de: "Einstellungen", tr: "Ayarlar", es: "Configuración", it: "Impostazioni" },
 };
-const previousTranslateText = translateText;
 export function translateText(locale: Locale, source: string): string {
   return phraseTranslations[source]?.[locale] ?? navigationTranslations[source]?.[locale] ?? source;
 }
