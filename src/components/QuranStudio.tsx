@@ -1,5 +1,8 @@
 "use client";
 
+import { useLocale } from "@/components/LocaleProvider";
+import { translateText } from "@/lib/i18n";
+
 import { pageHidden, pollMs } from "@/lib/poll";
 import { FitScale, QuranView, useQuranPlayback } from "@/components/QuranView";
 import { Section, Segmented, Toggle } from "@/components/TopListsStudio";
@@ -41,7 +44,9 @@ function Range({ label, value, min, max, step, fmt, onChange }: { label: string;
   );
 }
 
-export function QuranStudio({ onCopyUrl, onToast }: QuranStudioProps) {
+export function QuranStudio({ onCopyUrl, onToast }: QuranStudioProps) {  const { locale } = useLocale();
+  const tx = (source: string) => translateText(locale, source);
+
   const [server, setServer] = useState<QuranPayload | null>(null);
   const [draft, setDraft] = useState<QuranConfig>(QURAN_DEFAULTS);
   const [index, setIndex] = useState<SurahIndexItem[]>([]);
@@ -141,9 +146,9 @@ export function QuranStudio({ onCopyUrl, onToast }: QuranStudioProps) {
             <BookOpen className="h-6 w-6" />
           </div>
           <div>
-            <div className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-muted-foreground">Studio</div>
-            <h2 className="text-2xl font-black text-foreground">Quran Recitation</h2>
-            <p className="max-w-2xl text-xs text-muted-foreground">Show the surah you&apos;re reciting on stream — with a reciter&apos;s audio or your own voice, ayah-by-ayah tracking included.</p>
+            <div className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-muted-foreground">{tx("Studio")}</div>
+            <h2 className="text-2xl font-black text-foreground">{tx("Quran Recitation")}</h2>
+            <p className="max-w-2xl text-xs text-muted-foreground">{tx("Show the surah you&apos;re reciting on stream — with a reciter&apos;s audio or your own voice, ayah-by-ayah tracking included.")}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -175,14 +180,14 @@ export function QuranStudio({ onCopyUrl, onToast }: QuranStudioProps) {
           <div className="rounded-2xl border border-border bg-card p-3">
             <div className="flex flex-wrap items-center justify-center gap-2">
               <button type="button" onClick={() => command("restart")} title="Back to first ayah" className="rounded-xl border border-border p-2.5 text-muted-foreground hover:bg-secondary hover:text-foreground"><SkipBack className="h-4 w-4" /></button>
-              <button type="button" onClick={() => command("prev")} title="Previous ayah (←)" className="inline-flex items-center gap-1 rounded-xl border border-border px-3 py-2.5 text-xs font-bold text-foreground hover:bg-secondary"><ChevronLeft className="h-4 w-4" /> Previous</button>
+              <button type="button" onClick={() => command("prev")} title="Previous ayah (←)" className="inline-flex items-center gap-1 rounded-xl border border-border px-3 py-2.5 text-xs font-bold text-foreground hover:bg-secondary"><ChevronLeft className="h-4 w-4" /> {tx("Previous")}</button>
               <button type="button" onClick={() => command("toggle")} title="Play / pause (Space)" className={`inline-flex min-w-[140px] items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-black shadow ${state.playing ? "bg-amber-400 text-slate-950" : "bg-emerald-500 text-slate-950"} hover:brightness-110`}>
                 {state.playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />} {state.playing ? "Pause" : state.ended ? "Recite again" : "Start reciting"}
               </button>
-              <button type="button" onClick={() => command("next")} title="Next ayah (→)" className="inline-flex items-center gap-1 rounded-xl border border-border px-3 py-2.5 text-xs font-bold text-foreground hover:bg-secondary">Next <ChevronRight className="h-4 w-4" /></button>
+              <button type="button" onClick={() => command("next")} title="Next ayah (→)" className="inline-flex items-center gap-1 rounded-xl border border-border px-3 py-2.5 text-xs font-bold text-foreground hover:bg-secondary">{tx("Next")} <ChevronRight className="h-4 w-4" /></button>
             </div>
             <p className="mt-2 text-center text-[10px] text-muted-foreground">
-              Keyboard: <kbd className="rounded bg-secondary px-1">Space</kbd> play/pause · <kbd className="rounded bg-secondary px-1">→</kbd> next · <kbd className="rounded bg-secondary px-1">←</kbd> previous
+              Keyboard: <kbd className="rounded bg-secondary px-1">{tx("Space")}</kbd> {tx("play/pause ·")} <kbd className="rounded bg-secondary px-1">{tx("→")}</kbd> {tx("next ·")} <kbd className="rounded bg-secondary px-1">{tx("←")}</kbd> previous
               {!draft.soundEnabled && !draft.autoAdvance && " — reciting yourself: press Next as you finish each ayah."}
             </p>
             <div className="mt-3 max-h-40 overflow-y-auto rounded-xl border border-border bg-secondary/20 p-2">
@@ -218,11 +223,11 @@ export function QuranStudio({ onCopyUrl, onToast }: QuranStudioProps) {
             </div>
             <div className="mt-3 grid grid-cols-2 gap-3 text-xs">
               <label>
-                <span className="font-semibold text-muted-foreground">From ayah</span>
+                <span className="font-semibold text-muted-foreground">{tx("From ayah")}</span>
                 <input type="number" min={1} max={maxAyah} value={draft.fromAyah} onChange={(e) => set({ fromAyah: Math.min(maxAyah, Math.max(1, Number(e.target.value) || 1)) })} className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-1.5 font-bold text-foreground" />
               </label>
               <label>
-                <span className="font-semibold text-muted-foreground">To ayah</span>
+                <span className="font-semibold text-muted-foreground">{tx("To ayah")}</span>
                 <input type="number" min={draft.fromAyah} max={maxAyah} value={draft.toAyah} onChange={(e) => set({ toAyah: Math.min(maxAyah, Math.max(draft.fromAyah, Number(e.target.value) || draft.fromAyah)) })} className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-1.5 font-bold text-foreground" />
               </label>
             </div>
@@ -248,15 +253,15 @@ export function QuranStudio({ onCopyUrl, onToast }: QuranStudioProps) {
                 ))}
               </div>
             ) : (
-              <p className="mt-2 text-[11px] text-muted-foreground">No audio plays. With auto-advance on, each ayah is timed from its length; turn it off to move ayah by ayah yourself with Next.</p>
+              <p className="mt-2 text-[11px] text-muted-foreground">{tx("No audio plays. With auto-advance on, each ayah is timed from its length; turn it off to move ayah by ayah yourself with Next.")}</p>
             )}
             <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
               <Range label="Speed" value={draft.speed} min={0.5} max={2} step={0.05} fmt={(v) => `${v.toFixed(2)}×`} onChange={(v) => set({ speed: v })} />
               <Range label="Volume" value={Math.round(draft.volume * 100)} min={0} max={100} step={1} fmt={(v) => `${v}%`} onChange={(v) => set({ volume: v / 100 })} />
             </div>
             <div className="mt-3 grid grid-cols-1 gap-2 text-xs sm:grid-cols-2">
-              <label className="flex items-center justify-between rounded-xl border border-border bg-secondary/25 px-3 py-2 font-bold text-foreground">Auto-advance <Toggle checked={draft.autoAdvance} onChange={(v) => set({ autoAdvance: v })} /></label>
-              <label className="flex items-center justify-between rounded-xl border border-border bg-secondary/25 px-3 py-2 font-bold text-foreground">Repeat ayah <Toggle checked={draft.loop} onChange={(v) => set({ loop: v })} /></label>
+              <label className="flex items-center justify-between rounded-xl border border-border bg-secondary/25 px-3 py-2 font-bold text-foreground">{tx("Auto-advance")} <Toggle checked={draft.autoAdvance} onChange={(v) => set({ autoAdvance: v })} /></label>
+              <label className="flex items-center justify-between rounded-xl border border-border bg-secondary/25 px-3 py-2 font-bold text-foreground">{tx("Repeat ayah")} <Toggle checked={draft.loop} onChange={(v) => set({ loop: v })} /></label>
             </div>
           </Section>
 
@@ -279,7 +284,7 @@ export function QuranStudio({ onCopyUrl, onToast }: QuranStudioProps) {
           <Section title="Text & highlight">
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <label className="text-xs">
-                <span className="font-semibold text-muted-foreground">Font</span>
+                <span className="font-semibold text-muted-foreground">{tx("Font")}</span>
                 <select value={draft.fontFamily || QURAN_FONTS[0]} onChange={(e) => set({ fontFamily: e.target.value === QURAN_FONTS[0] ? "" : e.target.value })} className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 font-semibold text-foreground">
                   {QURAN_FONTS.map((f) => <option key={f} value={f}>{f}</option>)}
                 </select>
@@ -289,8 +294,8 @@ export function QuranStudio({ onCopyUrl, onToast }: QuranStudioProps) {
               <Range label="Line spacing" value={draft.lineHeight} min={1.6} max={3.6} step={0.1} fmt={(v) => v.toFixed(1)} onChange={(v) => set({ lineHeight: v })} />
             </div>
             <div className="mt-3 grid grid-cols-1 gap-2 text-xs sm:grid-cols-2">
-              <label className="flex items-center justify-between rounded-xl border border-border bg-secondary/25 px-3 py-2 font-bold text-foreground">Highlight current ayah <Toggle checked={draft.highlight} onChange={(v) => set({ highlight: v })} /></label>
-              <label className="flex items-center justify-between rounded-xl border border-border bg-secondary/25 px-3 py-2 font-bold text-foreground">Show surrounding ayahs <Toggle checked={draft.continuous} onChange={(v) => set({ continuous: v })} /></label>
+              <label className="flex items-center justify-between rounded-xl border border-border bg-secondary/25 px-3 py-2 font-bold text-foreground">{tx("Highlight current ayah")} <Toggle checked={draft.highlight} onChange={(v) => set({ highlight: v })} /></label>
+              <label className="flex items-center justify-between rounded-xl border border-border bg-secondary/25 px-3 py-2 font-bold text-foreground">{tx("Show surrounding ayahs")} <Toggle checked={draft.continuous} onChange={(v) => set({ continuous: v })} /></label>
             </div>
             <div className="mt-3 grid grid-cols-1 gap-2 text-xs sm:grid-cols-3">
               {([
@@ -303,7 +308,7 @@ export function QuranStudio({ onCopyUrl, onToast }: QuranStudioProps) {
                   <div className="flex items-center gap-2 rounded-xl border border-border bg-background px-2 py-1">
                     <input type="color" value={draft[k] || "#ffffff"} onChange={(e) => set({ [k]: e.target.value } as Partial<QuranConfig>)} className="h-6 w-7 cursor-pointer border-0 bg-transparent" />
                     <span className="min-w-0 flex-1 truncate font-mono text-[10px] text-muted-foreground">{draft[k] || "Design"}</span>
-                    {draft[k] && k !== "highlightColor" && <button type="button" onClick={() => set({ [k]: "" } as Partial<QuranConfig>)} className="text-[10px] font-bold text-muted-foreground hover:text-foreground">Reset</button>}
+                    {draft[k] && k !== "highlightColor" && <button type="button" onClick={() => set({ [k]: "" } as Partial<QuranConfig>)} className="text-[10px] font-bold text-muted-foreground hover:text-foreground">{tx("Reset")}</button>}
                   </div>
                 </div>
               ))}
@@ -311,7 +316,7 @@ export function QuranStudio({ onCopyUrl, onToast }: QuranStudioProps) {
           </Section>
 
           <p className="text-[11px] leading-relaxed text-muted-foreground">
-            Add <code className="text-brand-cyan">{LINK}</code> as a full-screen source — OBS: Browser 1920 × 1080 with <strong className="text-foreground">Control audio via OBS</strong> on so the recitation is heard; TikTok LIVE Studio: Web 1080 × 1920. Quran text: Tanzil Uthmani. Audio: EveryAyah.com.
+            Add <code className="text-brand-cyan">{LINK}</code> {tx("as a full-screen source — OBS: Browser 1920 × 1080 with")} <strong className="text-foreground">{tx("Control audio via OBS")}</strong> on so the recitation is heard; TikTok LIVE Studio: Web 1080 × 1920. Quran text: Tanzil Uthmani. Audio: EveryAyah.com.
           </p>
         </div>
       </div>
@@ -321,7 +326,7 @@ export function QuranStudio({ onCopyUrl, onToast }: QuranStudioProps) {
           <span className="truncate text-xs font-semibold text-muted-foreground">{dirty ? "Unsaved settings — the preview shows them, your stream doesn't yet" : "All settings saved"}</span>
           <div className="flex shrink-0 items-center gap-2">
             <button type="button" title="Restore defaults" onClick={() => setDraft(QURAN_DEFAULTS)} className="rounded-xl border border-border px-2.5 py-2 text-muted-foreground hover:bg-secondary hover:text-foreground"><RotateCcw className="h-3.5 w-3.5" /></button>
-            <button type="button" disabled={!dirty || saving} onClick={() => server && setDraft(server.config)} className="rounded-xl border border-border px-3 py-2 text-xs font-bold text-foreground hover:bg-secondary disabled:opacity-40">Discard</button>
+            <button type="button" disabled={!dirty || saving} onClick={() => server && setDraft(server.config)} className="rounded-xl border border-border px-3 py-2 text-xs font-bold text-foreground hover:bg-secondary disabled:opacity-40">{tx("Discard")}</button>
             <button type="button" disabled={!dirty || saving} onClick={save} className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-brand-blue to-brand-cyan px-5 py-2 text-xs font-black text-white shadow hover:brightness-110 disabled:opacity-50">
               {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />} {saving ? "Saving…" : "Save"}
             </button>
