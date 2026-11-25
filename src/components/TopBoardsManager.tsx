@@ -154,7 +154,7 @@ export function TopBoardsManager({ boards, avatars, onRefresh, onFireEvent, onCo
     setTimeout(() => setCopiedId(null), 1800);
   };
 
-  const run = async (fn: () => {tx("Promise")}<void>) => {
+  const run = async (fn: () => Promise<void>) => {
     setBusy(true);
     try {
       await fn();
