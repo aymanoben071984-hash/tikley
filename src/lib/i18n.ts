@@ -267,6 +267,29 @@ const overlayControlTranslations: Record<string, Partial<Record<Locale, string>>
   "Show Dark Test Grid": { ar: "إظهار شبكة الاختبار الداكنة", fr: "Afficher la grille de test sombre", de: "Dunkles Testgitter anzeigen", tr: "Koyu test ızgarasını göster", es: "Mostrar cuadrícula de prueba oscura", it: "Mostra griglia di test scura" },
 };
 
+
+const finalStudioLabels: Record<string, Partial<Record<Locale, string>>> = {
+  "Copy 1-Link Scene URL": { ar: "نسخ رابط المشهد الموحد", fr: "Copier le lien de scène unique", de: "Einheitlichen Szenenlink kopieren", tr: "Tek bağlantılı sahne URL'sini kopyala", es: "Copiar URL de escena única", it: "Copia URL scena unica" },
+  "Save Scene Layout": { ar: "حفظ تخطيط المشهد", fr: "Enregistrer la disposition de la scène", de: "Szenenlayout speichern", tr: "Sahne düzenini kaydet", es: "Guardar diseño de escena", it: "Salva layout scena" },
+  "Preview Transparent Tab": { ar: "معاينة التبويب الشفاف", fr: "Aperçu de l’onglet transparent", de: "Transparenten Tab vorschauen", tr: "Şeffaf sekmeyi önizle", es: "Vista previa de pestaña transparente", it: "Anteprima scheda trasparente" },
+  "Step-by-Step Broadcaster Setup": { ar: "إعداد البث خطوة بخطوة", fr: "Configuration du diffuseur étape par étape", de: "Schritt-für-Schritt-Streaming-Setup", tr: "Adım adım yayın kurulumu", es: "Configuración de emisión paso a paso", it: "Configurazione streaming passo passo" },
+  "Direct Browser Source Links (OBS & TikTok LIVE Studio)": { ar: "روابط مصادر المتصفح المباشرة (OBS وTikTok LIVE Studio)", fr: "Liens directs des sources navigateur (OBS et TikTok LIVE Studio)", de: "Direkte Browserquellen-Links (OBS & TikTok LIVE Studio)", tr: "Doğrudan tarayıcı kaynak bağlantıları (OBS ve TikTok LIVE Studio)", es: "Enlaces directos de fuentes de navegador (OBS y TikTok LIVE Studio)", it: "Link diretti sorgenti Browser (OBS e TikTok LIVE Studio)" },
+  "Match the source": { ar: "مطابقة المصدر", fr: "Adapter à la source", de: "An Quelle anpassen", tr: "Kaynağa uydur", es: "Ajustar a la fuente", it: "Adatta alla sorgente" },
+  "Always 9:16": { ar: "دائماً 9:16", fr: "Toujours 9:16", de: "Immer 9:16", tr: "Her zaman 9:16", es: "Siempre 9:16", it: "Sempre 9:16" },
+  "Always 16:9": { ar: "دائماً 16:9", fr: "Toujours 16:9", de: "Immer 16:9", tr: "Her zaman 16:9", es: "Siempre 16:9", it: "Sempre 16:9" },
+  "Plain link (without ?format) shows": { ar: "الرابط العادي (دون ?format) يعرض", fr: "Le lien simple (sans ?format) affiche", de: "Der einfache Link (ohne ?format) zeigt", tr: "Düz bağlantı (?format olmadan) şunu gösterir", es: "El enlace simple (sin ?format) muestra", it: "Il link semplice (senza ?format) mostra" },
+  "Sample": { ar: "عينة", fr: "Exemple", de: "Beispiel", tr: "Örnek", es: "Muestra", it: "Esempio" },
+  "Live data": { ar: "بيانات مباشرة", fr: "Données en direct", de: "Live-Daten", tr: "Canlı veriler", es: "Datos en directo", it: "Dati live" },
+  "Send test": { ar: "إرسال اختبار", fr: "Envoyer un test", de: "Test senden", tr: "Test gönder", es: "Enviar prueba", it: "Invia test" },
+  "Name animation": { ar: "حركة الاسم", fr: "Animation du nom", de: "Namensanimation", tr: "İsim animasyonu", es: "Animación del nombre", it: "Animazione nome" },
+  "Periodic animation": { ar: "حركة دورية", fr: "Animation périodique", de: "Periodische Animation", tr: "Periyodik animasyon", es: "Animación periódica", it: "Animazione periodica" },
+  "Hearts & stars burst": { ar: "انفجار قلوب ونجوم", fr: "Explosion de cœurs et d’étoiles", de: "Herz- und Sternenexplosion", tr: "Kalp ve yıldız patlaması", es: "Estallido de corazones y estrellas", it: "Esplosione di cuori e stelle" },
+  "Copy CSS": { ar: "نسخ CSS", fr: "Copier le CSS", de: "CSS kopieren", tr: "CSS'yi kopyala", es: "Copiar CSS", it: "Copia CSS" },
+  "Fire Test Event:": { ar: "إطلاق حدث تجريبي:", fr: "Déclencher un événement test :", de: "Testereignis auslösen:", tr: "Test etkinliğini tetikle:", es: "Lanzar evento de prueba:", it: "Attiva evento di test:" },
+  "Test Mode is running — sample events are flowing to your overlays.": { ar: "الوضع التجريبي يعمل — تُرسل أحداث تجريبية إلى شاشاتك.", fr: "Le mode test est actif — des événements de démonstration alimentent vos overlays.", de: "Der Testmodus läuft — Beispieldaten werden an deine Overlays gesendet.", tr: "Test modu çalışıyor — örnek etkinlikler katmanlarınıza aktarılıyor.", es: "El modo de prueba está activo: se envían eventos de ejemplo a tus overlays.", it: "La modalità test è attiva: gli eventi di esempio arrivano ai tuoi overlay." },
+  "Show TikTok Phone UI Safe Zone": { ar: "إظهار المنطقة الآمنة لواجهة TikTok على الهاتف", fr: "Afficher la zone de sécurité de l’interface TikTok mobile", de: "Sicherheitsbereich der TikTok-Handyoberfläche anzeigen", tr: "TikTok mobil arayüzünün güvenli alanını göster", es: "Mostrar zona segura de la interfaz móvil de TikTok", it: "Mostra area sicura interfaccia TikTok mobile" },
+};
+
 export function translateText(locale: Locale, source: string): string {
-  return phraseTranslations[source]?.[locale] ?? navigationTranslations[source]?.[locale] ?? dashboardTranslations[source]?.[locale] ?? loginTranslations[source]?.[locale] ?? tickerTranslations[source]?.[locale] ?? overlayControlTranslations[source]?.[locale] ?? overlayLayoutTranslations[source]?.[locale] ?? extendedStudioTranslations[source]?.[locale] ?? studioTranslations[source]?.[locale] ?? source;
+  return phraseTranslations[source]?.[locale] ?? navigationTranslations[source]?.[locale] ?? dashboardTranslations[source]?.[locale] ?? loginTranslations[source]?.[locale] ?? tickerTranslations[source]?.[locale] ?? finalStudioLabels[source]?.[locale] ?? overlayControlTranslations[source]?.[locale] ?? overlayLayoutTranslations[source]?.[locale] ?? extendedStudioTranslations[source]?.[locale] ?? studioTranslations[source]?.[locale] ?? source;
 }
