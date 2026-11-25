@@ -1,0 +1,11 @@
+node_modules/
+.next/
+.open-next/
+.wrangler/
+.dev.vars
+cloudflare-env.d.ts
+coverage/
+*.tsbuildinfo
+.env
+.env.*
+!.env.example

@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
+import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 
-/** Static artwork rarely changes: let browsers and Vercel's CDN cache it. */
+/** Static artwork rarely changes: let browsers and the edge cache it. */
 const ASSET_CACHE = "public, max-age=86400, s-maxage=2592000, stale-while-revalidate=604800";
 
 const nextConfig: NextConfig = {
@@ -11,5 +12,7 @@ const nextConfig: NextConfig = {
     }));
   },
 };
+
+initOpenNextCloudflareForDev();
 
 export default nextConfig;
