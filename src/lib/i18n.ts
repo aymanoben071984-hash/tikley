@@ -290,6 +290,29 @@ const finalStudioLabels: Record<string, Partial<Record<Locale, string>>> = {
   "Show TikTok Phone UI Safe Zone": { ar: "إظهار المنطقة الآمنة لواجهة TikTok على الهاتف", fr: "Afficher la zone de sécurité de l’interface TikTok mobile", de: "Sicherheitsbereich der TikTok-Handyoberfläche anzeigen", tr: "TikTok mobil arayüzünün güvenli alanını göster", es: "Mostrar zona segura de la interfaz móvil de TikTok", it: "Mostra area sicura interfaccia TikTok mobile" },
 };
 
+
+const editorControlTranslations: Record<string, Partial<Record<Locale, string>>> = {
+  "Top #1 Gifter": { ar: "أفضل مُهدٍ رقم 1", fr: "Meilleur donateur n° 1", de: "Top-Geschenksender Nr. 1", tr: "En iyi hediye gönderen #1", es: "Mejor regalador n.º 1", it: "Miglior donatore n. 1" },
+  "Position on screen": { ar: "الموضع على الشاشة", fr: "Position à l’écran", de: "Position auf dem Bildschirm", tr: "Ekrandaki konum", es: "Posición en pantalla", it: "Posizione sullo schermo" },
+  "Handle glow": { ar: "توهج اسم المستخدم", fr: "Lueur de l’identifiant", de: "Handle-Leuchten", tr: "Kullanıcı adı parıltısı", es: "Brillo del usuario", it: "Bagliore handle" },
+  "Card halo": { ar: "هالة البطاقة", fr: "Halo de la carte", de: "Kartenhalo", tr: "Kart halesi", es: "Halo de tarjeta", it: " alone scheda" },
+  "Card size": { ar: "حجم البطاقة", fr: "Taille de la carte", de: "Kartengröße", tr: "Kart boyutu", es: "Tamaño de tarjeta", it: "Dimensione scheda" },
+  "Particles": { ar: "الجزيئات", fr: "Particules", de: "Partikel", tr: "Parçacıklar", es: "Partículas", it: "Particelle" },
+  "Motion": { ar: "الحركة", fr: "Mouvement", de: "Bewegung", tr: "Hareket", es: "Movimiento", it: "Movimento" },
+  "Label": { ar: "التسمية", fr: "Libellé", de: "Beschriftung", tr: "Etiket", es: "Etiqueta", it: "Etichetta" },
+  "Accent": { ar: "اللون المميز", fr: "Accent", de: "Akzent", tr: "Vurgu", es: "Acento", it: "Accento" },
+  "Entrance": { ar: "الدخول", fr: "Entrée", de: "Einblenden", tr: "Giriş", es: "Entrada", it: "Ingresso" },
+  "Loop": { ar: "تكرار", fr: "Boucle", de: "Schleife", tr: "Döngü", es: "Bucle", it: "Ciclo" },
+  "Scroll direction": { ar: "اتجاه التمرير", fr: "Sens de défilement", de: "Scrollrichtung", tr: "Kaydırma yönü", es: "Dirección de desplazamiento", it: "Direzione scorrimento" },
+  "Separator": { ar: "الفاصل", fr: "Séparateur", de: "Trennzeichen", tr: "Ayırıcı", es: "Separador", it: "Separatore" },
+  "From (coins)": { ar: "ابتداءً من (عملات)", fr: "À partir de (pièces)", de: "Ab (Münzen)", tr: "Başlangıç (jeton)", es: "Desde (monedas)", it: "Da (monete)" },
+  "From ayah": { ar: "من الآية", fr: "À partir du verset", de: "Ab Vers", tr: "Ayet başlangıcı", es: "Desde la aleya", it: "Dal versetto" },
+  "To ayah": { ar: "إلى الآية", fr: "Jusqu’au verset", de: "Bis Vers", tr: "Ayet bitişi", es: "Hasta la aleya", it: "Al versetto" },
+  "Show platform name": { ar: "إظهار اسم المنصة", fr: "Afficher le nom de la plateforme", de: "Plattformnamen anzeigen", tr: "Platform adını göster", es: "Mostrar nombre de plataforma", it: "Mostra nome piattaforma" },
+  "Show seconds": { ar: "إظهار الثواني", fr: "Afficher les secondes", de: "Sekunden anzeigen", tr: "Saniyeleri göster", es: "Mostrar segundos", it: "Mostra secondi" },
+  "12-hour clock": { ar: "ساعة بنظام 12 ساعة", fr: "Horloge au format 12 heures", de: "12-Stunden-Uhr", tr: "12 saatlik saat", es: "Reloj de 12 horas", it: "Orologio a 12 ore" },
+};
+
 export function translateText(locale: Locale, source: string): string {
-  return phraseTranslations[source]?.[locale] ?? navigationTranslations[source]?.[locale] ?? dashboardTranslations[source]?.[locale] ?? loginTranslations[source]?.[locale] ?? tickerTranslations[source]?.[locale] ?? finalStudioLabels[source]?.[locale] ?? overlayControlTranslations[source]?.[locale] ?? overlayLayoutTranslations[source]?.[locale] ?? extendedStudioTranslations[source]?.[locale] ?? studioTranslations[source]?.[locale] ?? source;
+  return phraseTranslations[source]?.[locale] ?? navigationTranslations[source]?.[locale] ?? dashboardTranslations[source]?.[locale] ?? loginTranslations[source]?.[locale] ?? tickerTranslations[source]?.[locale] ?? editorControlTranslations[source]?.[locale] ?? finalStudioLabels[source]?.[locale] ?? overlayControlTranslations[source]?.[locale] ?? overlayLayoutTranslations[source]?.[locale] ?? extendedStudioTranslations[source]?.[locale] ?? studioTranslations[source]?.[locale] ?? source;
 }
