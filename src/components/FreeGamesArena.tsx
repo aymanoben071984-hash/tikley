@@ -53,6 +53,8 @@ export function GameOverlayStage({
   interactive = false,
   onUpdateState,
 }: GameOverlayStageProps) {
+  const { locale } = useLocale();
+  const tx = (value: string) => translateText(locale, value);
   const state = (gameConfig?.stateJson || {}) as Record<string, unknown>;
   const themeObj =
     QUIZ_CARD_THEMES.find((t) => t.id === gameConfig?.cardTheme) ?? QUIZ_CARD_THEMES[0];
@@ -341,7 +343,7 @@ export function GameOverlayStage({
         </div>
 
         <div className="flex w-full items-center justify-between rounded-xl bg-white/[0.07] px-3.5 py-2 text-xs">
-          <span className="text-white/70">Latest Prize:</span>
+          <span className="text-white/70">{tx("Latest Prize:")}</span>
           <span className="font-black text-amber-300">🎁 {winnerSlice}</span>
         </div>
 
@@ -550,7 +552,7 @@ export function GameOverlayStage({
               </div>
             ))}
           </div>
-          {visibleDancers.length === 0 && <div className="absolute inset-0 grid place-items-center text-xs font-semibold text-white/60">Waiting for viewers to join the dance floor…</div>}
+          {visibleDancers.length === 0 && <div className="absolute inset-0 grid place-items-center text-xs font-semibold text-white/60">{tx("Waiting for viewers to join the dance floor…")}</div>}
         </div>
         <div className="mt-2 flex items-center justify-between text-[10px] text-white/65">
           <span>Chat: !dance · !jump · !hug · !spin · !wave</span>
@@ -742,6 +744,8 @@ export function FreeGamesArena({
   onSaveGame,
   onCopyUrl,
 }: FreeGamesArenaProps) {
+  const { locale } = useLocale();
+  const tx = (value: string) => translateText(locale, value);
   const [selectedSlug, setSelectedSlug] = useState<string>(
     initialSlug && FREE_GAMES_CATALOG.some((g) => g.slug === initialSlug) ? initialSlug : "breaking-news",
   );
@@ -1476,8 +1480,8 @@ export function FreeGamesArena({
       <section className="rounded-2xl border border-border bg-card p-4 sm:p-5">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h3 className="text-base font-black text-foreground">Game Store</h3>
-            <p className="mt-1 text-xs text-muted-foreground">Search and filter all existing Tikley games by category.</p>
+            <h3 className="text-base font-black text-foreground">{tx("Game Store")}</h3>
+            <p className="mt-1 text-xs text-muted-foreground">{tx("Search and filter all existing Tikley games by category.")}</p>
           </div>
           <span className="rounded-xl border border-emerald-400/25 bg-emerald-500/10 px-3 py-2 text-xs font-extrabold text-emerald-300">{visibleGames.length} / {FREE_GAMES_CATALOG.length} · FREE</span>
         </div>
@@ -1572,9 +1576,9 @@ export function FreeGamesArena({
         {visibleGames.length === 0 && (
           <div className="mt-3 rounded-2xl border border-dashed border-border p-8 text-center">
             <div className="text-2xl">🎮</div>
-            <p className="mt-2 text-sm font-bold text-foreground">No games match these filters</p>
-            <p className="mt-1 text-xs text-muted-foreground">Try another category or clear your search.</p>
-            <button type="button" onClick={() => { setStoreSearch(""); setStoreCategory("all"); setStoreFreeOnly(true); }} className="mt-3 rounded-lg bg-brand-cyan px-3 py-2 text-xs font-black text-slate-950">Reset filters</button>
+            <p className="mt-2 text-sm font-bold text-foreground">{tx("No games match these filters")}</p>
+            <p className="mt-1 text-xs text-muted-foreground">{tx("Try another category or clear your search.")}</p>
+            <button type="button" onClick={() => { setStoreSearch(""); setStoreCategory("all"); setStoreFreeOnly(true); }} className="mt-3 rounded-lg bg-brand-cyan px-3 py-2 text-xs font-black text-slate-950">{tx("Reset filters")}</button>
           </div>
         )}
       </div>
