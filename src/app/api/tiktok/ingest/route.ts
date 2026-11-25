@@ -35,6 +35,7 @@ export async function POST(request: Request) {
       const [profile] = await db.select().from(streamerProfiles).limit(1);
       if (!profile) return NextResponse.json({ error: "Streamer profile is missing" }, { status: 503 });
       if (profile.connectionStatus !== "live" || profile.liveSessionId !== sessionId) {
+        await resetBoardsOnLive();
         await db.update(streamerProfiles).set({
           connectionStatus: "live",
           liveSessionId: sessionId,
@@ -46,7 +47,6 @@ export async function POST(request: Request) {
           sessionGifts: 0,
           updatedAt: new Date(),
         }).where(eq(streamerProfiles.id, profile.id));
-        await resetBoardsOnLive();
       }
       return NextResponse.json({ status: "live", sessionId });
     }
