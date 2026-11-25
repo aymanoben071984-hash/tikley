@@ -19,6 +19,8 @@ interface LegalPageProps {
 }
 
 export function LegalPage({ title, intro, updated, sections, current }: LegalPageProps) {
+  const { locale } = useLocale();
+  const tx = (value: string) => translateText(locale, value);
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur-md">
@@ -31,16 +33,16 @@ export function LegalPage({ title, intro, updated, sections, current }: LegalPag
               href="/terms"
               className={`rounded-lg px-3 py-1.5 ${current === "terms" ? "bg-brand-cyan/15 text-brand-cyan" : "text-muted-foreground hover:text-foreground"}`}
             >
-              Terms of Service
+              {tx("Terms of Service")}
             </Link>
             <Link
               href="/privacy"
               className={`rounded-lg px-3 py-1.5 ${current === "privacy" ? "bg-brand-cyan/15 text-brand-cyan" : "text-muted-foreground hover:text-foreground"}`}
             >
-              Privacy Policy
+              {tx("Privacy Policy")}
             </Link>
             <Link href="/dashboard" className="ms-2 rounded-lg bg-gradient-to-r from-brand-blue to-brand-cyan px-3 py-1.5 text-white">
-              Dashboard
+              {tx("Dashboard")}
             </Link>
           </nav>
         </div>
