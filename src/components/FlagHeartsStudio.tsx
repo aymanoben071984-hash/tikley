@@ -1,5 +1,8 @@
 "use client";
 
+import { useLocale } from "@/components/LocaleProvider";
+import { translateText } from "@/lib/i18n";
+
 import type { WidgetConfig } from "@/db/schema";
 import { FlagHearts } from "@/components/FlagHearts";
 import { notifyOverlayChannel, playBroadcastSound } from "@/components/SoundEngine";
@@ -46,7 +49,9 @@ function Range({ label, value, range, suffix, onChange }: { label: string; value
   );
 }
 
-export function FlagHeartsStudio({ widget, onSave, onCopyUrl }: FlagHeartsStudioProps) {
+export function FlagHeartsStudio({ widget, onSave, onCopyUrl }: FlagHeartsStudioProps) {  const { locale } = useLocale();
+  const tx = (source: string) => translateText(locale, source);
+
   const savedRaw = (widget?.customSettings as Record<string, unknown> | undefined)?.flagHearts;
   const saved = useMemo(() => normalizeFlagHearts(savedRaw), [savedRaw]);
   const savedJson = JSON.stringify(saved);
@@ -100,9 +105,9 @@ export function FlagHeartsStudio({ widget, onSave, onCopyUrl }: FlagHeartsStudio
             <Heart className="h-6 w-6" />
           </div>
           <div>
-            <div className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-muted-foreground">Overlays</div>
-            <h2 className="text-2xl font-black text-foreground">Flag Hearts</h2>
-            <p className="max-w-2xl text-xs text-muted-foreground">Glossy heart balloons wearing the flags you choose, turning gently in a corner of your stream.</p>
+            <div className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-muted-foreground">{tx("Overlays")}</div>
+            <h2 className="text-2xl font-black text-foreground">{tx("Flag Hearts")}</h2>
+            <p className="max-w-2xl text-xs text-muted-foreground">{tx("Glossy heart balloons wearing the flags you choose, turning gently in a corner of your stream.")}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -131,7 +136,7 @@ export function FlagHeartsStudio({ widget, onSave, onCopyUrl }: FlagHeartsStudio
         <div className="space-y-4">
           <Section title={`Flags (${draft.flags.length}/${FH_MAX_FLAGS})`} hint="Pick up to 6. The order here is the order on stream.">
             <div className="mb-3 flex min-h-[52px] flex-wrap gap-2 rounded-xl border border-dashed border-border p-2">
-              {draft.flags.length === 0 && <span className="px-2 py-2 text-xs text-muted-foreground">No flags yet — choose some below.</span>}
+              {draft.flags.length === 0 && <span className="px-2 py-2 text-xs text-muted-foreground">{tx("No flags yet — choose some below.")}</span>}
               {draft.flags.map((c, i) => (
                 <span key={c} className="flex items-center gap-1.5 rounded-xl border border-brand-cyan/40 bg-brand-cyan/10 py-1 pe-1 ps-1.5 text-xs font-bold text-foreground">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -169,7 +174,7 @@ export function FlagHeartsStudio({ widget, onSave, onCopyUrl }: FlagHeartsStudio
                 <Range label="Turning speed" value={draft.speed} range={FH_SPEED} suffix="×" onChange={(v) => set({ speed: v })} />
                 <Range label="Gap between hearts" value={draft.gap} range={FH_GAP} suffix="%" onChange={(v) => set({ gap: v })} />
                 <div className="text-xs">
-                  <div className="mb-1 font-semibold text-muted-foreground">Line up</div>
+                  <div className="mb-1 font-semibold text-muted-foreground">{tx("Line up")}</div>
                   <Segmented value={draft.direction} onChange={(v) => set({ direction: v })} options={[{ id: "row", label: "Side by side" }, { id: "column", label: "Stacked" }]} />
                 </div>
               </div>
@@ -192,14 +197,14 @@ export function FlagHeartsStudio({ widget, onSave, onCopyUrl }: FlagHeartsStudio
 
         <div className="space-y-3 xl:sticky xl:top-20 xl:self-start">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-extrabold text-foreground">Live preview</span>
+            <span className="text-sm font-extrabold text-foreground">{tx("Live preview")}</span>
             <Segmented value={stage} onChange={setStage} options={[{ id: "16:9", label: "OBS", icon: <Monitor className="h-3.5 w-3.5" /> }, { id: "9:16", label: "LIVE Studio", icon: <Smartphone className="h-3.5 w-3.5" /> }]} />
           </div>
           <div className={`relative mx-auto overflow-hidden rounded-2xl border border-border bg-slate-900 ${stage === "16:9" ? "aspect-video w-full" : "aspect-[9/16] w-[260px]"}`}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={stage === "16:9" ? "/backgrounds/space-nebula.jpg" : "/backgrounds/cozy-bedroom.jpg"} alt="" className="absolute inset-0 h-full w-full object-cover opacity-60" />
             <FlagHearts config={{ ...draft, enabled: true }} scale={stage === "16:9" ? 420 / 1920 : 260 / 1080} />
-            {!draft.enabled && <div className="absolute inset-x-0 bottom-2 text-center text-[10px] font-bold text-white/80">Hidden on stream — preview only</div>}
+            {!draft.enabled && <div className="absolute inset-x-0 bottom-2 text-center text-[10px] font-bold text-white/80">{tx("Hidden on stream — preview only")}</div>}
           </div>
           <p className="text-[11px] leading-relaxed text-muted-foreground">
             Add <code className="text-brand-cyan">{LINK}</code> as a full-screen source — OBS / Streamlabs: Browser 1920 × 1080; TikTok LIVE Studio: Web 1080 × 1920. The hearts render on your PC the first time (a second or two), then turn smoothly.
@@ -214,7 +219,7 @@ export function FlagHeartsStudio({ widget, onSave, onCopyUrl }: FlagHeartsStudio
             <button type="button" title="Restore defaults" onClick={() => setDraft({ ...FLAG_HEARTS_DEFAULTS, enabled: draft.enabled })} className="rounded-xl border border-border px-2.5 py-2 text-muted-foreground hover:bg-secondary hover:text-foreground">
               <RotateCcw className="h-3.5 w-3.5" />
             </button>
-            <button type="button" disabled={!dirty || saving} onClick={() => setDraft(saved)} className="rounded-xl border border-border px-3 py-2 text-xs font-bold text-foreground hover:bg-secondary disabled:opacity-40">Discard</button>
+            <button type="button" disabled={!dirty || saving} onClick={() => setDraft(saved)} className="rounded-xl border border-border px-3 py-2 text-xs font-bold text-foreground hover:bg-secondary disabled:opacity-40">{tx("Discard")}</button>
             <button type="button" disabled={!dirty || saving} onClick={() => persist(draft)} className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-brand-blue to-brand-cyan px-5 py-2 text-xs font-black text-white shadow hover:brightness-110 disabled:opacity-50">
               {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />} {saving ? "Saving…" : "Save"}
             </button>

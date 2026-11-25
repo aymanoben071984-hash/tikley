@@ -1,5 +1,8 @@
 "use client";
 
+import { useLocale } from "@/components/LocaleProvider";
+import { translateText } from "@/lib/i18n";
+
 import type { WidgetConfig } from "@/db/schema";
 import { AutoScale } from "@/components/RefBoard";
 import { PlatformIcon, SocialRotator } from "@/components/SocialOverlay";
@@ -45,7 +48,9 @@ function ColorOpt({ label, value, onChange, placeholder }: { label: string; valu
   );
 }
 
-export function SocialMediaStudio({ widget, onSave, onCopyUrl }: SocialMediaStudioProps) {
+export function SocialMediaStudio({ widget, onSave, onCopyUrl }: SocialMediaStudioProps) {  const { locale } = useLocale();
+  const tx = (source: string) => translateText(locale, source);
+
   const savedRaw = (widget?.customSettings as Record<string, unknown> | undefined)?.social;
   const saved = useMemo(() => normalizeSocial(savedRaw), [savedRaw]);
   const savedJson = JSON.stringify(saved);
@@ -89,9 +94,9 @@ export function SocialMediaStudio({ widget, onSave, onCopyUrl }: SocialMediaStud
             <Share2 className="h-6 w-6" />
           </div>
           <div>
-            <div className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-muted-foreground">Overlays</div>
-            <h2 className="text-2xl font-black text-foreground">Social Media</h2>
-            <p className="text-xs text-muted-foreground">A rotating overlay of your handles.</p>
+            <div className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-muted-foreground">{tx("Overlays")}</div>
+            <h2 className="text-2xl font-black text-foreground">{tx("Social Media")}</h2>
+            <p className="text-xs text-muted-foreground">{tx("A rotating overlay of your handles.")}</p>
           </div>
         </div>
       </div>
@@ -124,7 +129,7 @@ export function SocialMediaStudio({ widget, onSave, onCopyUrl }: SocialMediaStud
               )}
             </div>
             <label className="mt-3 block text-xs">
-              <span className="flex justify-between font-semibold text-muted-foreground"><span>Switch every</span><span className="text-foreground">{(draft.intervalMs / 1000).toFixed(1)}s</span></span>
+              <span className="flex justify-between font-semibold text-muted-foreground"><span>{tx("Switch every")}</span><span className="text-foreground">{(draft.intervalMs / 1000).toFixed(1)}s</span></span>
               <input type="range" min={1500} max={15000} step={500} value={draft.intervalMs} onChange={(e) => set({ intervalMs: Number(e.target.value) })} className="mt-1 w-full accent-cyan-400" />
             </label>
           </Section>
@@ -150,46 +155,46 @@ export function SocialMediaStudio({ widget, onSave, onCopyUrl }: SocialMediaStud
             <Section title="Size & text">
               <div className="space-y-3 text-xs">
                 <label className="block">
-                  <span className="flex justify-between font-semibold text-muted-foreground"><span>Card size</span><span className="text-foreground">{draft.scale}%</span></span>
+                  <span className="flex justify-between font-semibold text-muted-foreground"><span>{tx("Card size")}</span><span className="text-foreground">{draft.scale}%</span></span>
                   <input type="range" min={40} max={200} step={5} value={draft.scale} onChange={(e) => set({ scale: Number(e.target.value) })} className="mt-1 w-full accent-cyan-400" />
                 </label>
                 <label className="block">
-                  <span className="flex justify-between font-semibold text-muted-foreground"><span>Text size</span><span className="text-foreground">{draft.fontSize}%</span></span>
+                  <span className="flex justify-between font-semibold text-muted-foreground"><span>{tx("Text size")}</span><span className="text-foreground">{draft.fontSize}%</span></span>
                   <input type="range" min={50} max={200} step={5} value={draft.fontSize} onChange={(e) => set({ fontSize: Number(e.target.value) })} className="mt-1 w-full accent-cyan-400" />
                 </label>
                 <select value={draft.fontFamily} onChange={(e) => set({ fontFamily: e.target.value })} aria-label="Font" className="w-full rounded-xl border border-border bg-background px-3 py-2 font-semibold text-foreground">
                   {FONTS.map((f) => <option key={f} value={f}>{f ? `Font: ${f}` : "Font: design default"}</option>)}
                 </select>
                 <ColorOpt label="Handle colour" value={draft.textColor} placeholder="Design default" onChange={(v) => set({ textColor: v })} />
-                <label className="flex items-center justify-between font-bold text-foreground">Show platform name <Toggle checked={draft.showPlatform} onChange={(v) => set({ showPlatform: v })} /></label>
+                <label className="flex items-center justify-between font-bold text-foreground">{tx("Show platform name")} <Toggle checked={draft.showPlatform} onChange={(v) => set({ showPlatform: v })} /></label>
               </div>
             </Section>
             <Section title="Glow, motion & effects">
               <div className="space-y-3 text-xs">
-                <label className="flex items-center justify-between font-bold text-foreground">Handle glow <Toggle checked={draft.handleGlow} onChange={(v) => set({ handleGlow: v })} /></label>
+                <label className="flex items-center justify-between font-bold text-foreground">{tx("Handle glow")} <Toggle checked={draft.handleGlow} onChange={(v) => set({ handleGlow: v })} /></label>
                 {draft.handleGlow && <ColorOpt label="Glow colour" value={draft.handleGlowColor} placeholder="Platform colour" onChange={(v) => set({ handleGlowColor: v })} />}
-                <label className="flex items-center justify-between font-bold text-foreground">Card halo <Toggle checked={draft.cardGlow} onChange={(v) => set({ cardGlow: v })} /></label>
+                <label className="flex items-center justify-between font-bold text-foreground">{tx("Card halo")} <Toggle checked={draft.cardGlow} onChange={(v) => set({ cardGlow: v })} /></label>
                 {draft.cardGlow && <ColorOpt label="Halo colour" value={draft.cardGlowColor} placeholder="Platform colour" onChange={(v) => set({ cardGlowColor: v })} />}
                 <div>
-                  <div className="mb-1 font-semibold text-muted-foreground">Motion</div>
+                  <div className="mb-1 font-semibold text-muted-foreground">{tx("Motion")}</div>
                   <div className="flex flex-wrap gap-1">
                     {SOCIAL_MOTIONS.map((m) => <button key={m} type="button" onClick={() => set({ motion: m })} className={`rounded-lg px-2.5 py-1 text-[11px] font-bold capitalize ${draft.motion === m ? "bg-brand-cyan text-slate-950" : "bg-secondary/60 text-muted-foreground hover:text-foreground"}`}>{m}</button>)}
                   </div>
                 </div>
                 <div>
-                  <div className="mb-1 font-semibold text-muted-foreground">Particles</div>
+                  <div className="mb-1 font-semibold text-muted-foreground">{tx("Particles")}</div>
                   <div className="flex flex-wrap gap-1">
                     {SOCIAL_PARTICLES.map((m) => <button key={m} type="button" onClick={() => set({ particles: m })} className={`rounded-lg px-2.5 py-1 text-[11px] font-bold capitalize ${draft.particles === m ? "bg-brand-cyan text-slate-950" : "bg-secondary/60 text-muted-foreground hover:text-foreground"}`}>{m}</button>)}
                   </div>
                 </div>
-                <p className="text-[10px] text-muted-foreground">Motion, particles and halo apply to the painted frame designs.</p>
+                <p className="text-[10px] text-muted-foreground">{tx("Motion, particles and halo apply to the painted frame designs.")}</p>
               </div>
             </Section>
           </div>
         </div>
 
         <div className="space-y-3 xl:sticky xl:top-20 xl:self-start">
-          <div className="text-sm font-extrabold text-foreground">Live preview</div>
+          <div className="text-sm font-extrabold text-foreground">{tx("Live preview")}</div>
           <div className="relative flex aspect-video w-full overflow-hidden rounded-2xl border border-border p-4" style={{ background: "url(/backgrounds/space-nebula.jpg) center/cover" }}>
             <div className="absolute inset-0 bg-black/30" />
             <div className={`relative flex w-full ${({ center: "items-center justify-center", "bottom-left": "items-end justify-start", "bottom-right": "items-end justify-end", "top-left": "items-start justify-start", "top-right": "items-start justify-end", bottom: "items-end justify-center", top: "items-start justify-center" } as Record<SocialPosition, string>)[pos]}`}>
@@ -200,7 +205,7 @@ export function SocialMediaStudio({ widget, onSave, onCopyUrl }: SocialMediaStud
           </div>
 
           <div className="rounded-2xl border border-border bg-card p-3.5">
-            <div className="mb-2 text-xs font-extrabold text-foreground">Position on screen</div>
+            <div className="mb-2 text-xs font-extrabold text-foreground">{tx("Position on screen")}</div>
             <div className="mb-3 grid grid-cols-3 gap-1.5">
               {SOCIAL_POSITIONS.map((p) => (
                 <button key={p} type="button" onClick={() => setPos(p)} className={`rounded-lg px-2 py-1.5 text-[11px] font-bold ${pos === p ? "bg-brand-cyan text-slate-950" : "bg-secondary/60 text-muted-foreground hover:text-foreground"} ${p === "center" ? "col-span-3" : ""}`}>{POS_LABEL[p]}</button>
@@ -213,7 +218,7 @@ export function SocialMediaStudio({ widget, onSave, onCopyUrl }: SocialMediaStud
               </button>
               <a href={link} target="_blank" rel="noreferrer" aria-label="Open overlay" className="rounded-lg border border-border px-3 py-2 text-muted-foreground hover:text-foreground"><ExternalLink className="h-3.5 w-3.5" /></a>
             </div>
-            <p className="mt-2 text-[10px] leading-relaxed text-muted-foreground">The position is part of the link. Add it as a full-screen source — OBS: Browser 1920 × 1080; TikTok LIVE Studio: Web 1080 × 1920.</p>
+            <p className="mt-2 text-[10px] leading-relaxed text-muted-foreground">{tx("The position is part of the link. Add it as a full-screen source — OBS: Browser 1920 × 1080; TikTok LIVE Studio: Web 1080 × 1920.")}</p>
           </div>
         </div>
       </div>
@@ -223,7 +228,7 @@ export function SocialMediaStudio({ widget, onSave, onCopyUrl }: SocialMediaStud
           <span className="truncate text-xs font-semibold text-muted-foreground">{dirty ? "Unsaved changes to Social Media" : "All changes saved"}</span>
           <div className="flex shrink-0 items-center gap-2">
             <button type="button" title="Restore defaults" onClick={() => setDraft(SOCIAL_DEFAULTS)} className="rounded-xl border border-border px-2.5 py-2 text-muted-foreground hover:bg-secondary hover:text-foreground"><RotateCcw className="h-3.5 w-3.5" /></button>
-            <button type="button" disabled={!dirty || saving} onClick={() => setDraft(saved)} className="rounded-xl border border-border px-3 py-2 text-xs font-bold text-foreground hover:bg-secondary disabled:opacity-40">Discard</button>
+            <button type="button" disabled={!dirty || saving} onClick={() => setDraft(saved)} className="rounded-xl border border-border px-3 py-2 text-xs font-bold text-foreground hover:bg-secondary disabled:opacity-40">{tx("Discard")}</button>
             <button type="button" disabled={!dirty || saving} onClick={save} className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-brand-blue to-brand-cyan px-5 py-2 text-xs font-black text-white shadow hover:brightness-110 disabled:opacity-50">
               {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />} {saving ? "Saving…" : "Save"}
             </button>

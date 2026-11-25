@@ -1,5 +1,8 @@
 "use client";
 
+import { useLocale } from "@/components/LocaleProvider";
+import { translateText } from "@/lib/i18n";
+
 import type { GameConfig, LiveEvent } from "@/db/schema";
 import { BreakingNewsOverlay, toBnEvents } from "@/components/BreakingNewsOverlay";
 import { notifyOverlayChannel, playBroadcastSound } from "@/components/SoundEngine";
@@ -47,14 +50,16 @@ const EVENT_ROWS: Array<{ type: BnEventType; label: string; showKey: keyof Break
   { type: "join", label: "Join", showKey: "showJoins", vars: "{name}" },
 ];
 
-function FontSelect({ value, onChange, allowInherit }: { value: string; onChange: (v: string) => void; allowInherit?: boolean }) {
+function FontSelect({ value, onChange, allowInherit }: { value: string; onChange: (v: string) => void; allowInherit?: boolean }) {  const { locale } = useLocale();
+  const tx = (source: string) => translateText(locale, source);
+
   return (
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
       className="w-full rounded-xl border border-border bg-background px-3 py-2 text-xs font-semibold text-foreground"
     >
-      {allowInherit && <option value="">Same as main font</option>}
+      {allowInherit && <option value="">{tx("Same as main font")}</option>}
       {BN_FONTS.map((f) => (
         <option key={f} value={f}>
           {f}
@@ -100,7 +105,9 @@ function ScaleField({ label, value, onChange }: { label: string; value: number; 
   );
 }
 
-export function BreakingNewsStudio({ game, events, onSave, onFireEvent, onCopyUrl }: BreakingNewsStudioProps) {
+export function BreakingNewsStudio({ game, events, onSave, onFireEvent, onCopyUrl }: BreakingNewsStudioProps) {  const { locale } = useLocale();
+  const tx = (source: string) => translateText(locale, source);
+
   const saved = useMemo(() => normalizeBnState(game?.stateJson), [game?.stateJson]);
   const savedJson = JSON.stringify(saved.config);
   const [draft, setDraft] = useState<BreakingNewsConfig>(saved.config);
@@ -153,8 +160,8 @@ export function BreakingNewsStudio({ game, events, onSave, onFireEvent, onCopyUr
             <Newspaper className="h-6 w-6" />
           </div>
           <div>
-            <div className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-muted-foreground">Live Overlays</div>
-            <h2 className="text-xl font-black text-foreground">Breaking News</h2>
+            <div className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-muted-foreground">{tx("Live Overlays")}</div>
+            <h2 className="text-xl font-black text-foreground">{tx("Breaking News")}</h2>
             <p className="text-xs text-muted-foreground">
               A TV news bar for the bottom of your scene: every gift, follow, like, join and comment becomes a breaking headline, with a scrolling ticker and a live clock.
             </p>
@@ -185,7 +192,7 @@ export function BreakingNewsStudio({ game, events, onSave, onFireEvent, onCopyUr
       {/* Live preview */}
       <div className="rounded-2xl border border-border bg-card p-4">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-          <div className="text-sm font-extrabold text-foreground">Live preview</div>
+          <div className="text-sm font-extrabold text-foreground">{tx("Live preview")}</div>
           <div className="flex items-center gap-2">
             <Segmented
               value={stage}
@@ -210,12 +217,12 @@ export function BreakingNewsStudio({ game, events, onSave, onFireEvent, onCopyUr
           </div>
         </div>
         <div className="mt-3 flex flex-wrap items-center gap-2">
-          <span className="text-[11px] font-bold text-muted-foreground">Test a headline:</span>
-          <button type="button" onClick={() => onFireEvent({ eventType: "gift", giftId: "lion" })} className="rounded-lg bg-amber-500/15 px-2.5 py-1 text-[11px] font-bold text-amber-300 hover:bg-amber-500/25">🎁 Gift</button>
-          <button type="button" onClick={() => onFireEvent({ eventType: "follow" })} className="rounded-lg bg-cyan-500/15 px-2.5 py-1 text-[11px] font-bold text-cyan-300 hover:bg-cyan-500/25">⭐ Follow</button>
-          <button type="button" onClick={() => onFireEvent({ eventType: "like", likes: 30 })} className="rounded-lg bg-rose-500/15 px-2.5 py-1 text-[11px] font-bold text-rose-300 hover:bg-rose-500/25">❤️ Like</button>
-          <button type="button" onClick={() => onFireEvent({ eventType: "join" })} className="rounded-lg bg-emerald-500/15 px-2.5 py-1 text-[11px] font-bold text-emerald-300 hover:bg-emerald-500/25">👋 Join</button>
-          <button type="button" onClick={() => onFireEvent({ eventType: "chat", message: "خبر عاجل! البث رهيب 🔥" })} className="rounded-lg bg-violet-500/15 px-2.5 py-1 text-[11px] font-bold text-violet-300 hover:bg-violet-500/25">💬 Comment</button>
+          <span className="text-[11px] font-bold text-muted-foreground">{tx("Test a headline:")}</span>
+          <button type="button" onClick={() => onFireEvent({ eventType: "gift", giftId: "lion" })} className="rounded-lg bg-amber-500/15 px-2.5 py-1 text-[11px] font-bold text-amber-300 hover:bg-amber-500/25">{tx("🎁 Gift")}</button>
+          <button type="button" onClick={() => onFireEvent({ eventType: "follow" })} className="rounded-lg bg-cyan-500/15 px-2.5 py-1 text-[11px] font-bold text-cyan-300 hover:bg-cyan-500/25">{tx("⭐ Follow")}</button>
+          <button type="button" onClick={() => onFireEvent({ eventType: "like", likes: 30 })} className="rounded-lg bg-rose-500/15 px-2.5 py-1 text-[11px] font-bold text-rose-300 hover:bg-rose-500/25">{tx("❤️ Like")}</button>
+          <button type="button" onClick={() => onFireEvent({ eventType: "join" })} className="rounded-lg bg-emerald-500/15 px-2.5 py-1 text-[11px] font-bold text-emerald-300 hover:bg-emerald-500/25">{tx("👋 Join")}</button>
+          <button type="button" onClick={() => onFireEvent({ eventType: "chat", message: "خبر عاجل! البث رهيب 🔥" })} className="rounded-lg bg-violet-500/15 px-2.5 py-1 text-[11px] font-bold text-violet-300 hover:bg-violet-500/25">{tx("💬 Comment")}</button>
         </div>
       </div>
 
@@ -248,16 +255,16 @@ export function BreakingNewsStudio({ game, events, onSave, onFireEvent, onCopyUr
         <Section title="Text" hint="Badge, channel name and your own headlines that mix into the ticker.">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <label className="text-xs">
-              <span className="font-semibold text-muted-foreground">Badge text</span>
+              <span className="font-semibold text-muted-foreground">{tx("Badge text")}</span>
               <input value={draft.badgeText} maxLength={24} onChange={(e) => set({ badgeText: e.target.value })} dir="auto" className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 font-bold text-foreground outline-none focus:border-brand-cyan" />
             </label>
             <label className="text-xs">
-              <span className="font-semibold text-muted-foreground">Channel name</span>
+              <span className="font-semibold text-muted-foreground">{tx("Channel name")}</span>
               <input value={draft.channelName} maxLength={32} onChange={(e) => set({ channelName: e.target.value })} dir="auto" className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 font-bold text-foreground outline-none focus:border-brand-cyan" />
             </label>
           </div>
           <div className="mt-3">
-            <div className="mb-1 text-xs font-semibold text-muted-foreground">Custom headlines</div>
+            <div className="mb-1 text-xs font-semibold text-muted-foreground">{tx("Custom headlines")}</div>
             <div className="space-y-1.5">
               {draft.customHeadlines.map((h, i) => (
                 <div key={i} className="flex gap-2">
@@ -284,9 +291,9 @@ export function BreakingNewsStudio({ game, events, onSave, onFireEvent, onCopyUr
 
         <Section title="Events & headline templates" hint="Choose which LIVE events make headlines and how each one reads.">
           <div className="mb-2 flex items-center gap-2 text-[11px]">
-            <span className="font-semibold text-muted-foreground">Presets:</span>
-            <button type="button" onClick={() => set({ templates: BN_TEMPLATE_PRESETS.ar })} className="rounded-lg bg-secondary/60 px-2 py-1 font-bold hover:bg-secondary">العربية</button>
-            <button type="button" onClick={() => set({ templates: BN_TEMPLATE_PRESETS.en })} className="rounded-lg bg-secondary/60 px-2 py-1 font-bold hover:bg-secondary">English</button>
+            <span className="font-semibold text-muted-foreground">{tx("Presets:")}</span>
+            <button type="button" onClick={() => set({ templates: BN_TEMPLATE_PRESETS.ar })} className="rounded-lg bg-secondary/60 px-2 py-1 font-bold hover:bg-secondary">{tx("العربية")}</button>
+            <button type="button" onClick={() => set({ templates: BN_TEMPLATE_PRESETS.en })} className="rounded-lg bg-secondary/60 px-2 py-1 font-bold hover:bg-secondary">{tx("English")}</button>
           </div>
           <div className="space-y-2">
             {EVENT_ROWS.map((row) => (
@@ -306,13 +313,13 @@ export function BreakingNewsStudio({ game, events, onSave, onFireEvent, onCopyUr
               </div>
             ))}
           </div>
-          <p className="mt-2 text-[10px] text-muted-foreground">Likes show at most once every 4 seconds and joins once every 2.5 seconds, so they never flood the bar.</p>
+          <p className="mt-2 text-[10px] text-muted-foreground">{tx("Likes show at most once every 4 seconds and joins once every 2.5 seconds, so they never flood the bar.")}</p>
         </Section>
 
         <Section title="Style" hint="Colours, fonts and ticker speed.">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div className="text-xs">
-              <div className="mb-1 font-semibold text-muted-foreground">Accent colour</div>
+              <div className="mb-1 font-semibold text-muted-foreground">{tx("Accent colour")}</div>
               <ColorField value={draft.accentColor} onChange={(v) => set({ accentColor: v })} />
               <div className="mt-1.5 flex gap-1.5">
                 {["#dc2626", "#f97316", "#eab308", "#16a34a", "#0ea5e9", "#7c3aed", "#db2777"].map((c) => (
@@ -321,16 +328,16 @@ export function BreakingNewsStudio({ game, events, onSave, onFireEvent, onCopyUr
               </div>
             </div>
             <div className="text-xs">
-              <div className="mb-1 font-semibold text-muted-foreground">Text colour</div>
+              <div className="mb-1 font-semibold text-muted-foreground">{tx("Text colour")}</div>
               <ColorField value={draft.textColor} onChange={(v) => set({ textColor: v })} />
             </div>
             <div className="text-xs">
-              <div className="mb-1 font-semibold text-muted-foreground">Main font</div>
+              <div className="mb-1 font-semibold text-muted-foreground">{tx("Main font")}</div>
               <FontSelect value={draft.fontFamily} onChange={(v) => set({ fontFamily: v })} />
             </div>
             <label className="block text-xs">
               <span className="flex justify-between font-semibold text-muted-foreground">
-                <span>Ticker speed</span>
+                <span>{tx("Ticker speed")}</span>
                 <span className="text-foreground">{draft.tickerSpeed} px/s</span>
               </span>
               <input type="range" min={30} max={240} step={5} value={draft.tickerSpeed} onChange={(e) => set({ tickerSpeed: Number(e.target.value) })} className="mt-2 w-full accent-cyan-400" />
@@ -339,22 +346,22 @@ export function BreakingNewsStudio({ game, events, onSave, onFireEvent, onCopyUr
 
           <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
             <div className="space-y-2 rounded-xl border border-border bg-secondary/20 p-2.5">
-              <div className="text-[11px] font-extrabold uppercase tracking-wider text-foreground">Headline</div>
+              <div className="text-[11px] font-extrabold uppercase tracking-wider text-foreground">{tx("Headline")}</div>
               <ScaleField label="Size" value={draft.headlineFontScale} onChange={(v) => set({ headlineFontScale: v })} />
               <ColorField value={draft.headlineColor} placeholder="" onChange={(v) => set({ headlineColor: v })} />
               <FontSelect value={draft.headlineFont} allowInherit onChange={(v) => set({ headlineFont: v })} />
             </div>
             <div className="space-y-2 rounded-xl border border-border bg-secondary/20 p-2.5">
-              <div className="text-[11px] font-extrabold uppercase tracking-wider text-foreground">Badge & channel</div>
+              <div className="text-[11px] font-extrabold uppercase tracking-wider text-foreground">{tx("Badge & channel")}</div>
               <ScaleField label="Size" value={draft.leftFontScale} onChange={(v) => set({ leftFontScale: v })} />
               <ColorField value={draft.leftColor} placeholder="" onChange={(v) => set({ leftColor: v })} />
               <FontSelect value={draft.leftFont} allowInherit onChange={(v) => set({ leftFont: v })} />
             </div>
             <div className="space-y-2 rounded-xl border border-border bg-secondary/20 p-2.5">
-              <div className="text-[11px] font-extrabold uppercase tracking-wider text-foreground">Ticker</div>
+              <div className="text-[11px] font-extrabold uppercase tracking-wider text-foreground">{tx("Ticker")}</div>
               <FontSelect value={draft.tickerFont} allowInherit onChange={(v) => set({ tickerFont: v })} />
               <label className="flex items-center justify-between text-xs">
-                <span className="font-semibold text-muted-foreground">Show icon</span>
+                <span className="font-semibold text-muted-foreground">{tx("Show icon")}</span>
                 <Toggle checked={draft.showTickerIcon} onChange={(v) => set({ showTickerIcon: v })} />
               </label>
               <input value={draft.tickerIcon} maxLength={12} disabled={!draft.showTickerIcon} onChange={(e) => set({ tickerIcon: e.target.value })} className="w-full rounded-lg border border-border bg-background px-2.5 py-1.5 text-center text-sm disabled:opacity-50" />
@@ -365,7 +372,7 @@ export function BreakingNewsStudio({ game, events, onSave, onFireEvent, onCopyUr
 
       {/* Link */}
       <div className="rounded-2xl border border-border bg-card p-4">
-        <div className="mb-2 text-sm font-extrabold text-foreground">Overlay link</div>
+        <div className="mb-2 text-sm font-extrabold text-foreground">{tx("Overlay link")}</div>
         <div className="flex flex-wrap items-center gap-2">
           <code className="min-w-0 flex-1 truncate rounded-lg bg-secondary/60 px-3 py-2 font-mono text-[11px] text-muted-foreground">{link}</code>
           <button
@@ -385,7 +392,7 @@ export function BreakingNewsStudio({ game, events, onSave, onFireEvent, onCopyUr
           </a>
         </div>
         <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
-          Add it as a full-width source at the bottom of your scene — OBS / Streamlabs: Sources → + → Browser (1920 × 1080). TikTok LIVE Studio: Add source → Web (1080 × 1920). Add <code>?design=pill</code> (or classic, compact, ticker, minimal, card) to force a design on one source.
+          Add it as a full-width source at the bottom of your scene — OBS / Streamlabs: Sources → + → Browser (1920 × 1080). TikTok LIVE Studio: Add source → Web (1080 × 1920). Add <code>{tx("?design=pill")}</code> (or classic, compact, ticker, minimal, card) to force a design on one source.
         </p>
       </div>
 

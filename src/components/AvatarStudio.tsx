@@ -1,5 +1,8 @@
 "use client";
 
+import { useLocale } from "@/components/LocaleProvider";
+import { translateText } from "@/lib/i18n";
+
 import type { AvatarPreset } from "@/db/schema";
 import { AnimatedOverlayName, FramedAvatar } from "@/components/FramedAvatar";
 import {
@@ -53,7 +56,9 @@ export function AvatarStudio({
   onDeletePreset,
   onFireEntrance,
   onCopyUrl,
-}: AvatarStudioProps) {
+}: AvatarStudioProps) {  const { locale } = useLocale();
+  const tx = (source: string) => translateText(locale, source);
+
   const [selectedAvatarUrl, setSelectedAvatarUrl] = useState<string>("/avatars/a1.png");
   const [selectedFrameSlug, setSelectedFrameSlug] = useState<string>("ember-dragon");
   const [selectedAnim, setSelectedAnim] = useState<string>("aurora");
@@ -230,11 +235,11 @@ export function AvatarStudio({
                 onChange={(e) => setCustomRole(e.target.value)}
                 className="w-full rounded-xl border border-border bg-background px-3 py-2 text-xs font-semibold text-foreground outline-none"
               >
-                <option value="vip">VIP Regular</option>
-                <option value="superfan">Superfan</option>
-                <option value="top_gifter">Top #1 Gifter</option>
-                <option value="moderator">Moderator</option>
-                <option value="creator">Creator</option>
+                <option value="vip">{tx("VIP Regular")}</option>
+                <option value="superfan">{tx("Superfan")}</option>
+                <option value="top_gifter">{tx("Top #1 Gifter")}</option>
+                <option value="moderator">{tx("Moderator")}</option>
+                <option value="creator">{tx("Creator")}</option>
               </select>
             </div>
             <div>
@@ -418,7 +423,7 @@ export function AvatarStudio({
                 <span className="mt-2 line-clamp-1 text-[11px] font-bold text-foreground">
                   {frame.name}
                 </span>
-                <span className="text-[9px] text-muted-foreground">FREE</span>
+                <span className="text-[9px] text-muted-foreground">{tx("FREE")}</span>
               </button>
             );
           })}

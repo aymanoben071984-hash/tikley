@@ -35,7 +35,7 @@ import { DisplayCanvas } from "@/components/DisplayCanvas";
 import { DISPLAY_DEFAULT, normalizeDisplay, parseFormatParam, type OverlayDisplay } from "@/lib/overlayDisplay";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocale } from "@/components/LocaleProvider";
-import { normalizeLocale } from "@/lib/i18n";
+import { normalizeLocale, translateText } from "@/lib/i18n";
 
 interface OverlayStatePayload {
   profile: StreamerProfile;
@@ -55,7 +55,8 @@ interface OverlaySourceClientProps {
 }
 
 export function OverlaySourceClient({ type, subId }: OverlaySourceClientProps) {
-  const { setLocale } = useLocale();
+  const { locale, setLocale } = useLocale();
+  const tx = (source: string) => translateText(locale, source);
   const [state, setState] = useState<OverlayStatePayload | null>(null);
   const [previewBackdrop, setPreviewBackdrop] = useState<boolean>(false);
   const clientIdRef = useRef<string>("");
@@ -285,16 +286,16 @@ export function OverlaySourceClient({ type, subId }: OverlaySourceClientProps) {
   const format = formatParam ?? display.defaultFormat;
 
   return (
-    <div className={`fixed inset-0 transition-colors ${previewBackdrop ? "checkerboard-stage" : "bg-transparent"}`}>
+    <div dir={locale === "ar" ? "rtl" : "ltr"} className={`fixed inset-0 transition-colors ${previewBackdrop ? "checkerboard-stage" : "bg-transparent"}`}>
       {/* Hover-only browser test helper (completely invisible in OBS / TikTok LIVE Studio) */}
       {!isPreview && (
-      <div className="fixed right-3 top-3 z-50 flex items-center gap-2 opacity-0 transition-opacity duration-200 hover:opacity-100">
+      <div className={`fixed ${locale === "ar" ? "left-3" : "right-3"} top-3 z-50 flex items-center gap-2 opacity-0 transition-opacity duration-200 hover:opacity-100`}>
         <button
           type="button"
           onClick={() => setPreviewBackdrop((v) => !v)}
           className="rounded-full bg-slate-950/90 px-3 py-1 text-[11px] font-bold text-cyan-300 ring-1 ring-white/20"
         >
-          {previewBackdrop ? "Transparent OBS Mode" : "Show Dark Test Grid"}
+          {previewBackdrop ? tx("Transparent OBS Mode") : tx("Show Dark Test Grid")}
         </button>
         <a
           href="/dashboard"

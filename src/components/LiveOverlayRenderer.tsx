@@ -1,5 +1,8 @@
 "use client";
 
+import { useLocale } from "@/components/LocaleProvider";
+import { translateText } from "@/lib/i18n";
+
 import type {
   AvatarPreset,
   LiveEvent,
@@ -25,8 +28,6 @@ import {
   UserPlus,
 } from "lucide-react";
 import React from "react";
-import { useLocale } from "@/components/LocaleProvider";
-import { translateText } from "@/lib/i18n";
 
 interface OverlayWidgetViewProps {
   widgetKey: string;
@@ -234,7 +235,7 @@ export function OverlayWidgetView({
             <MessageCircle className="h-3 w-3" />
             LIVE Chat · {theme.replace("-", " ")}
           </span>
-          <span>TikTok LIVE</span>
+          <span>{tx("TikTok LIVE")}</span>
         </div>
         <div className="space-y-1.5">
           {chatEvents.map((msg) => (
@@ -358,7 +359,7 @@ export function OverlayWidgetView({
             Powered by
           </div>
           <div className="text-sm font-black text-white">
-            Overlay<span className="text-orange-400">Live</span>
+            Overlay<span className="text-orange-400">{tx("Live")}</span>
           </div>
         </div>
       </div>
@@ -415,7 +416,9 @@ export function SceneCanvasRenderer({
   showSafeZone = false,
   selectedLayerId,
   onSelectLayer,
-}: SceneCanvasRendererProps) {
+}: SceneCanvasRendererProps) {  const { locale } = useLocale();
+  const tx = (source: string) => translateText(locale, source);
+
   return (
     <div className="relative h-full w-full overflow-hidden">
       {layers
@@ -459,8 +462,8 @@ export function SceneCanvasRenderer({
 
       {showSafeZone && (
         <div className="pointer-events-none absolute inset-x-0 bottom-0 flex h-[14%] items-center justify-between border-t border-dashed border-rose-400/50 bg-rose-950/25 px-4 text-[10px] font-bold uppercase tracking-wider text-rose-200/85">
-          <span>📱 TikTok Mobile Safe Zone (Native Comments & Gift Tray)</span>
-          <span>Keep Clear</span>
+          <span>{tx("📱 TikTok Mobile Safe Zone (Native Comments & Gift Tray)")}</span>
+          <span>{tx("Keep Clear")}</span>
         </div>
       )}
     </div>

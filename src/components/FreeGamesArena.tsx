@@ -391,8 +391,8 @@ export function GameOverlayStage({
     return (
       <div className="mx-auto w-full max-w-lg rounded-2xl border border-emerald-400/30 bg-slate-950/90 p-4 backdrop-blur-md">
         <div className="mb-3 flex items-center justify-between text-xs font-black">
-          <span className="text-emerald-300">🏁 FRAMED AVATAR DERBY RACE</span>
-          <span className="text-white/60">!join or Tap Likes to Boost</span>
+          <span className="text-emerald-300">{tx("🏁 FRAMED AVATAR DERBY RACE")}</span>
+          <span className="text-white/60">{tx("!join or Tap Likes to Boost")}</span>
         </div>
         <div className="space-y-2.5">
           {racers.map((r) => (
@@ -572,7 +572,7 @@ export function GameOverlayStage({
     return (
       <div className="mx-auto w-full max-w-md rounded-2xl border border-amber-400/35 bg-slate-950/90 p-4 text-center backdrop-blur-md">
         <div className="mb-2 flex items-center justify-between text-xs font-black text-amber-300">
-          <span>🟡 NEON AVATAR PLINKO</span>
+          <span>{tx("🟡 NEON AVATAR PLINKO")}</span>
           <span>Jackpot: 🪙 {Number(state.jackpotPool || 2450)}</span>
         </div>
         <div className="relative my-2 flex flex-col items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] py-3">
@@ -637,7 +637,7 @@ export function GameOverlayStage({
     return (
       <div className="mx-auto w-full max-w-md rounded-2xl border border-rose-400/35 bg-slate-950/90 p-4 backdrop-blur-md">
         <div className="mb-2 flex items-center justify-between text-xs font-black text-rose-300">
-          <span>⚔️ AVATAR BATTLE ROYALE</span>
+          <span>{tx("⚔️ AVATAR BATTLE ROYALE")}</span>
           <span>{alive === 1 ? `🏆 Champion: ${champ}` : `${alive} Fighters Alive`}</span>
         </div>
         <div className="flex flex-wrap items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/[0.04] p-4">
@@ -716,7 +716,7 @@ export function GameOverlayStage({
         <div className="mt-1.5 text-sm font-black text-white">
           {fuse > 0 ? `${holder} holds the bomb!` : `💥 Exploded on ${holder}!`}
         </div>
-        <div className="text-[11px] text-white/65">Type !pass or send a Rose to pass it!</div>
+        <div className="text-[11px] text-white/65">{tx("Type !pass or send a Rose to pass it!")}</div>
       </div>
     </div>
   );
@@ -756,14 +756,14 @@ export function FreeGamesArena({
   const [storeCategory, setStoreCategory] = useState<string>("all");
   const [storeFreeOnly, setStoreFreeOnly] = useState(true);
   const storeCategories = [
-    { id: "all", label: "All games" },
-    { id: "quiz", label: "Quiz" },
-    { id: "battle", label: "Battles" },
-    { id: "wheel", label: "Wheels" },
-    { id: "race", label: "Racing" },
-    { id: "word", label: "Word games" },
-    { id: "arcade", label: "Arcade" },
-    { id: "news", label: "Stream tools" },
+    { id: "all", label: tx("All games") },
+    { id: "quiz", label: tx("Quiz") },
+    { id: "battle", label: tx("Battles") },
+    { id: "wheel", label: tx("Wheels") },
+    { id: "race", label: tx("Racing") },
+    { id: "word", label: tx("Word games") },
+    { id: "arcade", label: tx("Arcade") },
+    { id: "news", label: tx("Stream tools") },
   ];
   const visibleGames = FREE_GAMES_CATALOG.filter((game) => {
     const matchesCategory = storeCategory === "all" || game.category === storeCategory;
@@ -946,14 +946,14 @@ export function FreeGamesArena({
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-xl font-black text-foreground">
-                  Live Overlays
+                  {tx("Live Overlays")}
                 </h2>
                 <span className="rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-[11px] font-extrabold text-emerald-300 ring-1 ring-emerald-400/30">
-                  ALL {FREE_GAMES_CATALOG.length} FREE
+                  ALL {FREE_GAMES_CATALOG.length} {tx("FREE")}
                 </span>
               </div>
               <p className="text-xs text-muted-foreground">
-                Quizzes, battles, wheels, races and arcade games your chat plays live — each one a transparent Web Source for TikTok LIVE Studio and Browser Source for OBS, with your 68 avatar frames.
+                {tx("Quizzes, battles, wheels, races and arcade games your chat plays live — each one a transparent Web Source for TikTok LIVE Studio and Browser Source for OBS, with your 68 avatar frames.")}
               </p>
             </div>
           </div>
@@ -969,7 +969,7 @@ export function FreeGamesArena({
               ) : (
                 <Copy className="h-3.5 w-3.5" />
               )}
-              Copy Game Overlay URL
+              {tx("Copy Game Overlay URL")}
             </button>
             <a
               href={`/overlay/game/${selectedSlug}`}
@@ -978,7 +978,7 @@ export function FreeGamesArena({
               className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-secondary/60 px-3 py-2 text-xs font-semibold text-foreground hover:bg-secondary"
             >
               <ExternalLink className="h-3.5 w-3.5" />
-              Open OBS / Studio View
+              {tx("Open OBS / Studio View")}
             </a>
           </div>
         </div>
@@ -1012,11 +1012,11 @@ export function FreeGamesArena({
             <div className="flex items-center gap-2">
               <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse" />
               <span className="text-xs font-extrabold uppercase tracking-wider text-white/90">
-                LIVE PREVIEW · {selectedMeta.title}
+                {tx("LIVE PREVIEW")} · {selectedMeta.title}
               </span>
             </div>
             <span className="rounded-lg bg-white/10 px-2.5 py-1 text-[11px] font-semibold text-cyan-300">
-              Trigger: {selectedMeta.triggerLabel}
+              {tx("Trigger:")} {selectedMeta.triggerLabel}
             </span>
           </div>
 
@@ -1050,7 +1050,7 @@ export function FreeGamesArena({
           {/* 8 Card Design Picker */}
           <div>
             <label className="mb-1.5 block text-xs font-semibold text-muted-foreground">
-              Overlay Card Theme (8 Broadcast Styles)
+              {tx("Overlay Card Theme (8 Broadcast Styles)")}
             </label>
             <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-4">
               {QUIZ_CARD_THEMES.map((t) => (
@@ -1309,7 +1309,7 @@ export function FreeGamesArena({
                 }}
                 className="rounded-xl bg-secondary px-4 py-2.5 text-xs font-bold"
               >
-                Reset Track
+                {tx("Reset Track")}
               </button>
             </div>
           )}
@@ -1402,7 +1402,7 @@ export function FreeGamesArena({
                 }}
                 className="flex-1 rounded-xl bg-brand-cyan py-2.5 text-xs font-black text-slate-950"
               >
-                ⚡ Trigger Live Game Action
+                {tx("⚡ Trigger Live Game Action")}
               </button>
               <button
                 type="button"
@@ -1429,7 +1429,7 @@ export function FreeGamesArena({
       <div className="rounded-2xl border border-border bg-card p-5">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
           <div>
-            <h3 className="text-base font-extrabold text-foreground">🏪 Game Store — all {STORE_OVERLAYS.length} OverlayLive overlays</h3>
+            <h3 className="text-base font-extrabold text-foreground">🏪 {tx("Game Store")} — {tx("all OverlayLive overlays")}</h3>
             <p className="text-xs text-muted-foreground">
               {STORE_OVERLAYS.filter((o) => o.status === "ready").length} ready to use now · {STORE_OVERLAYS.filter((o) => o.status === "soon").length} coming next. Free / Pro labels will be added once the plan list is confirmed.
             </p>
@@ -1485,16 +1485,16 @@ export function FreeGamesArena({
             <h3 className="text-base font-black text-foreground">{tx("Game Store")}</h3>
             <p className="mt-1 text-xs text-muted-foreground">{tx("Search and filter all existing Tikley games by category.")}</p>
           </div>
-          <span className="rounded-xl border border-emerald-400/25 bg-emerald-500/10 px-3 py-2 text-xs font-extrabold text-emerald-300">{visibleGames.length} / {FREE_GAMES_CATALOG.length} · FREE</span>
+          <span className="rounded-xl border border-emerald-400/25 bg-emerald-500/10 px-3 py-2 text-xs font-extrabold text-emerald-300">{visibleGames.length} / {FREE_GAMES_CATALOG.length} · {tx("FREE")}</span>
         </div>
         <div className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
           <label className="flex items-center gap-2 rounded-xl border border-border bg-secondary/30 px-3 py-2.5">
             <span className="text-muted-foreground">⌕</span>
-            <input value={storeSearch} onChange={(event) => setStoreSearch(event.target.value)} placeholder="Search games, features or LIVE triggers..." aria-label="Search games" className="min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground" />
-            {storeSearch && <button type="button" onClick={() => setStoreSearch("")} className="text-xs font-bold text-brand-cyan">Clear</button>}
+            <input value={storeSearch} onChange={(event) => setStoreSearch(event.target.value)} placeholder={tx("Search games, features or LIVE triggers...")} aria-label={tx("Search games")} className="min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground" />
+            {storeSearch && <button type="button" onClick={() => setStoreSearch("")} className="text-xs font-bold text-brand-cyan">{tx("Clear")}</button>}
           </label>
           <button type="button" aria-pressed={storeFreeOnly} onClick={() => setStoreFreeOnly((value) => !value)} className={`rounded-xl border px-4 py-2.5 text-xs font-extrabold transition ${storeFreeOnly ? "border-emerald-400/40 bg-emerald-500/10 text-emerald-300" : "border-border bg-secondary/30 text-muted-foreground"}`}>
-            {storeFreeOnly ? "✓ Free games only" : "Show all access types"}
+            {storeFreeOnly ? tx("✓ Free games only") : tx("Show all access types")}
           </button>
         </div>
         <div className="flex gap-2 overflow-x-auto pb-2">
@@ -1509,7 +1509,7 @@ export function FreeGamesArena({
       <div>
         <div className="mb-3 flex items-center justify-between">
           <h3 className="text-base font-extrabold text-foreground">
-            🕹️ All {FREE_GAMES_CATALOG.length} Live Overlays (click one to set it up and preview it)
+            🕹️ {tx("All Live Overlays (click one to set it up and preview it)")}
           </h3>
           <span className="text-xs text-muted-foreground">
             Works in OBS Studio &amp; TikTok LIVE Studio

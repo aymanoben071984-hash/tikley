@@ -1,5 +1,8 @@
 "use client";
 
+import { useLocale } from "@/components/LocaleProvider";
+import { translateText } from "@/lib/i18n";
+
 import { pageHidden, pollMs } from "@/lib/poll";
 import type { GiftAction } from "@/db/schema";
 import { GiftActionPlayback, type PlayItem } from "@/components/GiftActionPlayer";
@@ -38,7 +41,9 @@ function mediaSummary(a: GiftAction) {
   return a.mediaType === "video" ? "🎬 Video" : "🖼️ GIF";
 }
 
-export function GiftVideosStudio({ onCopyUrl, onToast }: GiftVideosStudioProps) {
+export function GiftVideosStudio({ onCopyUrl, onToast }: GiftVideosStudioProps) {  const { locale } = useLocale();
+  const tx = (source: string) => translateText(locale, source);
+
   const [actions, setActions] = useState<GiftAction[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<number | "all">("all");
@@ -157,8 +162,8 @@ export function GiftVideosStudio({ onCopyUrl, onToast }: GiftVideosStudioProps) 
               <Film className="h-6 w-6" />
             </div>
             <div>
-              <div className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-muted-foreground">Interactive Actions</div>
-              <h2 className="text-2xl font-black text-foreground">Gift Videos</h2>
+              <div className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-muted-foreground">{tx("Interactive Actions")}</div>
+              <h2 className="text-2xl font-black text-foreground">{tx("Gift Videos")}</h2>
               <p className="max-w-3xl text-xs text-muted-foreground">
                 Trigger full-screen video or GIF animations (with optional sound) on up to 6 independent overlays when specific gifts are sent, coin milestones are hit, or likes reach a threshold.
               </p>
@@ -206,7 +211,7 @@ export function GiftVideosStudio({ onCopyUrl, onToast }: GiftVideosStudioProps) 
           {loading ? (
             <div className="grid place-items-center py-10 text-muted-foreground"><Loader2 className="h-5 w-5 animate-spin" /></div>
           ) : shown.length === 0 ? (
-            <p className="px-2 py-8 text-center text-xs text-muted-foreground">No actions on this screen yet — click “New action”.</p>
+            <p className="px-2 py-8 text-center text-xs text-muted-foreground">{tx("No actions on this screen yet — click “New action”.")}</p>
           ) : (
             <div className="space-y-1.5">
               {shown.map((a) => (
@@ -249,7 +254,7 @@ export function GiftVideosStudio({ onCopyUrl, onToast }: GiftVideosStudioProps) 
             <div className="checkerboard-stage relative aspect-video w-full overflow-hidden rounded-2xl border border-border">
               <div className="pointer-events-none absolute inset-x-0 top-3 text-center text-[10px] font-bold uppercase tracking-widest text-white/30">Screen {draft.screen} · 16:9 preview</div>
               {preview ? <GiftActionPlayback key={preview.key} item={preview} onDone={() => setPreview(null)} /> : (
-                <button type="button" onClick={runPreview} className="absolute inset-0 grid place-items-center text-sm font-bold text-white/60 hover:text-white">▶ Press Preview to play this action</button>
+                <button type="button" onClick={runPreview} className="absolute inset-0 grid place-items-center text-sm font-bold text-white/60 hover:text-white">{tx("▶ Press Preview to play this action")}</button>
               )}
             </div>
 
@@ -268,9 +273,9 @@ export function GiftVideosStudio({ onCopyUrl, onToast }: GiftVideosStudioProps) 
 
               {draft.trigger === "gift" && (
                 <div className="mt-3">
-                  <div className="mb-1.5 text-xs font-semibold text-muted-foreground">Gift</div>
+                  <div className="mb-1.5 text-xs font-semibold text-muted-foreground">{tx("Gift")}</div>
                   <div className="flex flex-wrap gap-2">
-                    <button type="button" onClick={() => set({ giftId: "any" })} className={`rounded-xl border px-3 py-2 text-xs font-bold ${draft.giftId === "any" || !draft.giftId ? "border-brand-cyan bg-brand-cyan/10 text-brand-cyan" : "border-border bg-secondary/25 text-muted-foreground"}`}>Any gift</button>
+                    <button type="button" onClick={() => set({ giftId: "any" })} className={`rounded-xl border px-3 py-2 text-xs font-bold ${draft.giftId === "any" || !draft.giftId ? "border-brand-cyan bg-brand-cyan/10 text-brand-cyan" : "border-border bg-secondary/25 text-muted-foreground"}`}>{tx("Any gift")}</button>
                     {GIFT_CATALOG.map((g) => (
                       <button key={g.id} type="button" onClick={() => set({ giftId: g.id })} className={`flex items-center gap-2 rounded-xl border px-2.5 py-1.5 text-xs font-bold ${draft.giftId === g.id ? "border-brand-cyan bg-brand-cyan/10 text-foreground" : "border-border bg-secondary/25 text-muted-foreground hover:text-foreground"}`}>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -280,7 +285,7 @@ export function GiftVideosStudio({ onCopyUrl, onToast }: GiftVideosStudioProps) 
                     ))}
                   </div>
                   <label className="mt-3 block max-w-xs text-xs">
-                    <span className="font-semibold text-muted-foreground">Minimum number sent at once</span>
+                    <span className="font-semibold text-muted-foreground">{tx("Minimum number sent at once")}</span>
                     <input type="number" min={1} max={9999} value={draft.minCount} onChange={(e) => set({ minCount: Math.max(1, Number(e.target.value) || 1) })} className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-1.5 font-bold text-foreground" />
                   </label>
                 </div>
@@ -289,14 +294,14 @@ export function GiftVideosStudio({ onCopyUrl, onToast }: GiftVideosStudioProps) 
               {(draft.trigger === "coins" || draft.trigger === "likes") && (
                 <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <label className="text-xs">
-                    <span className="font-semibold text-muted-foreground">Play every</span>
+                    <span className="font-semibold text-muted-foreground">{tx("Play every")}</span>
                     <div className="mt-1 flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-1.5">
                       <input type="number" min={1} value={draft.threshold} onChange={(e) => set({ threshold: Math.max(1, Number(e.target.value) || 1) })} className="w-full bg-transparent font-bold text-foreground outline-none" />
                       <span className="text-[11px] text-muted-foreground">{draft.trigger === "coins" ? "coins" : "likes"}</span>
                     </div>
                   </label>
                   <div className="text-xs">
-                    <div className="font-semibold text-muted-foreground">Progress to the next one</div>
+                    <div className="font-semibold text-muted-foreground">{tx("Progress to the next one")}</div>
                     <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-secondary">
                       <div className="h-full rounded-full bg-gradient-to-r from-amber-400 to-rose-500" style={{ width: `${Math.min(100, ((selected?.progress ?? 0) / Math.max(1, draft.threshold)) * 100)}%` }} />
                     </div>
@@ -320,28 +325,28 @@ export function GiftVideosStudio({ onCopyUrl, onToast }: GiftVideosStudioProps) 
               ) : (
                 <div className="mt-3 space-y-2">
                   <input value={draft.mediaUrl} onChange={(e) => set({ mediaUrl: e.target.value.trim() })} placeholder={draft.mediaType === "video" ? "https://…/celebration.mp4 (MP4 or WebM)" : "https://…/animation.gif"} className="w-full rounded-xl border border-border bg-background px-3 py-2 text-xs font-semibold text-foreground outline-none focus:border-brand-cyan" />
-                  <p className="text-[10px] text-muted-foreground">Paste a direct link to the file. Videos with a transparent background (WebM) look best on stream.</p>
+                  <p className="text-[10px] text-muted-foreground">{tx("Paste a direct link to the file. Videos with a transparent background (WebM) look best on stream.")}</p>
                 </div>
               )}
               <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
                 <label className="text-xs">
-                  <span className="font-semibold text-muted-foreground">Position</span>
+                  <span className="font-semibold text-muted-foreground">{tx("Position")}</span>
                   <select value={draft.position} onChange={(e) => set({ position: e.target.value })} className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 font-semibold text-foreground">
                     {ACTION_POSITIONS.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}
                   </select>
                 </label>
                 <label className={`block text-xs ${draft.position === "full" ? "opacity-50" : ""}`}>
-                  <span className="flex justify-between font-semibold text-muted-foreground"><span>Size</span><span className="text-foreground">{draft.size}%</span></span>
+                  <span className="flex justify-between font-semibold text-muted-foreground"><span>{tx("Size")}</span><span className="text-foreground">{draft.size}%</span></span>
                   <input type="range" min={20} max={100} value={draft.size} disabled={draft.position === "full"} onChange={(e) => set({ size: Number(e.target.value) })} className="mt-2 w-full accent-cyan-400" />
                 </label>
                 <label className="block text-xs">
-                  <span className="flex justify-between font-semibold text-muted-foreground"><span>Duration</span><span className="text-foreground">{draft.durationSec}s</span></span>
+                  <span className="flex justify-between font-semibold text-muted-foreground"><span>{tx("Duration")}</span><span className="text-foreground">{draft.durationSec}s</span></span>
                   <input type="range" min={1} max={30} value={draft.durationSec} onChange={(e) => set({ durationSec: Number(e.target.value) })} className="mt-2 w-full accent-cyan-400" />
                 </label>
               </div>
               {draft.mediaType !== "effect" && (
                 <div className="mt-3 max-w-xs text-xs">
-                  <div className="mb-1 font-semibold text-muted-foreground">Fit</div>
+                  <div className="mb-1 font-semibold text-muted-foreground">{tx("Fit")}</div>
                   <Segmented value={draft.fit === "cover" ? "cover" : "contain"} onChange={(v) => set({ fit: v })} options={[{ id: "contain", label: "Fit inside" }, { id: "cover", label: "Fill" }]} />
                 </div>
               )}
@@ -354,7 +359,7 @@ export function GiftVideosStudio({ onCopyUrl, onToast }: GiftVideosStudioProps) 
                 </label>
                 <div className={`space-y-2 ${draft.soundEnabled ? "" : "pointer-events-none opacity-50"}`}>
                   {draft.mediaType === "video" ? (
-                    <p className="text-[11px] text-muted-foreground">The video’s own audio plays.</p>
+                    <p className="text-[11px] text-muted-foreground">{tx("The video’s own audio plays.")}</p>
                   ) : (
                     <>
                       <select value={draft.soundName} onChange={(e) => set({ soundName: e.target.value })} className="w-full rounded-xl border border-border bg-background px-3 py-2 text-xs font-semibold text-foreground">
@@ -366,7 +371,7 @@ export function GiftVideosStudio({ onCopyUrl, onToast }: GiftVideosStudioProps) 
                     </>
                   )}
                   <label className="block text-xs">
-                    <span className="flex justify-between font-semibold text-muted-foreground"><span>Volume</span><span className="text-foreground">{draft.volume}%</span></span>
+                    <span className="flex justify-between font-semibold text-muted-foreground"><span>{tx("Volume")}</span><span className="text-foreground">{draft.volume}%</span></span>
                     <input type="range" min={0} max={100} value={draft.volume} onChange={(e) => set({ volume: Number(e.target.value) })} className="mt-1 w-full accent-cyan-400" />
                   </label>
                 </div>
@@ -378,14 +383,14 @@ export function GiftVideosStudio({ onCopyUrl, onToast }: GiftVideosStudioProps) 
                 <input value={draft.caption} maxLength={160} dir="auto" disabled={!draft.showCaption} onChange={(e) => set({ caption: e.target.value })} className="w-full rounded-xl border border-border bg-background px-3 py-2 text-xs font-semibold text-foreground disabled:opacity-50" />
                 <p className="mt-1 text-[10px] text-muted-foreground">Placeholders: {"{name}"} {"{gift}"} {"{amount}"}</p>
                 <label className="mt-3 block text-xs">
-                  <span className="flex justify-between font-semibold text-muted-foreground"><span>Cooldown</span><span className="text-foreground">{draft.cooldownSec ? `${draft.cooldownSec}s` : "None"}</span></span>
+                  <span className="flex justify-between font-semibold text-muted-foreground"><span>{tx("Cooldown")}</span><span className="text-foreground">{draft.cooldownSec ? `${draft.cooldownSec}s` : "None"}</span></span>
                   <input type="range" min={0} max={300} step={5} value={draft.cooldownSec} onChange={(e) => set({ cooldownSec: Number(e.target.value) })} className="mt-1 w-full accent-cyan-400" />
                 </label>
               </Section>
             </div>
           </div>
         ) : (
-          !loading && <div className="rounded-2xl border border-border bg-card p-10 text-center text-sm text-muted-foreground">Create your first action to get started.</div>
+          !loading && <div className="rounded-2xl border border-border bg-card p-10 text-center text-sm text-muted-foreground">{tx("Create your first action to get started.")}</div>
         )}
       </div>
 
@@ -397,7 +402,7 @@ export function GiftVideosStudio({ onCopyUrl, onToast }: GiftVideosStudioProps) 
               <button type="button" onClick={() => draft && test(draft)} disabled={dirty} title={dirty ? "Save first" : "Play on its screen"} className="inline-flex items-center gap-1 rounded-xl border border-border px-3 py-2 text-xs font-bold text-foreground hover:bg-secondary disabled:opacity-40">
                 <Zap className="h-3.5 w-3.5" /> Test on stream
               </button>
-              <button type="button" disabled={!dirty || saving} onClick={() => selected && setDraft(selected)} className="rounded-xl border border-border px-3 py-2 text-xs font-bold text-foreground hover:bg-secondary disabled:opacity-40">Discard</button>
+              <button type="button" disabled={!dirty || saving} onClick={() => selected && setDraft(selected)} className="rounded-xl border border-border px-3 py-2 text-xs font-bold text-foreground hover:bg-secondary disabled:opacity-40">{tx("Discard")}</button>
               <button type="button" disabled={!dirty || saving} onClick={save} className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-brand-blue to-brand-cyan px-5 py-2 text-xs font-black text-white shadow hover:brightness-110 disabled:opacity-50">
                 {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />} {saving ? "Saving…" : "Save"}
               </button>

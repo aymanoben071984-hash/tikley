@@ -1,5 +1,8 @@
 "use client";
 
+import { useLocale } from "@/components/LocaleProvider";
+import { translateText } from "@/lib/i18n";
+
 import type { AvatarPreset, TopBoardRow } from "@/db/schema";
 import { TopBoard } from "@/components/TopBoard";
 import { CROWNS, NAMEPLATES, isOlTheme, olTheme, themeThumb } from "@/lib/olThemes";
@@ -99,7 +102,9 @@ function SwitchMini({ animation, color }: { animation: SwitchAnimation; types: B
   );
 }
 
-export function TopBoardsManager({ boards, avatars, onRefresh, onFireEvent, onCopyUrl, onToast }: TopBoardsManagerProps) {
+export function TopBoardsManager({ boards, avatars, onRefresh, onFireEvent, onCopyUrl, onToast }: TopBoardsManagerProps) {  const { locale } = useLocale();
+  const tx = (source: string) => translateText(locale, source);
+
   const [selectedId, setSelectedId] = useState<number | null>(boards[0]?.id ?? null);
   const selected = boards.find((b) => b.id === selectedId) ?? boards[0];
 
@@ -202,8 +207,8 @@ export function TopBoardsManager({ boards, avatars, onRefresh, onFireEvent, onCo
             <Trophy className="h-5 w-5" />
           </div>
           <div>
-            <div className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-muted-foreground">Overlays</div>
-            <h2 className="text-2xl font-black text-foreground">Top Lists</h2>
+            <div className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-muted-foreground">{tx("Overlays")}</div>
+            <h2 className="text-2xl font-black text-foreground">{tx("Top Lists")}</h2>
             <p className="text-xs text-muted-foreground">
               Live leaderboards of your top gifters and likers, ranked in real time, with podium and list designs for every vibe.
             </p>
@@ -375,7 +380,7 @@ export function TopBoardsManager({ boards, avatars, onRefresh, onFireEvent, onCo
                     <div className="mb-1.5 flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-wider text-muted-foreground">
                       {g}
                       {g !== "Extra themes" && g !== "Flags" && g !== "PUBG Mobile" && (
-                        <span className="rounded-full bg-brand-cyan/15 px-1.5 py-0.5 text-[9px] text-brand-cyan">OverlayLive</span>
+                        <span className="rounded-full bg-brand-cyan/15 px-1.5 py-0.5 text-[9px] text-brand-cyan">{tx("OverlayLive")}</span>
                       )}
                     </div>
                     <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
@@ -412,7 +417,7 @@ export function TopBoardsManager({ boards, avatars, onRefresh, onFireEvent, onCo
                       <span className="truncate text-[11px] font-extrabold text-foreground">{v.name}</span>
                       {v.id === "spot-neon" ? (
                         <span className="popular-badge inline-flex items-center gap-0.5 rounded-full bg-gradient-to-r from-orange-500 to-amber-400 px-1.5 py-0.5 text-[9px] font-black uppercase text-white">
-                          <span className="popular-flame">🔥</span> Popular
+                          <span className="popular-flame">{tx("🔥")}</span> Popular
                         </span>
                       ) : (
                         <span className="text-[9px] font-bold uppercase text-muted-foreground">{v.tag}</span>
@@ -522,7 +527,7 @@ export function TopBoardsManager({ boards, avatars, onRefresh, onFireEvent, onCo
               </div>
               <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div className="text-xs">
-                  <div className="mb-1 font-semibold text-muted-foreground">Places on the board</div>
+                  <div className="mb-1 font-semibold text-muted-foreground">{tx("Places on the board")}</div>
                   <div className="grid grid-cols-8 gap-1">
                     {[3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
                       <button
@@ -535,17 +540,17 @@ export function TopBoardsManager({ boards, avatars, onRefresh, onFireEvent, onCo
                       </button>
                     ))}
                   </div>
-                  <p className="mt-1 text-[10px] text-muted-foreground">Three to five names reads best on a phone.</p>
+                  <p className="mt-1 text-[10px] text-muted-foreground">{tx("Three to five names reads best on a phone.")}</p>
                 </div>
                 <label className="text-xs">
-                  <span className="font-semibold text-muted-foreground">Avatar frame</span>
+                  <span className="font-semibold text-muted-foreground">{tx("Avatar frame")}</span>
                   <select
                     value={s.frameSlug}
                     disabled={!s.display.showFrame}
                     onChange={(e) => setS({ frameSlug: e.target.value })}
                     className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-1.5 font-semibold disabled:opacity-50"
                   >
-                    <option value="user">Each supporter&apos;s own frame</option>
+                    <option value="user">{tx("Each supporter&apos;s own frame")}</option>
                     {AVATAR_FRAMES.map((f) => (
                       <option key={f.slug} value={f.slug}>{f.name}</option>
                     ))}
@@ -555,16 +560,16 @@ export function TopBoardsManager({ boards, avatars, onRefresh, onFireEvent, onCo
               {s.variant.startsWith("crown-") && (
                 <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <label className="text-xs">
-                    <span className="font-semibold text-muted-foreground">Animated nameplate (plate background)</span>
+                    <span className="font-semibold text-muted-foreground">{tx("Animated nameplate (plate background)")}</span>
                     <select value={s.nameplate} onChange={(e) => setS({ nameplate: e.target.value })} className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-1.5 font-semibold">
-                      <option value="">None</option>
+                      <option value="">{tx("None")}</option>
                       {NAMEPLATES.map((n) => <option key={n.id} value={n.id}>{n.label}</option>)}
                     </select>
                   </label>
                   <div className="text-xs">
-                    <div className="font-semibold text-muted-foreground">Crown for #1</div>
+                    <div className="font-semibold text-muted-foreground">{tx("Crown for #1")}</div>
                     <div className="mt-1 flex max-h-28 flex-wrap gap-1 overflow-y-auto rounded-xl border border-border p-1.5">
-                      <button type="button" onClick={() => setS({ crownStyle: "" })} className={`grid h-10 w-10 place-items-center rounded-lg text-lg ${!s.crownStyle ? "bg-brand-cyan/20 ring-1 ring-brand-cyan" : "bg-secondary/40"}`} title="Emoji crown">👑</button>
+                      <button type="button" onClick={() => setS({ crownStyle: "" })} className={`grid h-10 w-10 place-items-center rounded-lg text-lg ${!s.crownStyle ? "bg-brand-cyan/20 ring-1 ring-brand-cyan" : "bg-secondary/40"}`} title="Emoji crown">{tx("👑")}</button>
                       {CROWNS.map((c) => (
                         <button key={c.id} type="button" title={c.label} onClick={() => setS({ crownStyle: c.id })} className={`grid h-10 w-10 place-items-center rounded-lg ${s.crownStyle === c.id ? "bg-brand-cyan/20 ring-1 ring-brand-cyan" : "bg-secondary/40"}`}>
                           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -577,7 +582,7 @@ export function TopBoardsManager({ boards, avatars, onRefresh, onFireEvent, onCo
               )}
               {s.variant.startsWith("crown-") && (
                 <div className="mt-3">
-                  <div className="mb-1 text-xs font-semibold text-muted-foreground">Score position (Crown List)</div>
+                  <div className="mb-1 text-xs font-semibold text-muted-foreground">{tx("Score position (Crown List)")}</div>
                   <Segmented value={s.scorePosition} onChange={(v) => setS({ scorePosition: v })} options={SCORE_POSITIONS.map((p) => ({ id: p.id, label: p.label }))} />
                 </div>
               )}
@@ -589,7 +594,7 @@ export function TopBoardsManager({ boards, avatars, onRefresh, onFireEvent, onCo
               hint="Show two or three boards in turn on a single OBS / LIVE Studio source, with a switch animation between them. (Type above sets which shows first.)"
             >
               <label className="mb-3 flex cursor-pointer items-center justify-between rounded-xl border border-border bg-secondary/25 px-3 py-2.5">
-                <span className="text-xs font-bold text-foreground">Rotate boards</span>
+                <span className="text-xs font-bold text-foreground">{tx("Rotate boards")}</span>
                 <Toggle checked={s.rotation.enabled} onChange={(v) => setS({ rotation: { ...s.rotation, enabled: v } })} />
               </label>
               <div className={s.rotation.enabled ? "space-y-3" : "pointer-events-none space-y-3 opacity-50"}>
@@ -621,7 +626,7 @@ export function TopBoardsManager({ boards, avatars, onRefresh, onFireEvent, onCo
 
                 <label className="block text-xs">
                   <span className="flex justify-between font-semibold text-muted-foreground">
-                    <span>Switch every</span>
+                    <span>{tx("Switch every")}</span>
                     <span className="text-foreground">{s.rotation.intervalSec}s</span>
                   </span>
                   <input
@@ -635,7 +640,7 @@ export function TopBoardsManager({ boards, avatars, onRefresh, onFireEvent, onCo
                 </label>
 
                 <div>
-                  <div className="mb-1.5 text-xs font-semibold text-muted-foreground">Switch animation</div>
+                  <div className="mb-1.5 text-xs font-semibold text-muted-foreground">{tx("Switch animation")}</div>
                   <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
                     {SWITCH_ANIMATIONS.map((a) => (
                       <button
@@ -721,12 +726,12 @@ export function TopBoardsManager({ boards, avatars, onRefresh, onFireEvent, onCo
             </div>
 
             <div className="rounded-2xl border border-border bg-card p-3">
-              <div className="mb-2 text-[11px] font-bold text-muted-foreground">Test with an event</div>
+              <div className="mb-2 text-[11px] font-bold text-muted-foreground">{tx("Test with an event")}</div>
               <div className="grid grid-cols-4 gap-1.5">
-                <button type="button" onClick={() => { setPreviewData("live"); playBroadcastSound("gift"); onFireEvent({ eventType: "gift", giftId: "tiktok" }); }} className="rounded-lg bg-amber-500/15 px-2 py-1.5 text-[11px] font-bold text-amber-300 hover:bg-amber-500/25">🪙 Gift</button>
-                <button type="button" onClick={() => { setPreviewData("live"); playBroadcastSound("lion"); onFireEvent({ eventType: "gift", giftId: "lion" }); }} className="rounded-lg bg-orange-500/15 px-2 py-1.5 text-[11px] font-bold text-orange-300 hover:bg-orange-500/25">🦁 Lion</button>
-                <button type="button" onClick={() => { setPreviewData("live"); onFireEvent({ eventType: "like", likes: 1500 }); }} className="rounded-lg bg-rose-500/15 px-2 py-1.5 text-[11px] font-bold text-rose-300 hover:bg-rose-500/25">❤️ Likes</button>
-                <button type="button" onClick={() => { setPreviewData("live"); onFireEvent({ eventType: "share" }); }} className="rounded-lg bg-emerald-500/15 px-2 py-1.5 text-[11px] font-bold text-emerald-300 hover:bg-emerald-500/25">🔁 Share</button>
+                <button type="button" onClick={() => { setPreviewData("live"); playBroadcastSound("gift"); onFireEvent({ eventType: "gift", giftId: "tiktok" }); }} className="rounded-lg bg-amber-500/15 px-2 py-1.5 text-[11px] font-bold text-amber-300 hover:bg-amber-500/25">{tx("🪙 Gift")}</button>
+                <button type="button" onClick={() => { setPreviewData("live"); playBroadcastSound("lion"); onFireEvent({ eventType: "gift", giftId: "lion" }); }} className="rounded-lg bg-orange-500/15 px-2 py-1.5 text-[11px] font-bold text-orange-300 hover:bg-orange-500/25">{tx("🦁 Lion")}</button>
+                <button type="button" onClick={() => { setPreviewData("live"); onFireEvent({ eventType: "like", likes: 1500 }); }} className="rounded-lg bg-rose-500/15 px-2 py-1.5 text-[11px] font-bold text-rose-300 hover:bg-rose-500/25">{tx("❤️ Likes")}</button>
+                <button type="button" onClick={() => { setPreviewData("live"); onFireEvent({ eventType: "share" }); }} className="rounded-lg bg-emerald-500/15 px-2 py-1.5 text-[11px] font-bold text-emerald-300 hover:bg-emerald-500/25">{tx("🔁 Share")}</button>
               </div>
             </div>
 
