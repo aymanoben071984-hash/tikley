@@ -179,7 +179,7 @@ async def mark_live():
     if live_confirmed and active_session_id:
         return True
 
-    active_session_id = str(uuid.uuid4())
+    active_session_id = active_session_id or str(uuid.uuid4())
     state, status, reason = await deliver({"eventType": "live_state", "status": "live", "sessionId": active_session_id})
     live_confirmed = state == "delivered"
     if live_confirmed:
