@@ -391,8 +391,8 @@ export function GameOverlayStage({
     return (
       <div className="mx-auto w-full max-w-lg rounded-2xl border border-emerald-400/30 bg-slate-950/90 p-4 backdrop-blur-md">
         <div className="mb-3 flex items-center justify-between text-xs font-black">
-          <span className="text-emerald-300">🏁 FRAMED AVATAR DERBY RACE</span>
-          <span className="text-white/60">!join or Tap Likes to Boost</span>
+          <span className="text-emerald-300">{tx("🏁 FRAMED AVATAR DERBY RACE")}</span>
+          <span className="text-white/60">{tx("!join or Tap Likes to Boost")}</span>
         </div>
         <div className="space-y-2.5">
           {racers.map((r) => (
@@ -572,7 +572,7 @@ export function GameOverlayStage({
     return (
       <div className="mx-auto w-full max-w-md rounded-2xl border border-amber-400/35 bg-slate-950/90 p-4 text-center backdrop-blur-md">
         <div className="mb-2 flex items-center justify-between text-xs font-black text-amber-300">
-          <span>🟡 NEON AVATAR PLINKO</span>
+          <span>{tx("🟡 NEON AVATAR PLINKO")}</span>
           <span>Jackpot: 🪙 {Number(state.jackpotPool || 2450)}</span>
         </div>
         <div className="relative my-2 flex flex-col items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] py-3">
@@ -637,7 +637,7 @@ export function GameOverlayStage({
     return (
       <div className="mx-auto w-full max-w-md rounded-2xl border border-rose-400/35 bg-slate-950/90 p-4 backdrop-blur-md">
         <div className="mb-2 flex items-center justify-between text-xs font-black text-rose-300">
-          <span>⚔️ AVATAR BATTLE ROYALE</span>
+          <span>{tx("⚔️ AVATAR BATTLE ROYALE")}</span>
           <span>{alive === 1 ? `🏆 Champion: ${champ}` : `${alive} Fighters Alive`}</span>
         </div>
         <div className="flex flex-wrap items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/[0.04] p-4">
@@ -716,7 +716,7 @@ export function GameOverlayStage({
         <div className="mt-1.5 text-sm font-black text-white">
           {fuse > 0 ? `${holder} holds the bomb!` : `💥 Exploded on ${holder}!`}
         </div>
-        <div className="text-[11px] text-white/65">Type !pass or send a Rose to pass it!</div>
+        <div className="text-[11px] text-white/65">{tx("Type !pass or send a Rose to pass it!")}</div>
       </div>
     </div>
   );
@@ -756,14 +756,14 @@ export function FreeGamesArena({
   const [storeCategory, setStoreCategory] = useState<string>("all");
   const [storeFreeOnly, setStoreFreeOnly] = useState(true);
   const storeCategories = [
-    { id: "all", label: "All games" },
-    { id: "quiz", label: "Quiz" },
-    { id: "battle", label: "Battles" },
-    { id: "wheel", label: "Wheels" },
-    { id: "race", label: "Racing" },
-    { id: "word", label: "Word games" },
-    { id: "arcade", label: "Arcade" },
-    { id: "news", label: "Stream tools" },
+    { id: "all", label: tx("All games") },
+    { id: "quiz", label: tx("Quiz") },
+    { id: "battle", label: tx("Battles") },
+    { id: "wheel", label: tx("Wheels") },
+    { id: "race", label: tx("Racing") },
+    { id: "word", label: tx("Word games") },
+    { id: "arcade", label: tx("Arcade") },
+    { id: "news", label: tx("Stream tools") },
   ];
   const visibleGames = FREE_GAMES_CATALOG.filter((game) => {
     const matchesCategory = storeCategory === "all" || game.category === storeCategory;
