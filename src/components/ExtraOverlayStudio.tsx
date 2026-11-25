@@ -1,5 +1,8 @@
 "use client";
 
+import { useLocale } from "@/components/LocaleProvider";
+import { translateText } from "@/lib/i18n";
+
 import type { GameConfig, StreamerProfile } from "@/db/schema";
 import { NewsTickerOverlay, StreamTimerOverlay } from "@/components/ExtraOverlays";
 import { notifyOverlayChannel, playBroadcastSound } from "@/components/SoundEngine";
@@ -57,7 +60,9 @@ function Num({ label, value, onChange, min = 0, max = 9999, suffix }: { label: s
   );
 }
 
-export function ExtraOverlayStudio({ slug, game, profile, onSave, onCopyUrl }: ExtraOverlayStudioProps) {
+export function ExtraOverlayStudio({ slug, game, profile, onSave, onCopyUrl }: ExtraOverlayStudioProps) {  const { locale } = useLocale();
+  const tx = (source: string) => translateText(locale, source);
+
   const meta = STORE_OVERLAYS.find((o) => o.slug === slug)!;
   const defaults = (slug === "news-ticker" ? NEWS_TICKER_DEFAULTS : STREAM_TIMER_DEFAULTS) as NewsTickerConfig & StreamTimerConfig;
   const saved = useMemo(() => normalizeSimpleState(game?.stateJson, defaults), [game?.stateJson, defaults]);
@@ -116,7 +121,7 @@ export function ExtraOverlayStudio({ slug, game, profile, onSave, onCopyUrl }: E
         <div className="flex items-center gap-3.5">
           <div className="grid h-12 w-12 place-items-center rounded-2xl bg-brand-cyan/15 text-2xl ring-1 ring-brand-cyan/30">{meta.emoji}</div>
           <div>
-            <div className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-muted-foreground">Live Overlays</div>
+            <div className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-muted-foreground">{tx("Live Overlays")}</div>
             <h2 className="text-xl font-black text-foreground">{meta.title}</h2>
             <p className="text-xs text-muted-foreground">{meta.description}</p>
           </div>
@@ -181,7 +186,7 @@ export function ExtraOverlayStudio({ slug, game, profile, onSave, onCopyUrl }: E
                   <input value={draft.badgeText} maxLength={16} disabled={!draft.showBadge} onChange={(e) => set({ badgeText: e.target.value })} className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-1.5 font-bold text-foreground disabled:opacity-50" />
                 </label>
                 <label className="text-xs">
-                  <span className="font-semibold text-muted-foreground">Separator</span>
+                  <span className="font-semibold text-muted-foreground">{tx("Separator")}</span>
                   <input value={draft.separator} maxLength={4} onChange={(e) => set({ separator: e.target.value })} className="mt-2 w-full rounded-xl border border-border bg-background px-3 py-1.5 text-center font-bold text-foreground" />
                 </label>
               </div>
@@ -189,25 +194,25 @@ export function ExtraOverlayStudio({ slug, game, profile, onSave, onCopyUrl }: E
             <Section title="Style">
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <label className="block text-xs">
-                  <span className="flex justify-between font-semibold text-muted-foreground"><span>Speed</span><span className="text-foreground">{draft.speed} px/s</span></span>
+                  <span className="flex justify-between font-semibold text-muted-foreground"><span>{tx("Speed")}</span><span className="text-foreground">{draft.speed} px/s</span></span>
                   <input type="range" min={20} max={240} step={5} value={draft.speed} onChange={(e) => set({ speed: Number(e.target.value) })} className="mt-2 w-full accent-cyan-400" />
                 </label>
                 <label className="block text-xs">
-                  <span className="flex justify-between font-semibold text-muted-foreground"><span>Text size</span><span className="text-foreground">{draft.fontScale}%</span></span>
+                  <span className="flex justify-between font-semibold text-muted-foreground"><span>{tx("Text size")}</span><span className="text-foreground">{draft.fontScale}%</span></span>
                   <input type="range" min={50} max={200} step={5} value={draft.fontScale} onChange={(e) => set({ fontScale: Number(e.target.value) })} className="mt-2 w-full accent-cyan-400" />
                 </label>
                 <div className="text-xs">
-                  <div className="mb-1 font-semibold text-muted-foreground">Scroll direction</div>
+                  <div className="mb-1 font-semibold text-muted-foreground">{tx("Scroll direction")}</div>
                   <Segmented value={draft.direction} onChange={(v) => set({ direction: v })} options={[{ id: "auto", label: "Auto" }, { id: "ltr", label: "Left to right" }, { id: "rtl", label: "Right to left" }]} />
                 </div>
                 <label className="text-xs">
-                  <span className="font-semibold text-muted-foreground">Font</span>
+                  <span className="font-semibold text-muted-foreground">{tx("Font")}</span>
                   <select value={draft.fontFamily} onChange={(e) => set({ fontFamily: e.target.value })} className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 font-semibold text-foreground">
                     {FONTS.map((f) => <option key={f} value={f}>{f || "Design default"}</option>)}
                   </select>
                 </label>
-                <div className="text-xs"><div className="mb-1 font-semibold text-muted-foreground">Text colour</div><Color value={draft.textColor} onChange={(v) => set({ textColor: v })} allowEmpty /></div>
-                <div className="text-xs"><div className="mb-1 font-semibold text-muted-foreground">Accent colour</div><Color value={draft.accentColor} onChange={(v) => set({ accentColor: v })} allowEmpty /></div>
+                <div className="text-xs"><div className="mb-1 font-semibold text-muted-foreground">{tx("Text colour")}</div><Color value={draft.textColor} onChange={(v) => set({ textColor: v })} allowEmpty /></div>
+                <div className="text-xs"><div className="mb-1 font-semibold text-muted-foreground">{tx("Accent colour")}</div><Color value={draft.accentColor} onChange={(v) => set({ accentColor: v })} allowEmpty /></div>
               </div>
             </Section>
           </>
@@ -217,14 +222,14 @@ export function ExtraOverlayStudio({ slug, game, profile, onSave, onCopyUrl }: E
               <Segmented value={draft.mode} onChange={(v) => set({ mode: v })} options={[{ id: "uptime", label: "Uptime" }, { id: "countdown", label: "Countdown" }, { id: "clock", label: "Clock" }]} />
               <div className="mt-3 grid grid-cols-2 gap-3">
                 <label className="text-xs">
-                  <span className="flex items-center justify-between font-semibold text-muted-foreground">Label <Toggle checked={draft.showLabel} onChange={(v) => set({ showLabel: v })} /></span>
+                  <span className="flex items-center justify-between font-semibold text-muted-foreground">{tx("Label")} <Toggle checked={draft.showLabel} onChange={(v) => set({ showLabel: v })} /></span>
                   <input value={draft.label} maxLength={20} disabled={!draft.showLabel} onChange={(e) => set({ label: e.target.value })} className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-1.5 font-bold text-foreground disabled:opacity-50" />
                 </label>
                 {draft.mode === "countdown" && <Num label="Countdown length" value={draft.countdownMinutes} min={1} max={1440} suffix="min" onChange={(v) => set({ countdownMinutes: v })} />}
               </div>
               <div className="mt-3 flex flex-wrap gap-4 text-xs font-semibold text-muted-foreground">
-                <label className="flex items-center gap-2"><Toggle checked={draft.showSeconds} onChange={(v) => set({ showSeconds: v })} /> Show seconds</label>
-                {draft.mode === "clock" && <label className="flex items-center gap-2"><Toggle checked={draft.hour12} onChange={(v) => set({ hour12: v })} /> 12-hour clock</label>}
+                <label className="flex items-center gap-2"><Toggle checked={draft.showSeconds} onChange={(v) => set({ showSeconds: v })} /> {tx("Show seconds")}</label>
+                {draft.mode === "clock" && <label className="flex items-center gap-2"><Toggle checked={draft.hour12} onChange={(v) => set({ hour12: v })} /> {tx("12-hour clock")}</label>}
               </div>
             </Section>
             {draft.mode === "countdown" && (
@@ -238,20 +243,20 @@ export function ExtraOverlayStudio({ slug, game, profile, onSave, onCopyUrl }: E
                   <Num label="Likes per bonus" value={draft.likesPerBonus} min={1} max={100000} onChange={(v) => set({ likesPerBonus: v })} />
                   <Num label="Seconds per bonus" value={draft.secPerLikes} max={600} onChange={(v) => set({ secPerLikes: v })} />
                   <Num label="Max added time (0 = no limit)" value={draft.maxBonusMinutes} max={1440} suffix="min" onChange={(v) => set({ maxBonusMinutes: v })} />
-                  <label className="flex items-end gap-2 pb-2 text-xs font-semibold text-muted-foreground"><Toggle checked={draft.showBonus} onChange={(v) => set({ showBonus: v })} /> Show “+time” chip</label>
+                  <label className="flex items-end gap-2 pb-2 text-xs font-semibold text-muted-foreground"><Toggle checked={draft.showBonus} onChange={(v) => set({ showBonus: v })} /> {tx("Show “+time” chip")}</label>
                 </div>
               </Section>
             )}
             <Section title="Style">
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                 <label className="text-xs">
-                  <span className="font-semibold text-muted-foreground">Font</span>
+                  <span className="font-semibold text-muted-foreground">{tx("Font")}</span>
                   <select value={draft.fontFamily} onChange={(e) => set({ fontFamily: e.target.value })} className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 font-semibold text-foreground">
                     {FONTS.filter(Boolean).map((f) => <option key={f} value={f}>{f}</option>)}
                   </select>
                 </label>
-                <div className="text-xs"><div className="mb-1 font-semibold text-muted-foreground">Accent colour</div><Color value={draft.accentColor} onChange={(v) => set({ accentColor: v })} /></div>
-                <div className="text-xs"><div className="mb-1 font-semibold text-muted-foreground">Text colour</div><Color value={draft.textColor} onChange={(v) => set({ textColor: v })} /></div>
+                <div className="text-xs"><div className="mb-1 font-semibold text-muted-foreground">{tx("Accent colour")}</div><Color value={draft.accentColor} onChange={(v) => set({ accentColor: v })} /></div>
+                <div className="text-xs"><div className="mb-1 font-semibold text-muted-foreground">{tx("Text colour")}</div><Color value={draft.textColor} onChange={(v) => set({ textColor: v })} /></div>
               </div>
             </Section>
           </>
@@ -259,7 +264,7 @@ export function ExtraOverlayStudio({ slug, game, profile, onSave, onCopyUrl }: E
       </div>
 
       <div className="rounded-2xl border border-border bg-card p-4">
-        <div className="mb-2 text-sm font-extrabold text-foreground">Overlay link</div>
+        <div className="mb-2 text-sm font-extrabold text-foreground">{tx("Overlay link")}</div>
         <div className="flex flex-wrap items-center gap-2">
           <code className="min-w-0 flex-1 truncate rounded-lg bg-secondary/60 px-3 py-2 font-mono text-[11px] text-muted-foreground">{link}</code>
           <button type="button" onClick={() => { onCopyUrl(link, meta.title); setCopied(true); setTimeout(() => setCopied(false), 1800); }} className="inline-flex items-center gap-1 rounded-lg bg-brand-cyan px-3 py-2 text-[11px] font-black text-slate-950">
@@ -267,7 +272,7 @@ export function ExtraOverlayStudio({ slug, game, profile, onSave, onCopyUrl }: E
           </button>
           <a href={link} target="_blank" rel="noreferrer" aria-label="Open overlay" className="rounded-lg border border-border p-2 text-muted-foreground hover:text-foreground"><ExternalLink className="h-3.5 w-3.5" /></a>
         </div>
-        <p className="mt-2 text-[11px] text-muted-foreground">Add it as a Browser source in OBS / Streamlabs or a Web source in TikTok LIVE Studio. Press Start to show it on stream.</p>
+        <p className="mt-2 text-[11px] text-muted-foreground">{tx("Add it as a Browser source in OBS / Streamlabs or a Web source in TikTok LIVE Studio. Press Start to show it on stream.")}</p>
       </div>
 
       <div className="fixed bottom-4 left-1/2 z-40 w-[min(680px,calc(100%-2rem))] -translate-x-1/2">
@@ -275,9 +280,9 @@ export function ExtraOverlayStudio({ slug, game, profile, onSave, onCopyUrl }: E
           <span className="truncate text-xs font-semibold text-muted-foreground">{dirty ? `Unsaved changes to ${meta.title}` : justSaved ? "Saved — your overlay updated" : "All changes saved"}</span>
           <div className="flex shrink-0 items-center gap-2">
             <button type="button" title="Restore OverlayLive defaults" onClick={() => setDraft(defaults)} className="rounded-xl border border-border px-2.5 py-2 text-muted-foreground hover:bg-secondary hover:text-foreground"><RotateCcw className="h-3.5 w-3.5" /></button>
-            <button type="button" disabled={!dirty || saving} onClick={() => setDraft(JSON.parse(savedJson))} className="rounded-xl border border-border px-3 py-2 text-xs font-bold text-foreground hover:bg-secondary disabled:opacity-40">Discard</button>
+            <button type="button" disabled={!dirty || saving} onClick={() => setDraft(JSON.parse(savedJson))} className="rounded-xl border border-border px-3 py-2 text-xs font-bold text-foreground hover:bg-secondary disabled:opacity-40">{tx("Discard")}</button>
             <button type="button" disabled={!dirty || saving} onClick={handleSave} className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-brand-blue to-brand-cyan px-5 py-2 text-xs font-black text-white shadow hover:brightness-110 disabled:opacity-50">
-              {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : justSaved ? <Check className="h-3.5 w-3.5" /> : <Save className="h-3.5 w-3.5" />}
+              {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> {tx(": justSaved ?")} <Check className="h-3.5 w-3.5" /> : <Save className="h-3.5 w-3.5" />}
               {saving ? "Saving…" : justSaved ? "Saved" : "Save"}
             </button>
           </div>
