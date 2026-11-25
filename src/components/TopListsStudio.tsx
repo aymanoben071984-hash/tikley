@@ -1,5 +1,8 @@
 "use client";
 
+import { useLocale } from "@/components/LocaleProvider";
+import { translateText } from "@/lib/i18n";
+
 import type { AvatarPreset, WidgetConfig } from "@/db/schema";
 import { TopBoard } from "@/components/TopBoard";
 import { NameAnimationPicker } from "@/components/NameAnimationPicker";
@@ -113,7 +116,9 @@ export function Segmented<T extends string>({
   );
 }
 
-export function TopListsStudio({ widget, avatars, onSave, onFireEvent, onCopyUrl }: TopListsStudioProps) {
+export function TopListsStudio({ widget, avatars, onSave, onFireEvent, onCopyUrl }: TopListsStudioProps) {  const { locale } = useLocale();
+  const tx = (source: string) => translateText(locale, source);
+
   const savedRaw = (widget?.customSettings as Record<string, unknown> | undefined)?.board;
   const saved = useMemo(() => normalizeBoardSettings(savedRaw), [savedRaw]);
   const savedJson = JSON.stringify(saved);
@@ -174,7 +179,7 @@ export function TopListsStudio({ widget, avatars, onSave, onFireEvent, onCopyUrl
               <Trophy className="h-6 w-6" />
             </div>
             <div>
-              <h2 className="text-xl font-black text-foreground">Top Lists</h2>
+              <h2 className="text-xl font-black text-foreground">{tx("Top Lists")}</h2>
               <p className="text-xs text-muted-foreground">
                 Live leaderboards of your top likers, gifters, sharers and supporters — ranked in real time for OBS and TikTok LIVE Studio.
               </p>
@@ -371,7 +376,7 @@ export function TopListsStudio({ widget, avatars, onSave, onFireEvent, onCopyUrl
             <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
               <label className="text-xs">
                 <span className="flex justify-between font-semibold text-muted-foreground">
-                  <span>Rows on the board</span>
+                  <span>{tx("Rows on the board")}</span>
                   <span className="text-foreground">{draft.display.maxRows}</span>
                 </span>
                 <input
@@ -384,14 +389,14 @@ export function TopListsStudio({ widget, avatars, onSave, onFireEvent, onCopyUrl
                 />
               </label>
               <label className="text-xs">
-                <span className="font-semibold text-muted-foreground">Avatar frame</span>
+                <span className="font-semibold text-muted-foreground">{tx("Avatar frame")}</span>
                 <select
                   value={draft.frameSlug}
                   disabled={!draft.display.showFrame}
                   onChange={(e) => patch({ frameSlug: e.target.value })}
                   className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-1.5 font-semibold disabled:opacity-50"
                 >
-                  <option value="user">Each supporter&apos;s own frame</option>
+                  <option value="user">{tx("Each supporter&apos;s own frame")}</option>
                   {AVATAR_FRAMES.map((f) => (
                     <option key={f.slug} value={f.slug}>
                       {f.name}
@@ -402,7 +407,7 @@ export function TopListsStudio({ widget, avatars, onSave, onFireEvent, onCopyUrl
             </div>
             {draft.variant.startsWith("crown-") && (
               <div className="mt-3">
-                <div className="mb-1 text-xs font-semibold text-muted-foreground">Score position (Crown List)</div>
+                <div className="mb-1 text-xs font-semibold text-muted-foreground">{tx("Score position (Crown List)")}</div>
                 <Segmented value={draft.scorePosition} onChange={(v) => patch({ scorePosition: v })} options={SCORE_POSITIONS.map((p) => ({ id: p.id, label: p.label }))} />
               </div>
             )}
@@ -414,7 +419,7 @@ export function TopListsStudio({ widget, avatars, onSave, onFireEvent, onCopyUrl
             hint="Show two or three boards in turn on a single OBS / LIVE Studio source, with a switch animation between them. (Type above sets which shows first.)"
           >
             <label className="mb-3 flex cursor-pointer items-center justify-between rounded-xl border border-border bg-secondary/25 px-3 py-2.5">
-              <span className="text-xs font-bold text-foreground">Rotate boards</span>
+              <span className="text-xs font-bold text-foreground">{tx("Rotate boards")}</span>
               <Toggle
                 checked={draft.rotation.enabled}
                 onChange={(v) => patch({ rotation: { ...draft.rotation, enabled: v } })}
@@ -452,7 +457,7 @@ export function TopListsStudio({ widget, avatars, onSave, onFireEvent, onCopyUrl
 
               <label className="block text-xs">
                 <span className="flex justify-between font-semibold text-muted-foreground">
-                  <span>Switch every</span>
+                  <span>{tx("Switch every")}</span>
                   <span className="text-foreground">{draft.rotation.intervalSec}s</span>
                 </span>
                 <input
@@ -466,7 +471,7 @@ export function TopListsStudio({ widget, avatars, onSave, onFireEvent, onCopyUrl
               </label>
 
               <div>
-                <div className="mb-1.5 text-xs font-semibold text-muted-foreground">Switch animation</div>
+                <div className="mb-1.5 text-xs font-semibold text-muted-foreground">{tx("Switch animation")}</div>
                 <Segmented
                   value={draft.rotation.animation}
                   onChange={(v) => patch({ rotation: { ...draft.rotation, animation: v } })}
@@ -503,12 +508,12 @@ export function TopListsStudio({ widget, avatars, onSave, onFireEvent, onCopyUrl
           </div>
 
           <div className="rounded-2xl border border-border bg-card p-3">
-            <div className="mb-2 text-[11px] font-bold text-muted-foreground">Test the ranking live</div>
+            <div className="mb-2 text-[11px] font-bold text-muted-foreground">{tx("Test the ranking live")}</div>
             <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-4">
-              <button type="button" onClick={() => { playBroadcastSound("gift"); onFireEvent({ eventType: "gift", giftId: "tiktok" }); }} className="rounded-lg bg-amber-500/15 px-2 py-1.5 text-[11px] font-bold text-amber-300 hover:bg-amber-500/25">🪙 Gift</button>
-              <button type="button" onClick={() => { playBroadcastSound("lion"); onFireEvent({ eventType: "gift", giftId: "lion" }); }} className="rounded-lg bg-orange-500/15 px-2 py-1.5 text-[11px] font-bold text-orange-300 hover:bg-orange-500/25">🦁 Lion</button>
-              <button type="button" onClick={() => onFireEvent({ eventType: "like", likes: 1500 })} className="rounded-lg bg-rose-500/15 px-2 py-1.5 text-[11px] font-bold text-rose-300 hover:bg-rose-500/25">❤️ Likes</button>
-              <button type="button" onClick={() => onFireEvent({ eventType: "share" })} className="rounded-lg bg-emerald-500/15 px-2 py-1.5 text-[11px] font-bold text-emerald-300 hover:bg-emerald-500/25">🔁 Share</button>
+              <button type="button" onClick={() => { playBroadcastSound("gift"); onFireEvent({ eventType: "gift", giftId: "tiktok" }); }} className="rounded-lg bg-amber-500/15 px-2 py-1.5 text-[11px] font-bold text-amber-300 hover:bg-amber-500/25">{tx("🪙 Gift")}</button>
+              <button type="button" onClick={() => { playBroadcastSound("lion"); onFireEvent({ eventType: "gift", giftId: "lion" }); }} className="rounded-lg bg-orange-500/15 px-2 py-1.5 text-[11px] font-bold text-orange-300 hover:bg-orange-500/25">{tx("🦁 Lion")}</button>
+              <button type="button" onClick={() => onFireEvent({ eventType: "like", likes: 1500 })} className="rounded-lg bg-rose-500/15 px-2 py-1.5 text-[11px] font-bold text-rose-300 hover:bg-rose-500/25">{tx("❤️ Likes")}</button>
+              <button type="button" onClick={() => onFireEvent({ eventType: "share" })} className="rounded-lg bg-emerald-500/15 px-2 py-1.5 text-[11px] font-bold text-emerald-300 hover:bg-emerald-500/25">{tx("🔁 Share")}</button>
             </div>
           </div>
         </div>
@@ -535,7 +540,7 @@ export function TopListsStudio({ widget, avatars, onSave, onFireEvent, onCopyUrl
               onClick={handleSave}
               className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-brand-blue to-brand-cyan px-5 py-2 text-xs font-black text-white shadow hover:brightness-110 disabled:opacity-50"
             >
-              {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : justSaved ? <Check className="h-3.5 w-3.5" /> : <Save className="h-3.5 w-3.5" />}
+              {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> {tx(": justSaved ?")} <Check className="h-3.5 w-3.5" /> : <Save className="h-3.5 w-3.5" />}
               {saving ? "Saving…" : justSaved ? "Saved" : "Save"}
             </button>
           </div>
