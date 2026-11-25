@@ -49,6 +49,7 @@ client.logger.setLevel(logging.INFO)
 
 http_session = None
 live_confirmed = False
+active_session_id = None
 delivery_lock = asyncio.Lock()
 
 
@@ -174,11 +175,12 @@ async def drain_spool():
 
 
 async def mark_live():
-    global live_confirmed
-    if live_confirmed:
+    global live_confirmed, active_session_id
+    if live_confirmed and active_session_id:
         return True
 
-    state, status, reason = await deliver({"eventType": "live_state", "status": "live"})
+    active_session_id = str(uuid.uuid4())
+    state, status, reason = await deliver({"eventType": "live_state", "status": "live", "sessionId": active_session_id})
     live_confirmed = state == "delivered"
     if live_confirmed:
         log.info("LIVE state confirmed by Tikley API for @%s; room_id=%s", HANDLE, client.room_id)
@@ -191,9 +193,13 @@ async def mark_live():
 
 
 async def mark_waiting():
-    global live_confirmed
+    global live_confirmed, active_session_id
+    session_id = active_session_id
     live_confirmed = False
-    state, status, reason = await deliver({"eventType": "live_state", "status": "waiting"})
+    active_session_id = None
+    if not session_id:
+        return
+    state, status, reason = await deliver({"eventType": "live_state", "status": "waiting", "sessionId": session_id})
     if state != "delivered":
         log.warning("Could not confirm waiting state (delivery=%s status=%s): %s", state, status, reason)
 
@@ -249,7 +255,11 @@ def event_fields(event):
 
 
 async def queue_event(payload):
-    """Persist first; deliver only after the API has acknowledged LIVE state."""
+    """Persist events with their originating LIVE session; never replay across sessions."""
+    if not active_session_id:
+        log.warning("Dropping event received without an active LIVE session")
+        return
+    payload["sessionId"] = active_session_id
     enqueue(payload)
     if not live_confirmed and not await mark_live():
         log.warning("Event queued until LIVE state is confirmed: %s", payload.get("sourceEventId"))
@@ -356,7 +366,6 @@ async def run_forever():
             http_session = session
             try:
                 log.info("Connecting to TikTok LIVE @%s", HANDLE)
-                await mark_waiting()
                 await client.connect()
                 log.info("TikTok LIVE connection ended for @%s", HANDLE)
             except UserOfflineError:
