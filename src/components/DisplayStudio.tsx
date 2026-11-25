@@ -1,5 +1,8 @@
 "use client";
 
+import { useLocale } from "@/components/LocaleProvider";
+import { translateText } from "@/lib/i18n";
+
 import type { TopBoardRow, WidgetConfig } from "@/db/schema";
 import { Toggle } from "@/components/TopListsStudio";
 import { FREE_GAMES_CATALOG } from "@/lib/catalog";
@@ -229,7 +232,9 @@ function FormatColumn({
 
 /* ───────────── page ───────────── */
 
-export function DisplayStudio({ boards, widgets, onCopyUrl, onToast }: { boards: TopBoardRow[]; widgets: WidgetConfig[]; onCopyUrl: (path: string, label: string) => void; onToast: (m: string) => void }) {
+export function DisplayStudio({ boards, widgets, onCopyUrl, onToast }: { boards: TopBoardRow[]; widgets: WidgetConfig[]; onCopyUrl: (path: string, label: string) => void; onToast: (m: string) => void }) {  const { locale } = useLocale();
+  const tx = (source: string) => translateText(locale, source);
+
   const [saved, setSaved] = useState<Record<string, OverlayDisplay>>({});
   const [loaded, setLoaded] = useState(false);
   const [sources, setSources] = useState<Source[]>([]);
@@ -336,8 +341,8 @@ export function DisplayStudio({ boards, widgets, onCopyUrl, onToast }: { boards:
             <MonitorSmartphone className="h-6 w-6" />
           </div>
           <div>
-            <div className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-muted-foreground">Studio</div>
-            <h2 className="text-2xl font-black text-foreground">9:16 &amp; 16:9 Display</h2>
+            <div className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-muted-foreground">{tx("Studio")}</div>
+            <h2 className="text-2xl font-black text-foreground">{tx("9:16 & 16:9 Display")}</h2>
             <p className="max-w-3xl text-xs text-muted-foreground">
               Every overlay works in TikTok LIVE Studio (9:16 · 1080 × 1920) and OBS Studio (16:9 · 1920 × 1080). Set the size and position for each format, preview them side by side, save, and copy the right link for each app — use both at once for dual output.
             </p>
@@ -358,7 +363,7 @@ export function DisplayStudio({ boards, widgets, onCopyUrl, onToast }: { boards:
                 {list.map((s) => (
                   <button key={s.key} type="button" onClick={() => select(s.key)} className={`flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-1.5 text-left text-xs ${s.key === selectedKey ? "bg-brand-cyan/15 font-bold text-foreground" : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"}`}>
                     <span className="truncate">{s.label}</span>
-                    {customised(s.key) && <span className="shrink-0 rounded-full bg-emerald-500/20 px-1.5 text-[9px] font-black text-emerald-300">SET</span>}
+                    {customised(s.key) && <span className="shrink-0 rounded-full bg-emerald-500/20 px-1.5 text-[9px] font-black text-emerald-300">{tx("SET")}</span>}
                   </button>
                 ))}
               </div>
@@ -374,7 +379,7 @@ export function DisplayStudio({ boards, widgets, onCopyUrl, onToast }: { boards:
                 <code className="text-[10px] text-muted-foreground">{source.path}</code>
               </div>
               <div className="text-xs">
-                <div className="mb-1 font-semibold text-muted-foreground">Plain link (without ?format) shows</div>
+                <div className="mb-1 font-semibold text-muted-foreground">{tx("Plain link (without ?format) shows")}</div>
                 <div className="inline-flex rounded-xl bg-secondary/60 p-1">
                   {([
                     ["auto", "Match the source"],
@@ -410,7 +415,7 @@ export function DisplayStudio({ boards, widgets, onCopyUrl, onToast }: { boards:
             <button type="button" disabled={bulk} onClick={applyToAll} title="Copy these settings to every overlay" className="inline-flex items-center gap-1 rounded-xl border border-border px-3 py-2 text-xs font-bold text-foreground hover:bg-secondary disabled:opacity-50">
               {bulk ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CopyCheck className="h-3.5 w-3.5" />} Apply to all
             </button>
-            <button type="button" disabled={!dirty || saving} onClick={() => setDraft(savedDisplay)} className="rounded-xl border border-border px-3 py-2 text-xs font-bold text-foreground hover:bg-secondary disabled:opacity-40">Discard</button>
+            <button type="button" disabled={!dirty || saving} onClick={() => setDraft(savedDisplay)} className="rounded-xl border border-border px-3 py-2 text-xs font-bold text-foreground hover:bg-secondary disabled:opacity-40">{tx("Discard")}</button>
             <button type="button" disabled={!dirty || saving} onClick={save} className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-brand-blue to-brand-cyan px-5 py-2 text-xs font-black text-white shadow hover:brightness-110 disabled:opacity-50">
               {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />} {saving ? "Saving…" : "Save"}
             </button>
