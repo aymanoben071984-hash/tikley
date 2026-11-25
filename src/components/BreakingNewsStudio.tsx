@@ -50,14 +50,16 @@ const EVENT_ROWS: Array<{ type: BnEventType; label: string; showKey: keyof Break
   { type: "join", label: "Join", showKey: "showJoins", vars: "{name}" },
 ];
 
-function FontSelect({ value, onChange, allowInherit }: { value: string; onChange: (v: string) => void; allowInherit?: boolean }) {
+function FontSelect({ value, onChange, allowInherit }: { value: string; onChange: (v: string) => void; allowInherit?: boolean }) {  const { locale } = useLocale();
+  const tx = (source: string) => translateText(locale, source);
+
   return (
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
       className="w-full rounded-xl border border-border bg-background px-3 py-2 text-xs font-semibold text-foreground"
     >
-      {allowInherit && <option value="">Same as main font</option>}
+      {allowInherit && <option value="">{tx("Same as main font")}</option>}
       {BN_FONTS.map((f) => (
         <option key={f} value={f}>
           {f}
