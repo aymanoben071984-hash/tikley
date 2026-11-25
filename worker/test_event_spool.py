@@ -149,6 +149,7 @@ class DurableReplayAfterLostResponseTest(unittest.TestCase):
                 return "delivered", 200, ""
 
             worker.deliver = fake_deliver
+            worker.active_session_id = "test-live-session-001"
             asyncio.run(worker.queue_event(event))
             self.assertEqual(calls, ["live_state"])
             self.assertIsNotNone(worker.next_pending())
