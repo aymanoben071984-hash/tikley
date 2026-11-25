@@ -236,6 +236,31 @@ const extendedStudioTranslations: Record<string, Partial<Record<Locale, string>>
   "Motion, particles and halo apply to the painted frame designs.": { ar: "تُطبّق الحركة والجزيئات والهالة على تصاميم الإطارات المرسومة.", fr: "Le mouvement, les particules et le halo s’appliquent aux cadres illustrés.", de: "Bewegung, Partikel und Halo gelten für die gestalteten Rahmen.", tr: "Hareket, parçacıklar ve hale çizimli çerçeve tasarımlarına uygulanır.", es: "El movimiento, las partículas y el halo se aplican a los marcos ilustrados.", it: "Movimento, particelle e alone si applicano alle cornici illustrate." },
 };
 
+
+const overlayLayoutTranslations: Record<string, Partial<Record<Locale, string>>> = {
+  "TikTok top bar": { ar: "الشريط العلوي في TikTok", fr: "Barre supérieure TikTok", de: "TikTok-Kopfleiste", tr: "TikTok üst çubuğu", es: "Barra superior de TikTok", it: "Barra superiore TikTok" },
+  "Buttons": { ar: "الأزرار", fr: "Boutons", de: "Schaltflächen", tr: "Düğmeler", es: "Botones", it: "Pulsanti" },
+  "Comments & gift tray": { ar: "التعليقات وصندوق الهدايا", fr: "Commentaires et cadeaux", de: "Kommentare & Geschenkbereich", tr: "Yorumlar ve hediye alanı", es: "Comentarios y bandeja de regalos", it: "Commenti e area regali" },
+  "Move left / right": { ar: "تحريك لليسار / اليمين", fr: "Déplacer à gauche / droite", de: "Nach links / rechts bewegen", tr: "Sola / sağa taşı", es: "Mover a izquierda / derecha", it: "Sposta a sinistra / destra" },
+  "Move up / down": { ar: "تحريك للأعلى / الأسفل", fr: "Déplacer vers le haut / bas", de: "Nach oben / unten bewegen", tr: "Yukarı / aşağı taşı", es: "Mover arriba / abajo", it: "Sposta su / giù" },
+  "Keep inside safe zone": { ar: "الإبقاء داخل المنطقة الآمنة", fr: "Garder dans la zone de sécurité", de: "Im Sicherheitsbereich halten", tr: "Güvenli alan içinde tut", es: "Mantener dentro de la zona segura", it: "Mantieni nell’area sicura" },
+  "Show TikTok UI guide": { ar: "إظهار دليل واجهة TikTok", fr: "Afficher le guide de l’interface TikTok", de: "TikTok-UI-Hilfe anzeigen", tr: "TikTok arayüz kılavuzunu göster", es: "Mostrar guía de interfaz de TikTok", it: "Mostra guida interfaccia TikTok" },
+  "Same as main font": { ar: "مثل الخط الرئيسي", fr: "Identique à la police principale", de: "Wie Hauptschriftart", tr: "Ana yazı tipiyle aynı", es: "Igual que la fuente principal", it: "Come il carattere principale" },
+  "Add comment…": { ar: "أضف تعليقاً…", fr: "Ajouter un commentaire…", de: "Kommentar hinzufügen…", tr: "Yorum ekle…", es: "Añadir comentario…", it: "Aggiungi commento…" },
+  "Camera": { ar: "الكاميرا", fr: "Caméra", de: "Kamera", tr: "Kamera", es: "Cámara", it: "Fotocamera" },
+  "Image": { ar: "صورة", fr: "Image", de: "Bild", tr: "Görsel", es: "Imagen", it: "Immagine" },
+  "OBS Studio / Streamlabs": { ar: "OBS Studio / Streamlabs", fr: "OBS Studio / Streamlabs", de: "OBS Studio / Streamlabs", tr: "OBS Studio / Streamlabs", es: "OBS Studio / Streamlabs", it: "OBS Studio / Streamlabs" },
+  "ACTIVE WIDGET BUDGET": { ar: "ميزانية الأدوات النشطة", fr: "BUDGET DES WIDGETS ACTIFS", de: "BUDGET AKTIVER WIDGETS", tr: "ETKİN BİLEŞEN BÜTÇESİ", es: "PRESUPUESTO DE WIDGETS ACTIVOS", it: "BUDGET WIDGET ATTIVI" },
+  "ENCODER HEADROOM": { ar: "هامش قدرة الترميز", fr: "MARGE DE L’ENCODEUR", de: "ENCODER-RESERVE", tr: "KODLAYICI PAYI", es: "MARGEN DEL CODIFICADOR", it: "MARGINE ENCODER" },
+  "98.4% Optimal": { ar: "98.4% مثالي", fr: "98,4 % optimal", de: "98,4 % optimal", tr: "%98,4 ideal", es: "98,4 % óptimo", it: "98,4% ottimale" },
+  "8 Physical Keys": { ar: "8 مفاتيح فعلية", fr: "8 touches physiques", de: "8 physische Tasten", tr: "8 fiziksel tuş", es: "8 teclas físicas", it: "8 tasti fisici" },
+  "Fire Test Event:": { ar: "إطلاق حدث تجريبي:", fr: "Déclencher un événement test :", de: "Testereignis auslösen:", tr: "Test etkinliği tetikle:", es: "Lanzar evento de prueba:", it: "Attiva evento di test:" },
+  "Goal Title": { ar: "عنوان الهدف", fr: "Titre de l’objectif", de: "Zieltitel", tr: "Hedef başlığı", es: "Título del objetivo", it: "Titolo obiettivo" },
+  "Target Amount": { ar: "المبلغ المستهدف", fr: "Montant cible", de: "Zielbetrag", tr: "Hedef miktar", es: "Cantidad objetivo", it: "Importo obiettivo" },
+  "Horizontal Canvas": { ar: "لوحة أفقية", fr: "Canvas horizontal", de: "Horizontale Leinwand", tr: "Yatay tuval", es: "Lienzo horizontal", it: "Canvas orizzontale" },
+  "Vertical Canvas": { ar: "لوحة عمودية", fr: "Canvas vertical", de: "Vertikale Leinwand", tr: "Dikey tuval", es: "Lienzo vertical", it: "Canvas verticale" },
+};
+
 export function translateText(locale: Locale, source: string): string {
-  return phraseTranslations[source]?.[locale] ?? navigationTranslations[source]?.[locale] ?? dashboardTranslations[source]?.[locale] ?? loginTranslations[source]?.[locale] ?? tickerTranslations[source]?.[locale] ?? extendedStudioTranslations[source]?.[locale] ?? studioTranslations[source]?.[locale] ?? source;
+  return phraseTranslations[source]?.[locale] ?? navigationTranslations[source]?.[locale] ?? dashboardTranslations[source]?.[locale] ?? loginTranslations[source]?.[locale] ?? tickerTranslations[source]?.[locale] ?? overlayLayoutTranslations[source]?.[locale] ?? extendedStudioTranslations[source]?.[locale] ?? studioTranslations[source]?.[locale] ?? source;
 }
