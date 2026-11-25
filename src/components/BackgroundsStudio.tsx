@@ -1,5 +1,8 @@
 "use client";
 
+import { useLocale } from "@/components/LocaleProvider";
+import { translateText } from "@/lib/i18n";
+
 import { Segmented, Toggle } from "@/components/TopListsStudio";
 import {
   BACKGROUNDS,
@@ -62,7 +65,9 @@ async function downloadBackground(item: BackgroundItem, orientation: BgOrientati
   setTimeout(() => URL.revokeObjectURL(url), 2000);
 }
 
-export function BackgroundsStudio({ onToast }: { onToast: (msg: string) => void }) {
+export function BackgroundsStudio({ onToast }: { onToast: (msg: string) => void }) {  const { locale } = useLocale();
+  const tx = (source: string) => translateText(locale, source);
+
   const [category, setCategory] = useState<BgCategory | "All">("All");
   const [orientation, setOrientation] = useState<BgOrientation | "all">("all");
   const [query, setQuery] = useState("");
@@ -86,8 +91,8 @@ export function BackgroundsStudio({ onToast }: { onToast: (msg: string) => void 
             <ImageIcon className="h-6 w-6" />
           </div>
           <div>
-            <div className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-muted-foreground">Studio</div>
-            <h2 className="text-2xl font-black text-foreground">Background Library</h2>
+            <div className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-muted-foreground">{tx("Studio")}</div>
+            <h2 className="text-2xl font-black text-foreground">{tx("Background Library")}</h2>
             <p className="max-w-3xl text-xs text-muted-foreground">
               Ready-made stream backgrounds — filter by category and orientation, preview them on a device frame, then download and drop them into TikTok LIVE Studio or OBS.
             </p>
@@ -126,7 +131,7 @@ export function BackgroundsStudio({ onToast }: { onToast: (msg: string) => void 
 
       {/* Grid */}
       {items.length === 0 ? (
-        <div className="rounded-2xl border border-border bg-card p-10 text-center text-sm text-muted-foreground">No backgrounds match these filters.</div>
+        <div className="rounded-2xl border border-border bg-card p-10 text-center text-sm text-muted-foreground">{tx("No backgrounds match these filters.")}</div>
       ) : (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
           {items.map((b) => {
@@ -142,7 +147,7 @@ export function BackgroundsStudio({ onToast }: { onToast: (msg: string) => void 
                       </span>
                     ))}
                   </div>
-                  <span className="absolute inset-x-2 bottom-2 rounded-lg bg-black/60 py-1 text-center text-[11px] font-bold text-white opacity-0 backdrop-blur transition group-hover:opacity-100">Preview</span>
+                  <span className="absolute inset-x-2 bottom-2 rounded-lg bg-black/60 py-1 text-center text-[11px] font-bold text-white opacity-0 backdrop-blur transition group-hover:opacity-100">{tx("Preview")}</span>
                 </div>
                 <div className="px-2.5 py-2">
                   <div className="truncate text-xs font-extrabold text-foreground">{b.title}</div>
