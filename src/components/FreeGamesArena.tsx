@@ -1490,11 +1490,11 @@ export function FreeGamesArena({
         <div className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
           <label className="flex items-center gap-2 rounded-xl border border-border bg-secondary/30 px-3 py-2.5">
             <span className="text-muted-foreground">⌕</span>
-            <input value={storeSearch} onChange={(event) => setStoreSearch(event.target.value)} placeholder="{tx("Search games, features or LIVE triggers...")}" aria-label={tx("Search games")} className="min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground" />
+            <input value={storeSearch} onChange={(event) => setStoreSearch(event.target.value)} placeholder={tx("Search games, features or LIVE triggers...")} aria-label={tx("Search games")} className="min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground" />
             {storeSearch && <button type="button" onClick={() => setStoreSearch("")} className="text-xs font-bold text-brand-cyan">{tx("Clear")}</button>}
           </label>
           <button type="button" aria-pressed={storeFreeOnly} onClick={() => setStoreFreeOnly((value) => !value)} className={`rounded-xl border px-4 py-2.5 text-xs font-extrabold transition ${storeFreeOnly ? "border-emerald-400/40 bg-emerald-500/10 text-emerald-300" : "border-border bg-secondary/30 text-muted-foreground"}`}>
-            {storeFreeOnly ? "{tx("✓ Free games only")}" : "Show all access types"}
+            {storeFreeOnly ? tx("✓ Free games only") : tx("Show all access types")}
           </button>
         </div>
         <div className="flex gap-2 overflow-x-auto pb-2">
