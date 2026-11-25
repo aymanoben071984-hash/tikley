@@ -101,7 +101,7 @@ const tickerTranslations: Record<string, Partial<Record<Locale, string>>> = {
   "Last Like": { ar: "آخر إعجاب", fr: "Dernier J’aime", de: "Letztes Like", tr: "Son beğeni", es: "Último Me gusta", it: "Ultimo Mi piace" },
   "Last Gift": { ar: "آخر هدية", fr: "Dernier cadeau", de: "Letztes Geschenk", tr: "Son hediye", es: "Último regalo", it: "Ultimo regalo" },
   "Last Join": { ar: "آخر انضمام", fr: "Dernière arrivée", de: "Letzter Beitritt", tr: "Son katılım", es: "Última entrada", it: "Ultimo accesso" },
-  "Last Share": { ar: "آخر مشاركة", fr: "Dernage partage", de: "Letzte Teilung", tr: "Son paylaşım", es: "Último compartido", it: "Ultima condivisione" },
+  "Last Share": { ar: "آخر مشاركة", fr: "Dernier partage", de: "Letzte Teilung", tr: "Son paylaşım", es: "Último compartido", it: "Ultima condivisione" },
   "just followed you!": { ar: "بدأ بمتابعتك!", fr: "vient de vous suivre !", de: "folgt dir jetzt!", tr: "seni takip etti!", es: "¡acaba de seguirte!", it: "ha iniziato a seguirti!" },
   "sent likes": { ar: "أرسل إعجابات", fr: "a envoyé des J’aime", de: "hat Likes gesendet", tr: "beğeni gönderdi", es: "envió Me gusta", it: "ha inviato Mi piace" },
   "sent a gift": { ar: "أرسل هدية", fr: "a envoyé un cadeau", de: "hat ein Geschenk gesendet", tr: "hediye gönderdi", es: "envió un regalo", it: "ha inviato un regalo" },
