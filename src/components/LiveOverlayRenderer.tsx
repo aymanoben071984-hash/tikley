@@ -28,8 +28,6 @@ import {
   UserPlus,
 } from "lucide-react";
 import React from "react";
-import { useLocale } from "@/components/LocaleProvider";
-import { translateText } from "@/lib/i18n";
 
 interface OverlayWidgetViewProps {
   widgetKey: string;
@@ -49,9 +47,7 @@ export function OverlayWidgetView({
   topListAvatars,
   events,
   compact = false,
-}: OverlayWidgetViewProps) {  const { locale } = useLocale();
-  const tx = (source: string) => translateText(locale, source);
-
+}: OverlayWidgetViewProps) {
   const { locale } = useLocale();
   const tx = (value: string) => translateText(locale, value);
   const primary = widget?.primaryColor || "#28c7fa";
