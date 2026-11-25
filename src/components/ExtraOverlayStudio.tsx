@@ -282,7 +282,7 @@ export function ExtraOverlayStudio({ slug, game, profile, onSave, onCopyUrl }: E
             <button type="button" title="Restore OverlayLive defaults" onClick={() => setDraft(defaults)} className="rounded-xl border border-border px-2.5 py-2 text-muted-foreground hover:bg-secondary hover:text-foreground"><RotateCcw className="h-3.5 w-3.5" /></button>
             <button type="button" disabled={!dirty || saving} onClick={() => setDraft(JSON.parse(savedJson))} className="rounded-xl border border-border px-3 py-2 text-xs font-bold text-foreground hover:bg-secondary disabled:opacity-40">{tx("Discard")}</button>
             <button type="button" disabled={!dirty || saving} onClick={handleSave} className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-brand-blue to-brand-cyan px-5 py-2 text-xs font-black text-white shadow hover:brightness-110 disabled:opacity-50">
-              {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> {tx(": justSaved ?")} <Check className="h-3.5 w-3.5" /> : <Save className="h-3.5 w-3.5" />}
+              {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : justSaved ? <Check className="h-3.5 w-3.5" /> : <Save className="h-3.5 w-3.5" />}
               {saving ? "Saving…" : justSaved ? "Saved" : "Save"}
             </button>
           </div>
