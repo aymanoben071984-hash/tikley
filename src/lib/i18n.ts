@@ -295,7 +295,7 @@ const editorControlTranslations: Record<string, Partial<Record<Locale, string>>>
   "Top #1 Gifter": { ar: "أفضل مُهدٍ رقم 1", fr: "Meilleur donateur n° 1", de: "Top-Geschenksender Nr. 1", tr: "En iyi hediye gönderen #1", es: "Mejor regalador n.º 1", it: "Miglior donatore n. 1" },
   "Position on screen": { ar: "الموضع على الشاشة", fr: "Position à l’écran", de: "Position auf dem Bildschirm", tr: "Ekrandaki konum", es: "Posición en pantalla", it: "Posizione sullo schermo" },
   "Handle glow": { ar: "توهج اسم المستخدم", fr: "Lueur de l’identifiant", de: "Handle-Leuchten", tr: "Kullanıcı adı parıltısı", es: "Brillo del usuario", it: "Bagliore handle" },
-  "Card halo": { ar: "هالة البطاقة", fr: "Halo de la carte", de: "Kartenhalo", tr: "Kart halesi", es: "Halo de tarjeta", it: " alone scheda" },
+  "Card halo": { ar: "هالة البطاقة", fr: "Halo de la carte", de: "Kartenhalo", tr: "Kart halesi", es: "Halo de tarjeta", it: "alone della scheda" },
   "Card size": { ar: "حجم البطاقة", fr: "Taille de la carte", de: "Kartengröße", tr: "Kart boyutu", es: "Tamaño de tarjeta", it: "Dimensione scheda" },
   "Particles": { ar: "الجزيئات", fr: "Particules", de: "Partikel", tr: "Parçacıklar", es: "Partículas", it: "Particelle" },
   "Motion": { ar: "الحركة", fr: "Mouvement", de: "Bewegung", tr: "Hareket", es: "Movimiento", it: "Movimento" },
