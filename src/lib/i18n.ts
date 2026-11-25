@@ -28,7 +28,8 @@ export function translate(locale: Locale, key: MessageKey): string {
   return messages[locale][key] ?? messages.en[key];
 }
 
-const phraseTranslations: Record<string, Partial<Record<Locale, string>>> = {\n  "Admin sign in": { ar: "تسجيل دخول المسؤول", fr: "Connexion administrateur", de: "Admin-Anmeldung", tr: "Yönetici girişi", es: "Acceso de administrador", it: "Accesso amministratore" },
+const phraseTranslations: Record<string, Partial<Record<Locale, string>>> = {
+  "Admin sign in": { ar: "تسجيل دخول المسؤول", fr: "Connexion administrateur", de: "Admin-Anmeldung", tr: "Yönetici girişi", es: "Acceso de administrador", it: "Accesso amministratore" },
   "Sign in to manage your LIVE overlays.": { ar: "سجّل الدخول لإدارة شاشات البث المباشر.", fr: "Connectez-vous pour gérer vos overlays LIVE.", de: "Melde dich an, um deine LIVE-Overlays zu verwalten.", tr: "Canlı yayın katmanlarınızı yönetmek için giriş yapın.", es: "Inicia sesión para gestionar tus overlays LIVE.", it: "Accedi per gestire i tuoi overlay LIVE." },
   "Email": { ar: "البريد الإلكتروني", fr: "E-mail", de: "E-Mail", tr: "E-posta", es: "Correo electrónico", it: "E-mail" },
   "Password": { ar: "كلمة المرور", fr: "Mot de passe", de: "Passwort", tr: "Şifre", es: "Contraseña", it: "Password" },
