@@ -1,3 +1,5 @@
+"use client";
+
 import { OverlayLogo } from "@/components/OverlayLogo";
 import Link from "next/link";
 import React from "react";
