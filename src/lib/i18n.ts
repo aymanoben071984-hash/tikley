@@ -261,6 +261,12 @@ const overlayLayoutTranslations: Record<string, Partial<Record<Locale, string>>>
   "Vertical Canvas": { ar: "لوحة عمودية", fr: "Canvas vertical", de: "Vertikale Leinwand", tr: "Dikey tuval", es: "Lienzo vertical", it: "Canvas verticale" },
 };
 
+
+const overlayControlTranslations: Record<string, Partial<Record<Locale, string>>> = {
+  "Transparent OBS Mode": { ar: "وضع OBS الشفاف", fr: "Mode OBS transparent", de: "Transparenter OBS-Modus", tr: "Şeffaf OBS modu", es: "Modo OBS transparente", it: "Modalità OBS trasparente" },
+  "Show Dark Test Grid": { ar: "إظهار شبكة الاختبار الداكنة", fr: "Afficher la grille de test sombre", de: "Dunkles Testgitter anzeigen", tr: "Koyu test ızgarasını göster", es: "Mostrar cuadrícula de prueba oscura", it: "Mostra griglia di test scura" },
+};
+
 export function translateText(locale: Locale, source: string): string {
-  return phraseTranslations[source]?.[locale] ?? navigationTranslations[source]?.[locale] ?? dashboardTranslations[source]?.[locale] ?? loginTranslations[source]?.[locale] ?? tickerTranslations[source]?.[locale] ?? overlayLayoutTranslations[source]?.[locale] ?? extendedStudioTranslations[source]?.[locale] ?? studioTranslations[source]?.[locale] ?? source;
+  return phraseTranslations[source]?.[locale] ?? navigationTranslations[source]?.[locale] ?? dashboardTranslations[source]?.[locale] ?? loginTranslations[source]?.[locale] ?? tickerTranslations[source]?.[locale] ?? overlayControlTranslations[source]?.[locale] ?? overlayLayoutTranslations[source]?.[locale] ?? extendedStudioTranslations[source]?.[locale] ?? studioTranslations[source]?.[locale] ?? source;
 }
