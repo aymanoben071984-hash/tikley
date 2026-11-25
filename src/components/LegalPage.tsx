@@ -1,6 +1,8 @@
 import { OverlayLogo } from "@/components/OverlayLogo";
 import Link from "next/link";
 import React from "react";
+import { LanguageSwitcher, useLocale } from "@/components/LocaleProvider";
+import { translateText } from "@/lib/i18n";
 
 export interface LegalSection {
   id: string;
@@ -17,6 +19,8 @@ interface LegalPageProps {
 }
 
 export function LegalPage({ title, intro, updated, sections, current }: LegalPageProps) {
+  const { locale } = useLocale();
+  const tx = (value: string) => translateText(locale, value);
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur-md">
@@ -24,21 +28,21 @@ export function LegalPage({ title, intro, updated, sections, current }: LegalPag
           <Link href="/dashboard" aria-label="OverlayLive dashboard">
             <OverlayLogo size={24} boxed showWordmark />
           </Link>
-          <nav className="flex items-center gap-1 text-xs font-bold">
+          <nav className="flex items-center gap-1 text-xs font-bold">\n            <LanguageSwitcher compact />
             <Link
               href="/terms"
               className={`rounded-lg px-3 py-1.5 ${current === "terms" ? "bg-brand-cyan/15 text-brand-cyan" : "text-muted-foreground hover:text-foreground"}`}
             >
-              Terms of Service
+              {tx("Terms of Service")}
             </Link>
             <Link
               href="/privacy"
               className={`rounded-lg px-3 py-1.5 ${current === "privacy" ? "bg-brand-cyan/15 text-brand-cyan" : "text-muted-foreground hover:text-foreground"}`}
             >
-              Privacy Policy
+              {tx("Privacy Policy")}
             </Link>
             <Link href="/dashboard" className="ms-2 rounded-lg bg-gradient-to-r from-brand-blue to-brand-cyan px-3 py-1.5 text-white">
-              Dashboard
+              {tx("Dashboard")}
             </Link>
           </nav>
         </div>
@@ -47,7 +51,7 @@ export function LegalPage({ title, intro, updated, sections, current }: LegalPag
       <main className="mx-auto grid max-w-5xl gap-8 px-4 py-10 lg:grid-cols-[220px_1fr]">
         <aside className="hidden lg:block">
           <div className="sticky top-20 space-y-1 text-xs">
-            <div className="mb-2 font-extrabold uppercase tracking-wider text-muted-foreground">On this page</div>
+            <div className="mb-2 font-extrabold uppercase tracking-wider text-muted-foreground">{tx("On this page")}</div>
             {sections.map((s) => (
               <a key={s.id} href={`#${s.id}`} className="block rounded-lg px-2 py-1 text-muted-foreground hover:bg-secondary hover:text-foreground">
                 {s.title}
@@ -58,9 +62,9 @@ export function LegalPage({ title, intro, updated, sections, current }: LegalPag
 
         <article className="min-w-0">
           <div className="mb-8">
-            <div className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-brand-cyan">Legal</div>
+            <div className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-brand-cyan">{tx("Legal")}</div>
             <h1 className="mt-1 text-3xl font-black tracking-tight sm:text-4xl">{title}</h1>
-            <p className="mt-2 text-sm text-muted-foreground">Last updated: {updated}</p>
+            <p className="mt-2 text-sm text-muted-foreground">{tx("Last updated:")} {updated}</p>
             <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground">{intro}</p>
           </div>
 
@@ -78,10 +82,10 @@ export function LegalPage({ title, intro, updated, sections, current }: LegalPag
           </div>
 
           <footer className="mt-12 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-6 text-xs text-muted-foreground">
-            <span>© {new Date().getFullYear()} OverlayLive. All rights reserved.</span>
+            <span>© {new Date().getFullYear()} Tikley. {tx("All rights reserved.")}</span>
             <span className="flex gap-4">
-              <Link href="/terms" className="hover:text-foreground">Terms of Service</Link>
-              <Link href="/privacy" className="hover:text-foreground">Privacy Policy</Link>
+              <Link href="/terms" className="hover:text-foreground">{tx("Terms of Service")}</Link>
+              <Link href="/privacy" className="hover:text-foreground">{tx("Privacy Policy")}</Link>
             </span>
           </footer>
         </article>
