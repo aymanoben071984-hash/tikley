@@ -5,6 +5,7 @@ import { ensureSeeded } from "@/lib/seed";
 import { resetBoardsOnLive } from "@/lib/topBoardsServer";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
+import { POST as handleEventsPost } from "@/app/api/events/route";
 
 export const dynamic = "force-dynamic";
 const MAX_BODY_BYTES = 16 * 1024;
@@ -112,13 +113,16 @@ export async function POST(request: Request) {
   }
   if (eventType === "like") payload.likes = Math.max(0, Math.min(2_000_000_000, Math.floor(Number(body.likes) || 0)));
 
-  const origin = new URL(request.url).origin;
-  const response = await fetch(origin + "/api/events", {
+  // Dispatch directly to the events route handler. A self-fetch through request.url
+  // unnecessarily re-enters the public Railway TLS endpoint and can fail with
+  // ERR_SSL_WRONG_VERSION_NUMBER when the request origin is not TLS-compatible.
+  // Keep the same worker authorization and payload contract without network I/O.
+  return handleEventsPost(new Request("http://tikley.internal/api/events", {
     method: "POST",
-    headers: { "content-type": "application/json", authorization: `Bearer ${secret}` },
+    headers: {
+      "content-type": "application/json",
+      authorization: `Bearer ${secret}`,
+    },
     body: JSON.stringify(payload),
-    cache: "no-store",
-  });
-  const result = await response.json().catch(() => ({}));
-  return NextResponse.json(result, { status: response.status });
+  }));
 }
