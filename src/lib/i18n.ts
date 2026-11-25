@@ -48,6 +48,35 @@ const phraseTranslations: Record<string, Partial<Record<Locale, string>>> = {
   "Try another category or clear your search.": { ar: "جرّب فئة أخرى أو امسح البحث.", fr: "Essayez une autre catégorie ou effacez la recherche.", de: "Versuche eine andere Kategorie oder lösche die Suche.", tr: "Başka bir kategori deneyin veya aramayı temizleyin.", es: "Prueba otra categoría o borra la búsqueda.", it: "Prova un'altra categoria o cancella la ricerca." },
   "Reset filters": { ar: "إعادة ضبط المرشحات", fr: "Réinitialiser les filtres", de: "Filter zurücksetzen", tr: "Filtreleri sıfırla", es: "Restablecer filtros", it: "Reimposta filtri" },
 };
+
+const navigationTranslations: Record<string, Partial<Record<Locale, string>>> = {
+  "Dashboard": { ar: "لوحة التحكم", fr: "Tableau de bord", de: "Dashboard", tr: "Kontrol paneli", es: "Panel", it: "Dashboard" },
+  "Live Room": { ar: "غرفة البث", fr: "Salle LIVE", de: "Live-Raum", tr: "Canlı yayın odası", es: "Sala LIVE", it: "Stanza LIVE" },
+  "Performance": { ar: "الأداء", fr: "Performances", de: "Leistung", tr: "Performans", es: "Rendimiento", it: "Prestazioni" },
+  "Live Viewers": { ar: "المشاهدون المباشرون", fr: "Spectateurs en direct", de: "Live-Zuschauer", tr: "Canlı izleyiciler", es: "Espectadores en directo", it: "Spettatori live" },
+  "Top Lists": { ar: "قوائم المتصدرين", fr: "Classements", de: "Bestenlisten", tr: "Lider tabloları", es: "Clasificaciones", it: "Classifiche" },
+  "Goals": { ar: "الأهداف", fr: "Objectifs", de: "Ziele", tr: "Hedefler", es: "Objetivos", it: "Obiettivi" },
+  "Gift Alerts": { ar: "تنبيهات الهدايا", fr: "Alertes cadeaux", de: "Geschenkalarm", tr: "Hediye uyarıları", es: "Alertas de regalos", it: "Avvisi regali" },
+  "Gift Videos & Actions": { ar: "فيديوهات وتأثيرات الهدايا", fr: "Vidéos et actions cadeaux", de: "Geschenk-Videos & Aktionen", tr: "Hediye videoları ve eylemler", es: "Vídeos y acciones de regalos", it: "Video e azioni regalo" },
+  "Follow & Join Alerts": { ar: "تنبيهات المتابعة والانضمام", fr: "Alertes abonnements et arrivées", de: "Follow- und Beitrittsalarme", tr: "Takip ve katılım uyarıları", es: "Alertas de seguidores y entradas", it: "Avvisi follower e ingressi" },
+  "Latest Events": { ar: "آخر الأحداث", fr: "Derniers événements", de: "Neueste Ereignisse", tr: "Son etkinlikler", es: "Últimos eventos", it: "Ultimi eventi" },
+  "Chat Box": { ar: "صندوق الدردشة", fr: "Boîte de chat", de: "Chat-Feld", tr: "Sohbet kutusu", es: "Caja de chat", it: "Chat" },
+  "Link Scenes": { ar: "مشاهد الربط", fr: "Scènes liées", de: "Verknüpfte Szenen", tr: "Bağlantılı sahneler", es: "Escenas vinculadas", it: "Scene collegate" },
+  "Avatars & 68 Frames": { ar: "الشخصيات و68 إطاراً", fr: "Avatars et 68 cadres", de: "Avatare & 68 Rahmen", tr: "Avatarlar ve 68 çerçeve", es: "Avatares y 68 marcos", it: "Avatar e 68 cornici" },
+  "Live Overlays": { ar: "شاشات البث", fr: "Overlays LIVE", de: "Live-Overlays", tr: "Canlı yayın katmanları", es: "Overlays en directo", it: "Overlay LIVE" },
+  "Effects & Rising Hearts": { ar: "التأثيرات والقلوب الصاعدة", fr: "Effets et cœurs animés", de: "Effekte & aufsteigende Herzen", tr: "Efektler ve yükselen kalpler", es: "Efectos y corazones", it: "Effetti e cuori animati" },
+  "Flag Hearts": { ar: "قلوب الأعلام", fr: "Cœurs drapeaux", de: "Flaggenherzen", tr: "Bayrak kalpleri", es: "Corazones con banderas", it: "Cuori con bandiere" },
+  "TTS & Sound Alerts": { ar: "تحويل النص إلى كلام والتنبيهات الصوتية", fr: "Synthèse vocale et alertes sonores", de: "Sprachausgabe & Tonalarme", tr: "Metin seslendirme ve sesli uyarılar", es: "Texto a voz y alertas sonoras", it: "Sintesi vocale e avvisi audio" },
+  "Social Media": { ar: "وسائل التواصل", fr: "Réseaux sociaux", de: "Soziale Medien", tr: "Sosyal medya", es: "Redes sociales", it: "Social media" },
+  "Branding": { ar: "الهوية البصرية", fr: "Identité visuelle", de: "Markenauftritt", tr: "Marka kimliği", es: "Identidad de marca", it: "Identità del brand" },
+  "Stream Notes": { ar: "ملاحظات البث", fr: "Notes du direct", de: "Stream-Notizen", tr: "Yayın notları", es: "Notas del directo", it: "Note della diretta" },
+  "Background Library": { ar: "مكتبة الخلفيات", fr: "Bibliothèque d’arrière-plans", de: "Hintergrundbibliothek", tr: "Arka plan kitaplığı", es: "Biblioteca de fondos", it: "Libreria sfondi" },
+  "Quran Recitation": { ar: "تلاوة القرآن", fr: "Récitation du Coran", de: "Koranrezitation", tr: "Kur'an tilaveti", es: "Recitación del Corán", it: "Recitazione del Corano" },
+  "9:16 & 16:9 Display": { ar: "العرض 9:16 و16:9", fr: "Affichage 9:16 et 16:9", de: "Anzeige 9:16 & 16:9", tr: "9:16 ve 16:9 görünüm", es: "Pantalla 9:16 y 16:9", it: "Schermo 9:16 e 16:9" },
+  "TikTok Studio & OBS": { ar: "TikTok Studio وOBS", fr: "TikTok Studio et OBS", de: "TikTok Studio & OBS", tr: "TikTok Studio ve OBS", es: "TikTok Studio y OBS", it: "TikTok Studio e OBS" },
+  "Settings": { ar: "الإعدادات", fr: "Paramètres", de: "Einstellungen", tr: "Ayarlar", es: "Configuración", it: "Impostazioni" },
+};
+const previousTranslateText = translateText;
 export function translateText(locale: Locale, source: string): string {
-  return phraseTranslations[source]?.[locale] ?? source;
+  return phraseTranslations[source]?.[locale] ?? navigationTranslations[source]?.[locale] ?? source;
 }
