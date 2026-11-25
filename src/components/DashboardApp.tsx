@@ -91,7 +91,8 @@ import {
   Wifi,
 } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
-import { LanguageSwitcher } from "@/components/LocaleProvider";
+import { LanguageSwitcher, useLocale } from "@/components/LocaleProvider";
+import { translateText } from "@/lib/i18n";
 
 interface DashboardPayload {
   profile: StreamerProfile;
@@ -207,6 +208,8 @@ function getNavIcon(id: string) {
 }
 
 export function DashboardApp({ initialSection = "overview", initialGame }: DashboardAppProps) {
+  const { locale } = useLocale();
+  const tx = (value: string) => translateText(locale, value);
   const [data, setData] = useState<DashboardPayload | null>(null);
   const [activeSection, setActiveSection] = useState<string>(initialSection);
   const [sidebarExpanded, setSidebarExpanded] = useState<boolean>(true);
@@ -593,7 +596,7 @@ export function DashboardApp({ initialSection = "overview", initialGame }: Dashb
                         className="h-3 w-3 rounded-full"
                         style={{ backgroundColor: item.hex }}
                       />
-                      {item.label}
+                      {tx(item.label)}
                     </span>
                     {profile.accentPreset === key && (
                       <Check className="h-3.5 w-3.5 text-brand-cyan" />
@@ -653,7 +656,7 @@ export function DashboardApp({ initialSection = "overview", initialGame }: Dashb
                   )}
                   <button
                     type="button"
-                    title={item.label}
+                    title={tx(item.label)}
                     onClick={() => setActiveSection(item.id)}
                     className={`group relative flex items-center gap-3 rounded-xl px-2.5 py-2 text-xs font-bold transition ${
                       sidebarExpanded ? "justify-between" : "justify-center"
