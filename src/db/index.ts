@@ -10,20 +10,8 @@ import { Pool } from "pg";
  * - Uses a small pool on serverless (Vercel) to stay under Postgres connection limits.
  */
 
-function normalizePgSslMode(connectionString: string): string {
-  const url = new URL(connectionString);
-  const sslMode = url.searchParams.get("sslmode");
-  // Preserve node-postgres's current secure behavior while avoiding its pg 9 deprecation warning.
-  if (sslMode && ["prefer", "require", "verify-ca"].includes(sslMode)) {
-    url.searchParams.set("sslmode", "verify-full");
-    return url.toString();
-  }
-  return connectionString;
-}
-
 export function databaseUrl(): string | undefined {
-  const raw = process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.POSTGRES_PRISMA_URL;
-  return raw ? normalizePgSslMode(raw) : undefined;
+  return process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.POSTGRES_PRISMA_URL || undefined;
 }
 
 const isServerless = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
@@ -84,7 +72,7 @@ export const db = new Proxy({} as Database, {
 function getLockPool(): Pool {
   if (!globalForDb.__olLockPool) {
     const explicitDirect = process.env.DATABASE_URL_UNPOOLED || process.env.POSTGRES_URL_NON_POOLING;
-    const raw = explicitDirect ? normalizePgSslMode(explicitDirect) : databaseUrl();
+    const raw = explicitDirect || databaseUrl();
     if (!raw) throw new Error("Database URL is not configured for advisory locks.");
     let connectionString = raw;
     if (!explicitDirect) {
