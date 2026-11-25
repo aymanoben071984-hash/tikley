@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { db } from "@/db";
 import { streamerProfiles } from "@/db/schema";
 import { ensureSeeded } from "@/lib/seed";
+import { resetBoardsOnLive } from "@/lib/topBoardsServer";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
@@ -25,18 +26,61 @@ export async function POST(request: Request) {
 
   await ensureSeeded();
   if (body.eventType === "live_state") {
-    const status = body.status === "live" ? "live" : "waiting";
+    const sessionId = typeof body.sessionId === "string" && /^[a-f0-9-]{32,36}$/i.test(body.sessionId)
+      ? body.sessionId
+      : null;
+    if (!sessionId) return NextResponse.json({ error: "Valid sessionId is required" }, { status: 400 });
+
+    if (body.status === "live") {
+      const [profile] = await db.select().from(streamerProfiles).limit(1);
+      if (!profile) return NextResponse.json({ error: "Streamer profile is missing" }, { status: 503 });
+      if (profile.connectionStatus !== "live" || profile.liveSessionId !== sessionId) {
+        await resetBoardsOnLive();
+        await db.update(streamerProfiles).set({
+          connectionStatus: "live",
+          liveSessionId: sessionId,
+          sessionCoins: 0,
+          sessionPeakViewers: 0,
+          sessionAvgViewers: 0,
+          sessionNewFollowers: 0,
+          sessionLikes: 0,
+          sessionGifts: 0,
+          updatedAt: new Date(),
+        }).where(eq(streamerProfiles.id, profile.id));
+      }
+      return NextResponse.json({ status: "live", sessionId });
+    }
+
     const [profile] = await db.select().from(streamerProfiles).limit(1);
-    if (profile) await db.update(streamerProfiles).set({ connectionStatus: status, updatedAt: new Date() }).where(eq(streamerProfiles.id, profile.id));
-    return NextResponse.json({ status });
+    if (profile && profile.liveSessionId === sessionId) {
+      await db.update(streamerProfiles).set({
+        connectionStatus: "waiting",
+        liveSessionId: null,
+        sessionCoins: 0,
+        sessionPeakViewers: 0,
+        sessionAvgViewers: 0,
+        sessionNewFollowers: 0,
+        sessionLikes: 0,
+        sessionGifts: 0,
+        updatedAt: new Date(),
+      }).where(eq(streamerProfiles.id, profile.id));
+    }
+    return NextResponse.json({ status: "waiting" });
   }
 
   const allowed = new Set(["gift", "like", "follow", "join", "chat", "share"]);
   const eventType = typeof body.eventType === "string" ? body.eventType : "";
   if (!allowed.has(eventType)) return NextResponse.json({ error: "Unsupported eventType" }, { status: 400 });
 
+  const sessionId = typeof body.sessionId === "string" && /^[a-f0-9-]{32,36}$/i.test(body.sessionId)
+    ? body.sessionId
+    : null;
+  if (!sessionId) return NextResponse.json({ error: "Valid sessionId is required" }, { status: 400 });
+
   const [profile] = await db.select().from(streamerProfiles).limit(1);
-  if (!profile || profile.connectionStatus !== "live") return NextResponse.json({ error: "LIVE session is not confirmed" }, { status: 409 });
+  if (!profile || profile.connectionStatus !== "live" || profile.liveSessionId !== sessionId) {
+    return NextResponse.json({ error: "LIVE session is no longer active" }, { status: 410 });
+  }
 
   const sourceEventId = typeof body.sourceEventId === "string" && /^[a-zA-Z0-9:_-]{1,128}$/.test(body.sourceEventId)
     ? body.sourceEventId
@@ -45,6 +89,7 @@ export async function POST(request: Request) {
   const payload: Record<string, unknown> = {
     eventType,
     sourceEventId,
+    sessionId,
     username: typeof body.username === "string" && body.username.trim() ? body.username.trim().replace(/^@/, "").slice(0, 80) : "",
     displayName: typeof body.displayName === "string" && body.displayName.trim()
       ? body.displayName.trim().slice(0, 120)
