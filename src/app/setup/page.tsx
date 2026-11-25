@@ -91,7 +91,7 @@ export default function SetupPage() {
             </label>
             {error && <p role="alert" className="text-sm text-rose-400">{error}</p>}
             <button disabled={busy} className="w-full rounded-lg bg-cyan-500 px-4 py-2.5 font-semibold text-slate-950 disabled:opacity-50">
-              {busy ? "{tx("Creating Admin…")}" : "{tx("Create Admin account")}"}
+              {busy ? tx("Creating Admin…") : tx("Create Admin account")}
             </button>
           </>
         )}
