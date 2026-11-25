@@ -1,5 +1,8 @@
 "use client";
 
+import { useLocale } from "@/components/LocaleProvider";
+import { translateText } from "@/lib/i18n";
+
 import type {
   AvatarPreset,
   LinkScene,
@@ -58,7 +61,9 @@ export function SceneAndStudioSetup({
   onCopyUrl,
   onTriggerDeckAction,
   mode,
-}: SceneComposerProps) {
+}: SceneComposerProps) {  const { locale } = useLocale();
+  const tx = (source: string) => translateText(locale, source);
+
   const [selectedSceneSlug, setSelectedSceneSlug] = useState<string>("tiktok-studio");
   const activeScene =
     scenes.find((s) => s.slug === selectedSceneSlug) ?? scenes[0];
@@ -310,7 +315,7 @@ export function SceneAndStudioSetup({
               <div className="grid grid-cols-2 gap-3 text-xs">
                 <label className="space-y-1">
                   <span className="flex justify-between font-semibold text-muted-foreground">
-                    <span>Horizontal (X)</span>
+                    <span>{tx("Horizontal (X)")}</span>
                     <span>{selectedLayer.x}%</span>
                   </span>
                   <input
@@ -326,7 +331,7 @@ export function SceneAndStudioSetup({
                 </label>
                 <label className="space-y-1">
                   <span className="flex justify-between font-semibold text-muted-foreground">
-                    <span>Vertical (Y)</span>
+                    <span>{tx("Vertical (Y)")}</span>
                     <span>{selectedLayer.y}%</span>
                   </span>
                   <input
@@ -342,7 +347,7 @@ export function SceneAndStudioSetup({
                 </label>
                 <label className="space-y-1">
                   <span className="flex justify-between font-semibold text-muted-foreground">
-                    <span>Layer Width</span>
+                    <span>{tx("Layer Width")}</span>
                     <span>{selectedLayer.width}%</span>
                   </span>
                   <input
@@ -358,7 +363,7 @@ export function SceneAndStudioSetup({
                 </label>
                 <label className="space-y-1">
                   <span className="flex justify-between font-semibold text-muted-foreground">
-                    <span>Scale</span>
+                    <span>{tx("Scale")}</span>
                     <span>{selectedLayer.scale}%</span>
                   </span>
                   <input
@@ -382,7 +387,7 @@ export function SceneAndStudioSetup({
               <span className="text-xs font-extrabold text-foreground">
                 🎛️ Live Stream Deck &amp; Studio Hotkeys (Click to fire!)
               </span>
-              <span className="text-[10px] font-bold text-brand-cyan">8 Physical Keys</span>
+              <span className="text-[10px] font-bold text-brand-cyan">{tx("8 Physical Keys")}</span>
             </div>
             <div className="grid grid-cols-4 gap-2">
               {HARDWARE_KEYS.map((k) => (
@@ -444,20 +449,20 @@ export function SceneAndStudioSetup({
           {guideTab === "tiktok" && (
             <ol className="space-y-2.5 text-xs text-muted-foreground">
               <li className="rounded-xl border border-border bg-secondary/25 p-3">
-                <strong className="text-foreground">1. Copy your Vertical Scene URL:</strong>{" "}
-                Click <em>Copy 1-Link Scene URL</em> above (<code className="text-brand-cyan">/overlay/scene/tiktok-studio</code>).
+                <strong className="text-foreground">{tx("1. Copy your Vertical Scene URL:")}</strong>{" "}
+                Click <em>{tx("Copy 1-Link Scene URL")}</em> {tx("above (")}<code className="text-brand-cyan">{tx("/overlay/scene/tiktok-studio")}</code>).
               </li>
               <li className="rounded-xl border border-border bg-secondary/25 p-3">
-                <strong className="text-foreground">2. Open TikTok LIVE Studio → Add Source → Link / Web:</strong>{" "}
-                Choose <strong>Link (Web)</strong> in your Sources list and paste your OverlayLive URL.
+                <strong className="text-foreground">{tx("2. Open TikTok LIVE Studio → Add Source → Link / Web:")}</strong>{" "}
+                Choose <strong>{tx("Link (Web)")}</strong> in your Sources list and paste your OverlayLive URL.
               </li>
               <li className="rounded-xl border border-border bg-secondary/25 p-3">
-                <strong className="text-foreground">3. Set Resolution to 1080 × 1920 (60 FPS):</strong>{" "}
+                <strong className="text-foreground">{tx("3. Set Resolution to 1080 × 1920 (60 FPS):")}</strong>{" "}
                 Place the Web layer above your Camera or Game Capture. Keep the bottom 14% clear for TikTok mobile chat!
               </li>
               <li className="rounded-xl border border-border bg-secondary/25 p-3">
-                <strong className="text-foreground">4. Test before going LIVE:</strong>{" "}
-                Keep <em>Test Mode</em> enabled in your Dashboard to preview Gifts, VIP Avatars &amp; Games directly inside TikTok LIVE Studio.
+                <strong className="text-foreground">{tx("4. Test before going LIVE:")}</strong>{" "}
+                Keep <em>{tx("Test Mode")}</em> enabled in your Dashboard to preview Gifts, VIP Avatars &amp; Games directly inside TikTok LIVE Studio.
               </li>
             </ol>
           )}
@@ -465,18 +470,18 @@ export function SceneAndStudioSetup({
           {guideTab === "obs" && (
             <ol className="space-y-2.5 text-xs text-muted-foreground">
               <li className="rounded-xl border border-border bg-secondary/25 p-3">
-                <strong className="text-foreground">1. In OBS Studio, click Sources → + → Browser:</strong>{" "}
-                Name it <code className="text-brand-cyan">OverlayLive Master Scene</code>.
+                <strong className="text-foreground">{tx("1. In OBS Studio, click Sources → + → Browser:")}</strong>{" "}
+                Name it <code className="text-brand-cyan">{tx("OverlayLive Master Scene")}</code>.
               </li>
               <li className="rounded-xl border border-border bg-secondary/25 p-3">
-                <strong className="text-foreground">2. Paste URL &amp; Set Dimensions:</strong>{" "}
+                <strong className="text-foreground">{tx("2. Paste URL & Set Dimensions:")}</strong>{" "}
                 Use <code className="text-brand-cyan">1920 × 1080</code> for Horizontal OBS or{" "}
                 <code className="text-brand-cyan">1080 × 1920</code> if using Aitum Vertical Plugin. Check{" "}
-                <em>Control audio via OBS</em>.
+                <em>{tx("Control audio via OBS")}</em>.
               </li>
               <li className="rounded-xl border border-border bg-secondary/25 p-3">
                 <div className="mb-1 flex items-center justify-between">
-                  <strong className="text-foreground">3. Transparent Custom CSS (Auto-applied):</strong>
+                  <strong className="text-foreground">{tx("3. Transparent Custom CSS (Auto-applied):")}</strong>
                   <button
                     type="button"
                     onClick={() => {
@@ -497,13 +502,13 @@ export function SceneAndStudioSetup({
           {guideTab === "streamlabs" && (
             <ol className="space-y-2.5 text-xs text-muted-foreground">
               <li className="rounded-xl border border-border bg-secondary/25 p-3">
-                <strong className="text-foreground">1. Streamlabs Desktop Dual Output Ready:</strong>{" "}
-                Add a <strong>Browser Source</strong> in both your Horizontal (16:9) and Vertical (9:16) scenes!
+                <strong className="text-foreground">{tx("1. Streamlabs Desktop Dual Output Ready:")}</strong>{" "}
+                Add a <strong>{tx("Browser Source")}</strong> in both your Horizontal (16:9) and Vertical (9:16) scenes!
               </li>
               <li className="rounded-xl border border-border bg-secondary/25 p-3">
-                <strong className="text-foreground">2. Paste Dedicated Scene Links:</strong>{" "}
-                Use <code className="text-brand-cyan">/overlay/scene/obs-studio</code> for YouTube/Twitch and{" "}
-                <code className="text-brand-cyan">/overlay/scene/tiktok-studio</code> for TikTok Dual Output.
+                <strong className="text-foreground">{tx("2. Paste Dedicated Scene Links:")}</strong>{" "}
+                Use <code className="text-brand-cyan">{tx("/overlay/scene/obs-studio")}</code> for YouTube/Twitch and{" "}
+                <code className="text-brand-cyan">{tx("/overlay/scene/tiktok-studio")}</code> for TikTok Dual Output.
               </li>
             </ol>
           )}
