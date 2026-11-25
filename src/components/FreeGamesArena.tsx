@@ -30,6 +30,8 @@ import {
   Zap,
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
+import { useLocale } from "@/components/LocaleProvider";
+import { translateText } from "@/lib/i18n";
 
 interface GameOverlayStageProps {
   gameSlug: string;
