@@ -114,7 +114,7 @@ export async function POST(request: Request) {
     // Locking the single streamer row also serializes session-stat updates and LIVE state changes.
     const result = await db.transaction(async (tx) => {
       const [profile] = await tx.select().from(streamerProfiles).for("update").limit(1);
-      if (!profile || profile.connectionStatus !== "live") return { kind: "not_live" as const };
+      if (!profile || profile.connectionStatus !== "live" || profile.liveSessionId !== body.sessionId) return { kind: "not_live" as const };
 
       const [created] = await tx.insert(liveEvents)
         .values({ sourceEventId, eventType, username, displayName, avatarUrl, avatarFrame, giftId, giftName, giftIcon, coins, likes, message, effectKey })
