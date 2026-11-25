@@ -84,7 +84,9 @@ function buildSources(boards: TopBoardRow[], widgets: WidgetConfig[]): Source[] 
 
 /* ───────────── live preview (real overlay in an iframe) ───────────── */
 
-function PreviewFrame({ source, format, display, showGuide, width }: { source: Source; format: DisplayFormat; display: OverlayDisplay; showGuide: boolean; width: number }) {
+function PreviewFrame({ source, format, display, showGuide, width }: { source: Source; format: DisplayFormat; display: OverlayDisplay; showGuide: boolean; width: number }) {  const { locale } = useLocale();
+  const tx = (source: string) => translateText(locale, source);
+
   const ref = useRef<HTMLIFrameElement>(null);
   const { w: W, h: H } = CANVAS[format];
   const k = width / W;
@@ -122,9 +124,9 @@ function PreviewFrame({ source, format, display, showGuide, width }: { source: S
       />
       {format === "9:16" && showGuide && (
         <div className="pointer-events-none absolute inset-0 text-[8px] font-bold uppercase tracking-wide text-rose-100/80">
-          <div className="absolute inset-x-0 top-0 flex items-center justify-center border-b border-dashed border-rose-400/60 bg-rose-500/15" style={{ height: `${TIKTOK_SAFE.top * 100}%` }}>TikTok top bar</div>
-          <div className="absolute right-0 flex items-center justify-center border-l border-dashed border-rose-400/60 bg-rose-500/15 [writing-mode:vertical-rl]" style={{ top: "38%", bottom: `${TIKTOK_SAFE.bottom * 100}%`, width: `${TIKTOK_SAFE.right * 100}%` }}>Buttons</div>
-          <div className="absolute inset-x-0 bottom-0 flex items-center justify-center border-t border-dashed border-rose-400/60 bg-rose-500/15" style={{ height: `${TIKTOK_SAFE.bottom * 100}%` }}>Comments & gift tray</div>
+          <div className="absolute inset-x-0 top-0 flex items-center justify-center border-b border-dashed border-rose-400/60 bg-rose-500/15" style={{ height: `${TIKTOK_SAFE.top * 100}%` }}>{tx("TikTok top bar")}</div>
+          <div className="absolute right-0 flex items-center justify-center border-l border-dashed border-rose-400/60 bg-rose-500/15 [writing-mode:vertical-rl]" style={{ top: "38%", bottom: `${TIKTOK_SAFE.bottom * 100}%`, width: `${TIKTOK_SAFE.right * 100}%` }}>{tx("Buttons")}</div>
+          <div className="absolute inset-x-0 bottom-0 flex items-center justify-center border-t border-dashed border-rose-400/60 bg-rose-500/15" style={{ height: `${TIKTOK_SAFE.bottom * 100}%` }}>{tx("Comments & gift tray")}</div>
           {p.safeZone && (
             <div className="absolute border-2 border-dashed border-emerald-400/80" style={{ top: `${TIKTOK_SAFE.top * 100}%`, bottom: `${TIKTOK_SAFE.bottom * 100}%`, left: `${TIKTOK_SAFE.left * 100}%`, right: `${TIKTOK_SAFE.right * 100}%` }} />
           )}
@@ -153,7 +155,9 @@ function FormatColumn({
   onChange: (p: Partial<FormatPlacement>) => void;
   onCopy: (path: string, label: string, id: string) => void;
   copied: string | null;
-}) {
+}) {  const { locale } = useLocale();
+  const tx = (source: string) => translateText(locale, source);
+
   const [guide, setGuide] = useState(true);
   const p = display.formats[format];
   const vertical = format === "9:16";
@@ -181,7 +185,7 @@ function FormatColumn({
 
       <div className="grid grid-cols-[auto_1fr] items-start gap-4">
         <div>
-          <div className="mb-1 text-[11px] font-semibold text-muted-foreground">Position</div>
+          <div className="mb-1 text-[11px] font-semibold text-muted-foreground">{tx("Position")}</div>
           <div className="grid w-[102px] grid-cols-3 gap-1">
             {ANCHORS.map((a) => (
               <button key={a} type="button" title={ANCHOR_LABEL[a]} aria-label={ANCHOR_LABEL[a]} onClick={() => onChange({ anchor: a })} className={`grid aspect-square place-items-center rounded-md border text-[10px] ${p.anchor === a ? "border-brand-cyan bg-brand-cyan/25 text-brand-cyan" : "border-border bg-secondary/40 text-muted-foreground hover:text-foreground"}`}>
@@ -193,15 +197,15 @@ function FormatColumn({
         </div>
         <div className="space-y-2 text-xs">
           <label className="block">
-            <span className="flex justify-between font-semibold text-muted-foreground"><span>Size</span><span className="text-foreground">{p.scale}%</span></span>
+            <span className="flex justify-between font-semibold text-muted-foreground"><span>{tx("Size")}</span><span className="text-foreground">{p.scale}%</span></span>
             <input type="range" min={30} max={250} step={5} value={p.scale} onChange={(e) => onChange({ scale: Number(e.target.value) })} className="w-full accent-cyan-400" />
           </label>
           <label className="block">
-            <span className="flex justify-between font-semibold text-muted-foreground"><span>Move left / right</span><span className="text-foreground">{p.offsetX}%</span></span>
+            <span className="flex justify-between font-semibold text-muted-foreground"><span>{tx("Move left / right")}</span><span className="text-foreground">{p.offsetX}%</span></span>
             <input type="range" min={-50} max={50} value={p.offsetX} onChange={(e) => onChange({ offsetX: Number(e.target.value) })} className="w-full accent-cyan-400" />
           </label>
           <label className="block">
-            <span className="flex justify-between font-semibold text-muted-foreground"><span>Move up / down</span><span className="text-foreground">{p.offsetY}%</span></span>
+            <span className="flex justify-between font-semibold text-muted-foreground"><span>{tx("Move up / down")}</span><span className="text-foreground">{p.offsetY}%</span></span>
             <input type="range" min={-50} max={50} value={p.offsetY} onChange={(e) => onChange({ offsetY: Number(e.target.value) })} className="w-full accent-cyan-400" />
           </label>
         </div>
@@ -209,8 +213,8 @@ function FormatColumn({
 
       {vertical && (
         <div className="grid grid-cols-1 gap-2 text-xs sm:grid-cols-2">
-          <label className="flex items-center justify-between rounded-xl border border-border bg-secondary/25 px-3 py-2 font-bold text-foreground">Keep inside safe zone <Toggle checked={p.safeZone} onChange={(v) => onChange({ safeZone: v })} /></label>
-          <label className="flex items-center justify-between rounded-xl border border-border bg-secondary/25 px-3 py-2 font-bold text-foreground">Show TikTok UI guide <Toggle checked={guide} onChange={setGuide} /></label>
+          <label className="flex items-center justify-between rounded-xl border border-border bg-secondary/25 px-3 py-2 font-bold text-foreground">{tx("Keep inside safe zone")} <Toggle checked={p.safeZone} onChange={(v) => onChange({ safeZone: v })} /></label>
+          <label className="flex items-center justify-between rounded-xl border border-border bg-secondary/25 px-3 py-2 font-bold text-foreground">{tx("Show TikTok UI guide")} <Toggle checked={guide} onChange={setGuide} /></label>
         </div>
       )}
 
