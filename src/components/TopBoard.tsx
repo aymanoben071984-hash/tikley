@@ -19,6 +19,8 @@ import { AutoScale, RefBoardFace } from "@/components/RefBoard";
 import { ThemeBoard } from "@/components/ThemeBoard";
 import { olTheme } from "@/lib/olThemes";
 import React, { useEffect, useMemo, useState } from "react";
+import { useLocale } from "@/components/LocaleProvider";
+import { translateText } from "@/lib/i18n";
 
 const MEDALS = ["#ffd700", "#e2e8f0", "#ff7a18"];
 
@@ -248,11 +250,13 @@ interface BoardFaceProps {
 }
 
 function BoardFace({ type, settings, avatars, compact, fontCss }: BoardFaceProps) {
+  const { locale } = useLocale();
   const meta = getBoardMeta(type);
   const d = settings.display;
   const tk = tokensFor(settings.variant);
   const rows = rankBoard(avatars, type, compact ? Math.min(d.maxRows, 5) : d.maxRows);
-  const title = settings.titles[type] || meta.defaultTitle;
+  const configuredTitle = settings.titles[type];
+  const title = configuredTitle && configuredTitle !== meta.defaultTitle ? configuredTitle : translateText(locale, meta.defaultTitle);
   const horizontal = settings.layout === "horizontal";
 
   if (isThemeDesign(settings.variant)) {
