@@ -95,6 +95,20 @@ const loginTranslations: Record<string, Partial<Record<Locale, string>>> = {
   "Unable to sign in. Please try again.": { ar: "تعذّر تسجيل الدخول. حاول مجدداً.", fr: "Connexion impossible. Veuillez réessayer.", de: "Anmeldung nicht möglich. Bitte erneut versuchen.", tr: "Giriş yapılamadı. Lütfen tekrar deneyin.", es: "No se pudo iniciar sesión. Inténtalo de nuevo.", it: "Impossibile accedere. Riprova." },
   "Too many attempts. Try again later.": { ar: "محاولات كثيرة. حاول لاحقاً.", fr: "Trop de tentatives. Réessayez plus tard.", de: "Zu viele Versuche. Versuche es später erneut.", tr: "Çok fazla deneme. Daha sonra tekrar deneyin.", es: "Demasiados intentos. Vuelve a intentarlo más tarde.", it: "Troppi tentativi. Riprova più tardi." },
 };
+
+const tickerTranslations: Record<string, Partial<Record<Locale, string>>> = {
+  "Last Follow": { ar: "آخر متابع", fr: "Dernier abonnement", de: "Letzter Follow", tr: "Son takip", es: "Último seguidor", it: "Ultimo follower" },
+  "Last Like": { ar: "آخر إعجاب", fr: "Dernier J’aime", de: "Letztes Like", tr: "Son beğeni", es: "Último Me gusta", it: "Ultimo Mi piace" },
+  "Last Gift": { ar: "آخر هدية", fr: "Dernier cadeau", de: "Letztes Geschenk", tr: "Son hediye", es: "Último regalo", it: "Ultimo regalo" },
+  "Last Join": { ar: "آخر انضمام", fr: "Dernière arrivée", de: "Letzter Beitritt", tr: "Son katılım", es: "Última entrada", it: "Ultimo accesso" },
+  "Last Share": { ar: "آخر مشاركة", fr: "Dernage partage", de: "Letzte Teilung", tr: "Son paylaşım", es: "Último compartido", it: "Ultima condivisione" },
+  "just followed you!": { ar: "بدأ بمتابعتك!", fr: "vient de vous suivre !", de: "folgt dir jetzt!", tr: "seni takip etti!", es: "¡acaba de seguirte!", it: "ha iniziato a seguirti!" },
+  "sent likes": { ar: "أرسل إعجابات", fr: "a envoyé des J’aime", de: "hat Likes gesendet", tr: "beğeni gönderdi", es: "envió Me gusta", it: "ha inviato Mi piace" },
+  "sent a gift": { ar: "أرسل هدية", fr: "a envoyé un cadeau", de: "hat ein Geschenk gesendet", tr: "hediye gönderdi", es: "envió un regalo", it: "ha inviato un regalo" },
+  "joined the LIVE": { ar: "انضم إلى البث المباشر", fr: "a rejoint le LIVE", de: "ist dem LIVE beigetreten", tr: "canlı yayına katıldı", es: "se unió al directo", it: "è entrato nella diretta" },
+  "shared the LIVE": { ar: "شارك البث المباشر", fr: "a partagé le LIVE", de: "hat das LIVE geteilt", tr: "canlı yayını paylaştı", es: "compartió el directo", it: "ha condiviso la diretta" },
+  "Gift": { ar: "هدية", fr: "Cadeau", de: "Geschenk", tr: "Hediye", es: "Regalo", it: "Regalo" },
+};
 export function translateText(locale: Locale, source: string): string {
-  return phraseTranslations[source]?.[locale] ?? navigationTranslations[source]?.[locale] ?? dashboardTranslations[source]?.[locale] ?? loginTranslations[source]?.[locale] ?? source;
+  return phraseTranslations[source]?.[locale] ?? navigationTranslations[source]?.[locale] ?? dashboardTranslations[source]?.[locale] ?? loginTranslations[source]?.[locale] ?? tickerTranslations[source]?.[locale] ?? source;
 }
