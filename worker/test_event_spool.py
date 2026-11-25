@@ -73,6 +73,7 @@ class DurableReplayAfterLostResponseTest(unittest.TestCase):
                 "displayName": "Viewer",
                 "avatarUrl": "https://example.test/avatar.png",
                 "coins": 25,
+                "sessionId": "11111111-1111-4111-8111-111111111111",
             }
 
             server_committed_ids = set()
@@ -90,6 +91,8 @@ class DurableReplayAfterLostResponseTest(unittest.TestCase):
                 return "delivered", 200, ""
 
             worker_a = load_worker(spool, "tikley_worker_process_a")
+            worker_a.active_session_id = "11111111-1111-4111-8111-111111111111"
+            worker_a.live_confirmed = True
             worker_a.enqueue(event)
             worker_a.deliver = simulated_delivery
             asyncio.run(worker_a.drain_spool())
@@ -99,6 +102,8 @@ class DurableReplayAfterLostResponseTest(unittest.TestCase):
             del worker_a
 
             worker_b = load_worker(spool, "tikley_worker_process_b")
+            worker_b.active_session_id = "11111111-1111-4111-8111-111111111111"
+            worker_b.live_confirmed = True
             worker_b.deliver = simulated_delivery
             asyncio.run(worker_b.drain_spool())
             self.assertEqual(len(server_committed_ids), 1)
@@ -114,7 +119,10 @@ class DurableReplayAfterLostResponseTest(unittest.TestCase):
                 "username": "viewer",
                 "displayName": "Viewer",
                 "avatarUrl": "https://example.test/avatar.png",
+                "sessionId": "11111111-1111-4111-8111-111111111111",
             }
+            worker.active_session_id = "11111111-1111-4111-8111-111111111111"
+            worker.live_confirmed = True
             worker.enqueue(event)
             calls = {"count": 0}
 
@@ -149,10 +157,64 @@ class DurableReplayAfterLostResponseTest(unittest.TestCase):
                 return "delivered", 200, ""
 
             worker.deliver = fake_deliver
-            worker.active_session_id = "test-live-session-001"
+            worker.active_session_id = "11111111-1111-4111-8111-111111111111"
             asyncio.run(worker.queue_event(event))
             self.assertEqual(calls, ["live_state"])
             self.assertIsNotNone(worker.next_pending())
+
+
+    def test_legacy_pending_and_missing_session_quarantine_are_recovered_without_data_loss(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            worker = load_worker(Path(tmp) / "spool.sqlite3", "tikley_worker_legacy_recovery")
+            pending = {
+                "eventType": "chat",
+                "sourceEventId": "legacy:pending:001",
+                "username": "viewer",
+                "displayName": "Legacy Viewer",
+                "message": "pending message",
+            }
+            quarantined = {
+                "eventType": "like",
+                "sourceEventId": "legacy:failed:001",
+                "username": "viewer2",
+                "displayName": "Legacy Viewer 2",
+                "likes": 7,
+            }
+            unrelated = {
+                "eventType": "chat",
+                "sourceEventId": "legacy:unrelated:001",
+                "username": "viewer3",
+                "displayName": "Legacy Viewer 3",
+            }
+            worker.enqueue(pending)
+            with __import__("sqlite3").connect(worker.SPOOL_PATH) as conn:
+                conn.execute(
+                    "INSERT INTO failed_events(source_event_id,payload_json,http_status,reason) VALUES(?,?,?,?)",
+                    (quarantined["sourceEventId"], __import__("json").dumps(quarantined), 400,
+                     '{"error":"Valid sessionId is required"}'),
+                )
+                conn.execute(
+                    "INSERT INTO failed_events(source_event_id,payload_json,http_status,reason) VALUES(?,?,?,?)",
+                    (unrelated["sourceEventId"], __import__("json").dumps(unrelated), 400, "other validation error"),
+                )
+
+            counts = worker.rebind_legacy_spool_events("11111111-1111-4111-8111-111111111111")
+            self.assertEqual(counts, (1, 1))
+            with __import__("sqlite3").connect(worker.SPOOL_PATH) as conn:
+                rows = dict(conn.execute(
+                    "SELECT source_event_id,payload_json FROM pending_events"
+                ).fetchall())
+                failed = dict(conn.execute(
+                    "SELECT source_event_id,payload_json FROM failed_events"
+                ).fetchall())
+
+            self.assertEqual(set(rows), {pending["sourceEventId"], quarantined["sourceEventId"]})
+            for original in (pending, quarantined):
+                restored = __import__("json").loads(rows[original["sourceEventId"]])
+                self.assertEqual(restored["sessionId"], "11111111-1111-4111-8111-111111111111")
+                for key, value in original.items():
+                    self.assertEqual(restored[key], value)
+            self.assertEqual(set(failed), {unrelated["sourceEventId"]})
 
 
 
