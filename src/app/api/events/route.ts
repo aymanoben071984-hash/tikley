@@ -148,7 +148,6 @@ export async function POST(request: Request) {
             coinsTotal: sql`${avatarPresets.coinsTotal} + ${coins}`,
             weeklyCoins: sql`${avatarPresets.weeklyCoins} + ${coins}`,
             allTimeCoins: sql`${avatarPresets.allTimeCoins} + ${coins}`,
-            likesTotal: sql`${avatarPresets.likesTotal} + ${likes}`,
             sharesTotal: sql`${avatarPresets.sharesTotal} + ${shares}`,
           }).where(eq(avatarPresets.id, preset.id));
         } else {
@@ -159,7 +158,6 @@ export async function POST(request: Request) {
             avatarUrl,
             frameSlug: avatarFrame,
             coinsTotal: coins,
-            likesTotal: likes,
             sharesTotal: shares,
             weeklyCoins: coins,
             allTimeCoins: coins,
