@@ -166,7 +166,9 @@ export function BackgroundsStudio({ onToast }: { onToast: (msg: string) => void 
   );
 }
 
-function BackgroundPreview({ item, initialOrientation, onClose, onToast }: { item: BackgroundItem; initialOrientation: BgOrientation; onClose: () => void; onToast: (m: string) => void }) {
+function BackgroundPreview({ item, initialOrientation, onClose, onToast }: { item: BackgroundItem; initialOrientation: BgOrientation; onClose: () => void; onToast: (m: string) => void }) {  const { locale } = useLocale();
+  const tx = (source: string) => translateText(locale, source);
+
   const [orientation, setOrientation] = useState<BgOrientation>(item.orientations.includes(initialOrientation) ? initialOrientation : item.orientations[0]);
   const [accent, setAccent] = useState(item.accent ?? "#28c7fa");
   const [sizeIdx, setSizeIdx] = useState(0);
@@ -210,7 +212,7 @@ function BackgroundPreview({ item, initialOrientation, onClose, onToast }: { ite
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src="/avatars/a1.png" alt="" className="h-6 w-6 rounded-full" /> Ava Stone
                       </span>
-                      <span className="rounded bg-rose-600 px-1.5 py-0.5 text-[9px] font-black">LIVE</span>
+                      <span className="rounded bg-rose-600 px-1.5 py-0.5 text-[9px] font-black">{tx("LIVE")}</span>
                     </div>
                     <div className="absolute bottom-24 right-2 flex flex-col items-center gap-3 text-white drop-shadow">
                       <Heart className="h-6 w-6" />
@@ -221,7 +223,7 @@ function BackgroundPreview({ item, initialOrientation, onClose, onToast }: { ite
                       {["Mira Lee: love this background 😍", "Zeyad: so clean!"].map((c) => (
                         <div key={c} className="w-fit max-w-[80%] rounded-full bg-black/35 px-2 py-0.5 text-[9px] font-semibold text-white backdrop-blur">{c}</div>
                       ))}
-                      <div className="h-7 rounded-full bg-black/40 px-3 text-[9px] leading-7 text-white/60">Add comment…</div>
+                      <div className="h-7 rounded-full bg-black/40 px-3 text-[9px] leading-7 text-white/60">{tx("Add comment…")}</div>
                     </div>
                   </>
                 )}
@@ -237,7 +239,7 @@ function BackgroundPreview({ item, initialOrientation, onClose, onToast }: { ite
                       <div className="absolute inset-x-0 top-0 flex items-center gap-1.5 bg-black/60 px-2 py-1 text-[9px] font-bold text-white/80">
                         <span className="h-2 w-2 rounded-full bg-rose-500" /> OBS Studio — Scene: Live
                       </div>
-                      <div className="absolute bottom-3 right-3 aspect-video w-1/4 rounded-md border-2 border-white/60 bg-black/40 text-center text-[8px] font-bold leading-[3] text-white/70 backdrop-blur">Camera</div>
+                      <div className="absolute bottom-3 right-3 aspect-video w-1/4 rounded-md border-2 border-white/60 bg-black/40 text-center text-[8px] font-bold leading-[3] text-white/70 backdrop-blur">{tx("Camera")}</div>
                     </>
                   )}
                 </div>
@@ -273,7 +275,7 @@ function BackgroundPreview({ item, initialOrientation, onClose, onToast }: { ite
 
           {item.kind === "procedural" && (
             <div className="text-xs">
-              <div className="mb-1.5 font-semibold text-muted-foreground">Accent colour</div>
+              <div className="mb-1.5 font-semibold text-muted-foreground">{tx("Accent colour")}</div>
               <div className="flex flex-wrap items-center gap-1.5">
                 {["#28c7fa", "#ec4899", "#a855f7", "#10b981", "#f59e0b", "#f43f5e", "#d4af37", "#ffffff"].map((c) => (
                   <button key={c} type="button" title={c} onClick={() => setAccent(c)} className={`h-6 w-6 rounded-full ${accent === c ? "ring-2 ring-brand-cyan ring-offset-2 ring-offset-card" : ""}`} style={{ background: c }} />
@@ -284,7 +286,7 @@ function BackgroundPreview({ item, initialOrientation, onClose, onToast }: { ite
           )}
 
           <label className="text-xs">
-            <span className="font-semibold text-muted-foreground">Size</span>
+            <span className="font-semibold text-muted-foreground">{tx("Size")}</span>
             <select value={sizeIdx} onChange={(e) => setSizeIdx(Number(e.target.value))} className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 font-semibold text-foreground">
               {sizes.map((s, i) => <option key={s.label} value={i}>{s.label}</option>)}
             </select>
@@ -298,13 +300,13 @@ function BackgroundPreview({ item, initialOrientation, onClose, onToast }: { ite
           <div className="rounded-xl border border-border bg-secondary/20 p-3 text-[11px] leading-relaxed text-muted-foreground">
             {orientation === "vertical" ? (
               <>
-                <div className="mb-1 font-extrabold text-foreground">TikTok LIVE Studio</div>
-                Add source → <strong className="text-foreground">Image</strong> → pick the file. Drag it to the bottom of the source list so your camera and overlays sit on top, then right-click → Fit to screen.
+                <div className="mb-1 font-extrabold text-foreground">{tx("TikTok LIVE Studio")}</div>
+                Add source → <strong className="text-foreground">{tx("Image")}</strong> → pick the file. Drag it to the bottom of the source list so your camera and overlays sit on top, then right-click → Fit to screen.
               </>
             ) : (
               <>
-                <div className="mb-1 font-extrabold text-foreground">OBS Studio / Streamlabs</div>
-                Sources → <strong className="text-foreground">+ → Image</strong> → browse to the file. Keep it at the bottom of the list, right-click → Transform → Fit to screen (Ctrl + F).
+                <div className="mb-1 font-extrabold text-foreground">{tx("OBS Studio / Streamlabs")}</div>
+                Sources → <strong className="text-foreground">{tx("+ → Image")}</strong> → browse to the file. Keep it at the bottom of the list, right-click → Transform → Fit to screen (Ctrl + F).
               </>
             )}
           </div>
