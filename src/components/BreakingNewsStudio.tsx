@@ -410,7 +410,7 @@ export function BreakingNewsStudio({ game, events, onSave, onFireEvent, onCopyUr
               Discard
             </button>
             <button type="button" disabled={!dirty || saving} onClick={handleSave} className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-brand-blue to-brand-cyan px-5 py-2 text-xs font-black text-white shadow hover:brightness-110 disabled:opacity-50">
-              {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> {tx(": justSaved ?")} <Check className="h-3.5 w-3.5" /> : <Save className="h-3.5 w-3.5" />}
+              {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : justSaved ? <Check className="h-3.5 w-3.5" /> : <Save className="h-3.5 w-3.5" />}
               {saving ? "Saving…" : justSaved ? "Saved" : "Save"}
             </button>
           </div>
