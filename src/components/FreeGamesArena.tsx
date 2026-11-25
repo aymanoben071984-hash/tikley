@@ -858,7 +858,7 @@ export function FreeGamesArena({
         const players = (next.players as Player[]) || [];
         const existing = players.find((p) => p.name.toLowerCase() === name.toLowerCase());
         const messageCommand = normalizedMessage.split(/\s+/)[0];
-        const shouldEnter = kind !== "chat" || messageCommand === "!join";
+        const shouldEnter = true;
         if (existing || shouldEnter) {
           const growth = kind === "gift" ? Math.max(25, Math.min(900, coins * 2)) : kind === "like" ? Math.max(1, Math.min(120, likes)) : kind === "chat" ? 14 : 8;
           const player: Player = existing
