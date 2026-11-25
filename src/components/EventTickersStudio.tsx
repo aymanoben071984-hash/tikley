@@ -1,5 +1,8 @@
 "use client";
 
+import { useLocale } from "@/components/LocaleProvider";
+import { translateText } from "@/lib/i18n";
+
 import type { LiveEvent } from "@/db/schema";
 import { EventTicker } from "@/components/EventTicker";
 import { NameAnimationPicker } from "@/components/NameAnimationPicker";
@@ -53,10 +56,12 @@ function latestOf(events: LiveEvent[], type: TickerEvent): TickerEventData | nul
   };
 }
 
-export function EventTickersStudio({ events, onFireEvent, onCopyUrl }: EventTickersStudioProps) {
+export function EventTickersStudio({ events, onFireEvent, onCopyUrl }: EventTickersStudioProps) {  const { locale } = useLocale();
+  const tx = (source: string) => translateText(locale, source);
+
   const [active, setActive] = useState<TickerEvent>("follow");
   const [all, setAll] = useState<Record<TickerEvent, TickerSettings>>(() =>
-    Object.fromEntries(TICKER_EVENTS.map((e) => [e.id, tickerDefaults(e.id)])) as Record<TickerEvent, TickerSettings>,
+    Object.fromEntries(TICKER_EVENTS.map((e) => {tx("[e.id, tickerDefaults(e.id)])) as Record")}<TickerEvent, TickerSettings>,
   );
   const [useLive, setUseLive] = useState(false);
   const [replayKey, setReplayKey] = useState(0);
@@ -64,7 +69,7 @@ export function EventTickersStudio({ events, onFireEvent, onCopyUrl }: EventTick
   const [origin, setOrigin] = useState("");
 
   useEffect(() => {
-    setAll(Object.fromEntries(TICKER_EVENTS.map((e) => [e.id, loadSettings(e.id)])) as Record<TickerEvent, TickerSettings>);
+    setAll(Object.fromEntries(TICKER_EVENTS.map((e) => {tx("[e.id, loadSettings(e.id)])) as Record")}<TickerEvent, TickerSettings>);
     setOrigin(window.location.origin);
   }, []);
 
@@ -104,8 +109,8 @@ export function EventTickersStudio({ events, onFireEvent, onCopyUrl }: EventTick
   return (
     <div className="space-y-5">
       <div className="rounded-2xl border border-border bg-gradient-to-r from-fuchsia-950/40 via-card to-cyan-950/40 p-5">
-        <div className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-muted-foreground">Overlays</div>
-        <h2 className="text-2xl font-black text-foreground">Latest Events</h2>
+        <div className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-muted-foreground">{tx("Overlays")}</div>
+        <h2 className="text-2xl font-black text-foreground">{tx("Latest Events")}</h2>
         <p className="mt-1 max-w-3xl text-xs text-muted-foreground">
           Design individual single-event tickers — last follow, like, gift, join and share — with premium neon frames. Each ticker is its own OBS / TikTok LIVE Studio browser source, and its settings live in its URL.
         </p>
@@ -172,7 +177,7 @@ export function EventTickersStudio({ events, onFireEvent, onCopyUrl }: EventTick
               ))}
             </div>
             <select value={RING_FRAMES.some((r) => r.id === s.avatarFrame) || s.avatarFrame === "none" ? "" : s.avatarFrame} onChange={(e) => e.target.value && set({ avatarFrame: e.target.value })} className="w-full rounded-xl border border-border bg-background px-3 py-2 text-xs font-semibold text-foreground">
-              <option value="">Or pick an image frame…</option>
+              <option value="">{tx("Or pick an image frame…")}</option>
               {frameOptions.map((f) => (
                 <option key={f.slug} value={f.slug}>
                   {f.name}
@@ -185,11 +190,11 @@ export function EventTickersStudio({ events, onFireEvent, onCopyUrl }: EventTick
             <Section title="Colours">
               <div className="space-y-2 text-xs">
                 <label className="flex items-center justify-between gap-2">
-                  <span className="font-semibold text-muted-foreground">Accent</span>
+                  <span className="font-semibold text-muted-foreground">{tx("Accent")}</span>
                   <input type="color" value={s.accentColor} onChange={(e) => set({ accentColor: e.target.value })} className="h-7 w-10 cursor-pointer rounded border-0 bg-transparent" />
                 </label>
                 <label className="flex items-center justify-between gap-2">
-                  <span className="font-semibold text-muted-foreground">Text</span>
+                  <span className="font-semibold text-muted-foreground">{tx("Text")}</span>
                   <input type="color" value={s.textColor} onChange={(e) => set({ textColor: e.target.value })} className="h-7 w-10 cursor-pointer rounded border-0 bg-transparent" />
                 </label>
                 <div className="flex flex-wrap gap-1.5 pt-1">
@@ -246,7 +251,7 @@ export function EventTickersStudio({ events, onFireEvent, onCopyUrl }: EventTick
             </div>
             <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
               <label className={`block text-xs ${s.replay === "none" ? "opacity-50" : ""}`}>
-                <span className="flex justify-between font-semibold text-muted-foreground"><span>Every</span><span className="text-foreground">{s.replaySec}s</span></span>
+                <span className="flex justify-between font-semibold text-muted-foreground"><span>{tx("Every")}</span><span className="text-foreground">{s.replaySec}s</span></span>
                 <input type="range" min={4} max={60} value={s.replaySec} disabled={s.replay === "none"} onChange={(e) => set({ replaySec: Number(e.target.value) })} className="mt-1 w-full accent-cyan-400" />
               </label>
               <label className="flex items-center justify-between rounded-xl border border-border bg-secondary/25 px-3 py-2 text-xs font-bold">
