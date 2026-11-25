@@ -13,6 +13,9 @@ const nextConfig: NextConfig = {
   },
 };
 
-initOpenNextCloudflareForDev();
+// Cloudflare bindings are needed by the Next.js dev server, not production builds.
+if (process.env.NODE_ENV === "development") {
+  initOpenNextCloudflareForDev();
+}
 
 export default nextConfig;
