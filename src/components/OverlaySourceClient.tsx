@@ -267,6 +267,7 @@ export function OverlaySourceClient({ type, subId }: OverlaySourceClientProps) {
           widget={foundWidget}
           profile={profile}
           avatars={avatars}
+          topListAvatars={topListAvatars}
           events={events}
         />
       </div>
