@@ -313,6 +313,36 @@ const editorControlTranslations: Record<string, Partial<Record<Locale, string>>>
   "12-hour clock": { ar: "ساعة بنظام 12 ساعة", fr: "Horloge au format 12 heures", de: "12-Stunden-Uhr", tr: "12 saatlik saat", es: "Reloj de 12 horas", it: "Orologio a 12 ore" },
 };
 
+
+const gameOverlayTranslations: Record<string, Partial<Record<Locale, string>>> = {
+  "Type A, B, C or D in Chat!": { ar: "اكتب A أو B أو C أو D في الدردشة!", fr: "Tapez A, B, C ou D dans le chat !", de: "Schreibe A, B, C oder D in den Chat!", tr: "Sohbete A, B, C veya D yazın!", es: "¡Escribe A, B, C o D en el chat!", it: "Scrivi A, B, C o D nella chat!" },
+  "Timed Coin Battle": { ar: "معركة العملات المحددة بوقت", fr: "Bataille de pièces chronométrée", de: "Zeitlich begrenzter Münzkampf", tr: "Süreli jeton savaşı", es: "Batalla de monedas contrarreloj", it: "Battaglia a tempo di monete" },
+  "🧊 FROZEN x2": { ar: "🧊 تجميد ×2", fr: "🧊 GELÉ ×2", de: "🧊 EINGEFROREN ×2", tr: "🧊 DONDU ×2", es: "🧊 CONGELADO ×2", it: "🧊 CONGELATO ×2" },
+  "TEAM TUG-OF-WAR": { ar: "شد الحبل بين الفريقين", fr: "Tir à la corde par équipes", de: "Team-Seilziehen", tr: "Takımlar arası halat çekme", es: "Tira y afloja por equipos", it: "Tiro alla fune a squadre" },
+  "SPIN": { ar: "دُر", fr: "TOURNER", de: "DREHEN", tr: "ÇEVİR", es: "GIRAR", it: "GIRA" },
+  "Spinning Wheel...": { ar: "العجلة تدور…", fr: "La roue tourne…", de: "Das Rad dreht sich…", tr: "Çark dönüyor…", es: "La ruleta está girando…", it: "La ruota gira…" },
+  "🎰 Spin Lucky Wheel Now": { ar: "🎰 أدر عجلة الحظ الآن", fr: "🎰 Faites tourner la roue maintenant", de: "🎰 Glücksrad jetzt drehen", tr: "🎰 Şans çarkını şimdi çevir", es: "🎰 Gira la ruleta ahora", it: "🎰 Gira subito la ruota" },
+  "🏁 FRAMED AVATAR DERBY RACE": { ar: "🏁 سباق الشخصيات ذات الإطارات", fr: "🏁 COURSE DE CADRES AVATARS", de: "🏁 AVATAR-RAHMEN-DERBY", tr: "🏁 ÇERÇEVELİ AVATAR YARIŞI", es: "🏁 CARRERA DE AVATARES ENMARCADOS", it: "🏁 GARA AVATAR CON CORNICE" },
+  "!join or Tap Likes to Boost": { ar: "!join أو اضغط إعجاباً لزيادة السرعة", fr: "!join ou appuyez sur J’aime pour accélérer", de: "!join oder Likes antippen, um zu beschleunigen", tr: "Hızlanmak için !join yazın veya Beğeniye dokunun", es: "¡Usa !join o toca Me gusta para acelerar!", it: "Usa !join o tocca Mi piace per accelerare" },
+  "🔤 Live Chat Word Scramble": { ar: "🔤 لعبة ترتيب الكلمات في الدردشة المباشرة", fr: "🔤 Mélange de mots du chat en direct", de: "🔤 Live-Chat-Worträtsel", tr: "🔤 Canlı sohbet kelime bulmacası", es: "🔤 Palabras desordenadas del chat en directo", it: "🔤 Parole mescolate nella chat live" },
+  "💡 Hint:": { ar: "💡 تلميح:", fr: "💡 Indice :", de: "💡 Hinweis:", tr: "💡 İpucu:", es: "💡 Pista:", it: "💡 Suggerimento:" },
+  "Solve": { ar: "حل", fr: "Résoudre", de: "Lösen", tr: "Çöz", es: "Resolver", it: "Risolvi" },
+  "🟡 NEON AVATAR PLINKO": { ar: "🟡 بلينكو الشخصيات النيونية", fr: "🟡 PLINKO AVATAR NÉON", de: "🟡 NEON-AVATAR-PLINKO", tr: "🟡 NEON AVATAR PLINKO", es: "🟡 PLINKO DE AVATARES NEÓN", it: "🟡 PLINKO AVATAR NEON" },
+  "⚔️ AVATAR BATTLE ROYALE": { ar: "⚔️ معركة البقاء للشخصيات", fr: "⚔️ BATTLE ROYALE D’AVATARS", de: "⚔️ AVATAR-BATTLE-ROYALE", tr: "⚔️ AVATAR SAVAŞI", es: "⚔️ BATALLA CAMPAL DE AVATARES", it: "⚔️ BATTAGLIA REALE AVATAR" },
+  "TICKING NEON BOMB": { ar: "القنبلة النيونية الموقوتة", fr: "BOMBE NÉON À RETARDEMENT", de: "TICKENDE NEON-BOMBE", tr: "GERİ SAYIMLI NEON BOMBA", es: "BOMBA NEÓN DE TIC-TAC", it: "BOMBA NEON A TEMPO" },
+  "Type !pass or send a Rose to pass it!": { ar: "اكتب !pass أو أرسل وردة لتمريرها!", fr: "Tapez !pass ou envoyez une Rose pour la passer !", de: "Schreibe !pass oder sende eine Rose, um sie weiterzugeben!", tr: "Devretmek için !pass yazın veya Gül gönderin!", es: "¡Escribe !pass o envía una Rosa para pasarla!", it: "Scrivi !pass o invia una Rosa per passarla!" },
+  "🪙 Drop Avatar Plinko Puck": { ar: "🪙 أسقط قرص بلينكو للشخصية", fr: "🪙 Lancer le palet Plinko de l’avatar", de: "🪙 Avatar-Plinko-Scheibe fallen lassen", tr: "🪙 Avatar Plinko diskini bırak", es: "🪙 Soltar ficha Plinko del avatar", it: "🪙 Lascia cadere il disco Plinko avatar" },
+  "Streamer (X) vs Chat Vote (O)": { ar: "صاحب البث (X) ضد تصويت الدردشة (O)", fr: "Streamer (X) contre vote du chat (O)", de: "Streamer (X) gegen Chat-Abstimmung (O)", tr: "Yayıncı (X) ve sohbet oyu (O)", es: "Streamer (X) contra voto del chat (O)", it: "Streamer (X) contro voto chat (O)" },
+  "All games": { ar: "كل الألعاب", fr: "Tous les jeux", de: "Alle Spiele", tr: "Tüm oyunlar", es: "Todos los juegos", it: "Tutti i giochi" },
+  "Quiz": { ar: "مسابقة", fr: "Quiz", de: "Quiz", tr: "Bilgi yarışması", es: "Concurso", it: "Quiz" },
+  "Battles": { ar: "المعارك", fr: "Combats", de: "Kämpfe", tr: "Savaşlar", es: "Batallas", it: "Battaglie" },
+  "Wheels": { ar: "العجلات", fr: "Roues", de: "Räder", tr: "Çarklar", es: "Ruletas", it: "Ruote" },
+  "Racing": { ar: "السباقات", fr: "Courses", de: "Rennen", tr: "Yarışlar", es: "Carreras", it: "Corse" },
+  "Word games": { ar: "ألعاب الكلمات", fr: "Jeux de mots", de: "Wortspiele", tr: "Kelime oyunları", es: "Juegos de palabras", it: "Giochi di parole" },
+  "Arcade": { ar: "ألعاب الأركيد", fr: "Arcade", de: "Arcade", tr: "Atari", es: "Arcade", it: "Arcade" },
+  "Stream tools": { ar: "أدوات البث", fr: "Outils de streaming", de: "Stream-Tools", tr: "Yayın araçları", es: "Herramientas de streaming", it: "Strumenti streaming" },
+};
+
 export function translateText(locale: Locale, source: string): string {
-  return phraseTranslations[source]?.[locale] ?? navigationTranslations[source]?.[locale] ?? dashboardTranslations[source]?.[locale] ?? loginTranslations[source]?.[locale] ?? tickerTranslations[source]?.[locale] ?? editorControlTranslations[source]?.[locale] ?? finalStudioLabels[source]?.[locale] ?? overlayControlTranslations[source]?.[locale] ?? overlayLayoutTranslations[source]?.[locale] ?? extendedStudioTranslations[source]?.[locale] ?? studioTranslations[source]?.[locale] ?? source;
+  return phraseTranslations[source]?.[locale] ?? navigationTranslations[source]?.[locale] ?? dashboardTranslations[source]?.[locale] ?? loginTranslations[source]?.[locale] ?? tickerTranslations[source]?.[locale] ?? gameOverlayTranslations[source]?.[locale] ?? editorControlTranslations[source]?.[locale] ?? finalStudioLabels[source]?.[locale] ?? overlayControlTranslations[source]?.[locale] ?? overlayLayoutTranslations[source]?.[locale] ?? extendedStudioTranslations[source]?.[locale] ?? studioTranslations[source]?.[locale] ?? source;
 }
