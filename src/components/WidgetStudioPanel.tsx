@@ -1,5 +1,8 @@
 "use client";
 
+import { useLocale } from "@/components/LocaleProvider";
+import { translateText } from "@/lib/i18n";
+
 import type {
   AvatarPreset,
   LiveEvent,
@@ -61,7 +64,9 @@ export function WidgetStudioPanel({
   onUpdateProfile,
   onFireEvent,
   onCopyUrl,
-}: WidgetStudioPanelProps) {
+}: WidgetStudioPanelProps) {  const { locale } = useLocale();
+  const tx = (source: string) => translateText(locale, source);
+
   const [chatDraft, setChatDraft] = useState("");
   const [ttsSample, setTtsSample] = useState(
     "Mira Lee just dropped a Lion! Welcome everyone to Ava's TikTok LIVE!",
@@ -106,7 +111,7 @@ export function WidgetStudioPanel({
             <div className="rounded-2xl border border-border bg-secondary/20 p-4">
               <div className="mb-3 flex items-center justify-between text-xs font-extrabold">
                 <span>⚡ Real-Time Event Log ({events.length})</span>
-                <span className="text-emerald-400">● Synced with PostgreSQL</span>
+                <span className="text-emerald-400">{tx("● Synced with PostgreSQL")}</span>
               </div>
               <div className="max-h-80 space-y-2 overflow-y-auto pr-1">
                 {events.map((ev) => (
@@ -272,8 +277,8 @@ export function WidgetStudioPanel({
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div className="rounded-2xl border border-emerald-400/30 bg-emerald-500/10 p-4">
-            <div className="text-xs font-bold text-emerald-300">ENCODER HEADROOM</div>
-            <div className="mt-1 text-2xl font-black text-foreground">98.4% Optimal</div>
+            <div className="text-xs font-bold text-emerald-300">{tx("ENCODER HEADROOM")}</div>
+            <div className="mt-1 text-2xl font-black text-foreground">{tx("98.4% Optimal")}</div>
             <p className="mt-1 text-xs text-muted-foreground">
               Using Link Scenes consolidates 10 widgets into 1 Chromium render process.
             </p>
@@ -282,13 +287,13 @@ export function WidgetStudioPanel({
             <div className="flex items-center gap-1.5 text-xs font-bold text-brand-cyan">
               <Cpu className="h-4 w-4" /> TIKTOK LIVE STUDIO PRESET
             </div>
-            <div className="mt-1 text-2xl font-black text-foreground">1080×1920 · 60fps</div>
+            <div className="mt-1 text-2xl font-black text-foreground">{tx("1080×1920 · 60fps")}</div>
             <p className="mt-1 text-xs text-muted-foreground">
               Recommended bitrate: 6,000 kbps NVENC / Apple VT H.264.
             </p>
           </div>
           <div className="rounded-2xl border border-border bg-secondary/30 p-4">
-            <div className="text-xs font-bold text-amber-300">ACTIVE WIDGET BUDGET</div>
+            <div className="text-xs font-bold text-amber-300">{tx("ACTIVE WIDGET BUDGET")}</div>
             <div className="mt-1 text-2xl font-black text-foreground">
               {widgets.filter((w) => w.enabled).length} / 12 Layers
             </div>
@@ -319,7 +324,7 @@ export function WidgetStudioPanel({
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <label className="space-y-1 text-xs">
-            <span className="font-bold text-muted-foreground">Display Name</span>
+            <span className="font-bold text-muted-foreground">{tx("Display Name")}</span>
             <input
               defaultValue={profile.displayName}
               onBlur={(e) => onUpdateProfile({ displayName: e.target.value })}
@@ -327,7 +332,7 @@ export function WidgetStudioPanel({
             />
           </label>
           <label className="space-y-1 text-xs">
-            <span className="font-bold text-muted-foreground">TikTok @Handle</span>
+            <span className="font-bold text-muted-foreground">{tx("TikTok @Handle")}</span>
             <input
               defaultValue={profile.tiktokHandle}
               onBlur={(e) => onUpdateProfile({ tiktokHandle: e.target.value })}
@@ -335,7 +340,7 @@ export function WidgetStudioPanel({
             />
           </label>
           <label className="space-y-1 text-xs sm:col-span-2">
-            <span className="font-bold text-muted-foreground">Creator Bio</span>
+            <span className="font-bold text-muted-foreground">{tx("Creator Bio")}</span>
             <input
               defaultValue={profile.bio}
               onBlur={(e) => onUpdateProfile({ bio: e.target.value })}
@@ -364,7 +369,7 @@ export function WidgetStudioPanel({
         </div>
 
         <div className="rounded-2xl border border-border bg-secondary/20 p-4">
-          <div className="mb-2 text-sm font-extrabold text-foreground">Legal</div>
+          <div className="mb-2 text-sm font-extrabold text-foreground">{tx("Legal")}</div>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             {[
               { label: "Terms of Service", path: "/terms" },
@@ -482,7 +487,7 @@ export function WidgetStudioPanel({
 
           {/* Quick Test Triggers */}
           <div className="flex flex-wrap items-center gap-2 border-t border-white/10 pt-3">
-            <span className="text-[11px] font-bold text-white/70">Fire Test Event:</span>
+            <span className="text-[11px] font-bold text-white/70">{tx("Fire Test Event:")}</span>
             <button
               type="button"
               onClick={() => {
@@ -654,7 +659,7 @@ export function WidgetStudioPanel({
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-2">
                 <label className="text-xs">
-                  <span className="font-semibold text-muted-foreground">Goal Title</span>
+                  <span className="font-semibold text-muted-foreground">{tx("Goal Title")}</span>
                   <input
                     defaultValue={String(customSettings.label || "Daily Coin Goal")}
                     onBlur={(e) =>
@@ -664,7 +669,7 @@ export function WidgetStudioPanel({
                   />
                 </label>
                 <label className="text-xs">
-                  <span className="font-semibold text-muted-foreground">Target Amount</span>
+                  <span className="font-semibold text-muted-foreground">{tx("Target Amount")}</span>
                   <input
                     type="number"
                     defaultValue={Number(customSettings.target || 1000)}
