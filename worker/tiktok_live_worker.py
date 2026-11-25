@@ -106,6 +106,73 @@ def quarantine(event_id, payload, status, reason):
         conn.execute("DELETE FROM pending_events WHERE source_event_id=?", (event_id,))
 
 
+def _valid_session_id(value):
+    if not isinstance(value, str):
+        return False
+    try:
+        return str(uuid.UUID(value)) == value.lower()
+    except (ValueError, AttributeError, TypeError):
+        return False
+
+
+def rebind_legacy_spool_events(session_id):
+    """Attach legacy session-less events to a confirmed LIVE session without dropping data."""
+    if not _valid_session_id(session_id):
+        raise ValueError("A valid confirmed LIVE session ID is required")
+
+    rebound_pending = 0
+    restored_failed = 0
+    with sqlite3.connect(SPOOL_PATH, timeout=10) as conn:
+        conn.execute("BEGIN IMMEDIATE")
+        pending_rows = conn.execute(
+            "SELECT source_event_id,payload_json FROM pending_events"
+        ).fetchall()
+        for event_id, payload_json in pending_rows:
+            try:
+                payload = json.loads(payload_json)
+            except (TypeError, json.JSONDecodeError):
+                log.error("Preserving malformed spool row during session migration id=%s", event_id)
+                continue
+            if not isinstance(payload, dict) or _valid_session_id(payload.get("sessionId")):
+                continue
+            payload["sessionId"] = session_id
+            conn.execute(
+                "UPDATE pending_events SET payload_json=? WHERE source_event_id=?",
+                (json.dumps(payload, ensure_ascii=False, separators=(",", ":")), event_id),
+            )
+            rebound_pending += 1
+
+        # Restore only rows quarantined by the old missing-sessionId validation.
+        # All other failed rows remain quarantined and untouched.
+        failed_rows = conn.execute(
+            """SELECT source_event_id,payload_json
+               FROM failed_events
+               WHERE http_status=400 AND reason LIKE '%Valid sessionId is required%'"""
+        ).fetchall()
+        for event_id, payload_json in failed_rows:
+            try:
+                payload = json.loads(payload_json)
+            except (TypeError, json.JSONDecodeError):
+                log.error("Preserving malformed quarantined row during session migration id=%s", event_id)
+                continue
+            if not isinstance(payload, dict) or _valid_session_id(payload.get("sessionId")):
+                continue
+            payload["sessionId"] = session_id
+            conn.execute(
+                "INSERT OR IGNORE INTO pending_events(source_event_id,payload_json) VALUES(?,?)",
+                (event_id, json.dumps(payload, ensure_ascii=False, separators=(",", ":"))),
+            )
+            conn.execute("DELETE FROM failed_events WHERE source_event_id=?", (event_id,))
+            restored_failed += 1
+
+    if rebound_pending or restored_failed:
+        log.warning(
+            "Recovered legacy spool events for confirmed LIVE session: pending=%s restored_from_quarantine=%s",
+            rebound_pending, restored_failed,
+        )
+    return rebound_pending, restored_failed
+
+
 async def deliver(payload):
     """Send using one pooled HTTP session for the entire TikTok client event loop."""
     if http_session is None or http_session.closed:
@@ -159,6 +226,19 @@ async def drain_spool():
 
             event_id, payload_json = row
             payload = json.loads(payload_json)
+            if not _valid_session_id(payload.get("sessionId")):
+                # Never send an event without a session. Persist a binding only after
+                # the current LIVE session has been confirmed by the application.
+                if live_confirmed and active_session_id:
+                    payload["sessionId"] = active_session_id
+                    with sqlite3.connect(SPOOL_PATH, timeout=10) as conn:
+                        conn.execute(
+                            "UPDATE pending_events SET payload_json=? WHERE source_event_id=?",
+                            (json.dumps(payload, ensure_ascii=False, separators=(",", ":")), event_id),
+                        )
+                else:
+                    log.warning("Legacy spool event retained until LIVE session confirmation id=%s", event_id)
+                    return
             state, status, reason = await deliver(payload)
 
             if state == "delivered":
@@ -183,6 +263,8 @@ async def mark_live():
     state, status, reason = await deliver({"eventType": "live_state", "status": "live", "sessionId": active_session_id})
     live_confirmed = state == "delivered"
     if live_confirmed:
+        # Migrate legacy rows only after the API confirms this LIVE session.
+        rebind_legacy_spool_events(active_session_id)
         log.info("LIVE state confirmed by Tikley API for @%s; room_id=%s", HANDLE, client.room_id)
     else:
         log.error(
