@@ -343,6 +343,24 @@ const gameOverlayTranslations: Record<string, Partial<Record<Locale, string>>> =
   "Stream tools": { ar: "أدوات البث", fr: "Outils de streaming", de: "Stream-Tools", tr: "Yayın araçları", es: "Herramientas de streaming", it: "Strumenti streaming" },
 };
 
+
+const gameEditorTranslations: Record<string, Partial<Record<Locale, string>>> = {
+  "LIVE PREVIEW": { ar: "معاينة مباشرة", fr: "APERÇU EN DIRECT", de: "LIVE-VORSCHAU", tr: "CANLI ÖNİZLEME", es: "VISTA PREVIA EN DIRECTO", it: "ANTEPRIMA LIVE" },
+  "Trigger:": { ar: "المُشغّل:", fr: "Déclencheur :", de: "Auslöser:", tr: "Tetikleyici:", es: "Activador:", it: "Attivatore:" },
+  "Overlay Card Theme (8 Broadcast Styles)": { ar: "نمط بطاقة الشاشة (8 تصاميم للبث)", fr: "Thème de carte overlay (8 styles)", de: "Overlay-Kartendesign (8 Broadcast-Stile)", tr: "Katman kartı teması (8 yayın stili)", es: "Tema de tarjeta overlay (8 estilos)", it: "Tema scheda overlay (8 stili)" },
+  "Reset Track": { ar: "إعادة ضبط المسار", fr: "Réinitialiser la piste", de: "Rennstrecke zurücksetzen", tr: "Parkuru sıfırla", es: "Restablecer pista", it: "Reimposta pista" },
+  "⚡ Trigger Live Game Action": { ar: "⚡ تشغيل إجراء اللعبة المباشر", fr: "⚡ Déclencher une action de jeu en direct", de: "⚡ Live-Spielaktion auslösen", tr: "⚡ Canlı oyun eylemini tetikle", es: "⚡ Activar acción de juego en directo", it: "⚡ Attiva azione di gioco live" },
+  "all OverlayLive overlays": { ar: "جميع شاشات OverlayLive", fr: "tous les overlays OverlayLive", de: "alle OverlayLive-Overlays", tr: "tüm OverlayLive katmanları", es: "todos los overlays de OverlayLive", it: "tutti gli overlay OverlayLive" },
+  "Search games, features or LIVE triggers...": { ar: "ابحث عن الألعاب أو الميزات أو محفزات البث المباشر…", fr: "Rechercher des jeux, fonctions ou déclencheurs LIVE…", de: "Spiele, Funktionen oder LIVE-Auslöser suchen…", tr: "Oyunları, özellikleri veya canlı yayın tetikleyicilerini ara…", es: "Buscar juegos, funciones o activadores LIVE…", it: "Cerca giochi, funzioni o trigger LIVE…" },
+  "Search games": { ar: "البحث عن الألعاب", fr: "Rechercher des jeux", de: "Spiele suchen", tr: "Oyun ara", es: "Buscar juegos", it: "Cerca giochi" },
+  "Clear": { ar: "مسح", fr: "Effacer", de: "Leeren", tr: "Temizle", es: "Borrar", it: "Cancella" },
+  "✓ Free games only": { ar: "✓ الألعاب المجانية فقط", fr: "✓ Jeux gratuits uniquement", de: "✓ Nur kostenlose Spiele", tr: "✓ Yalnızca ücretsiz oyunlar", es: "✓ Solo juegos gratis", it: "✓ Solo giochi gratuiti" },
+  "Show all access types": { ar: "إظهار جميع أنواع الوصول", fr: "Afficher tous les types d’accès", de: "Alle Zugriffsarten anzeigen", tr: "Tüm erişim türlerini göster", es: "Mostrar todos los tipos de acceso", it: "Mostra tutti i tipi di accesso" },
+  "All Live Overlays (click one to set it up and preview it)": { ar: "جميع شاشات البث (اضغط على واحدة لإعدادها ومعاينتها)", fr: "Tous les overlays LIVE (cliquez pour configurer et prévisualiser)", de: "Alle Live-Overlays (zum Einrichten und Vorschauen anklicken)", tr: "Tüm canlı yayın katmanları (kurmak ve önizlemek için tıklayın)", es: "Todos los overlays en directo (haz clic para configurar y previsualizar)", it: "Tutti gli overlay live (clicca per configurarli e visualizzarli)" },
+  "FREE": { ar: "مجاني", fr: "GRATUIT", de: "KOSTENLOS", tr: "ÜCRETSİZ", es: "GRATIS", it: "GRATIS" },
+  "Copy Game Overlay URL": { ar: "نسخ رابط شاشة اللعبة", fr: "Copier l’URL de l’overlay du jeu", de: "Game-Overlay-URL kopieren", tr: "Oyun katmanı URL'sini kopyala", es: "Copiar URL del overlay del juego", it: "Copia URL overlay gioco" },
+};
+
 export function translateText(locale: Locale, source: string): string {
-  return phraseTranslations[source]?.[locale] ?? navigationTranslations[source]?.[locale] ?? dashboardTranslations[source]?.[locale] ?? loginTranslations[source]?.[locale] ?? tickerTranslations[source]?.[locale] ?? gameOverlayTranslations[source]?.[locale] ?? editorControlTranslations[source]?.[locale] ?? finalStudioLabels[source]?.[locale] ?? overlayControlTranslations[source]?.[locale] ?? overlayLayoutTranslations[source]?.[locale] ?? extendedStudioTranslations[source]?.[locale] ?? studioTranslations[source]?.[locale] ?? source;
+  return phraseTranslations[source]?.[locale] ?? navigationTranslations[source]?.[locale] ?? dashboardTranslations[source]?.[locale] ?? loginTranslations[source]?.[locale] ?? tickerTranslations[source]?.[locale] ?? gameEditorTranslations[source]?.[locale] ?? gameOverlayTranslations[source]?.[locale] ?? editorControlTranslations[source]?.[locale] ?? finalStudioLabels[source]?.[locale] ?? overlayControlTranslations[source]?.[locale] ?? overlayLayoutTranslations[source]?.[locale] ?? extendedStudioTranslations[source]?.[locale] ?? studioTranslations[source]?.[locale] ?? source;
 }
