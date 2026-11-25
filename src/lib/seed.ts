@@ -46,6 +46,8 @@ function initialGameState(slug: string): Record<string, unknown> {
   if (slug === "stream-timer") {
     return { phase: "running", startedAt: Date.now(), baseline: null, config: STREAM_TIMER_DEFAULTS };
   }
+  if (slug === "mit-halay-party") return { status: "active", bpm: 105, dancers: [] };
+  if (slug === "mit-avatar-arena") return { status: "active", players: [] };
   return { status: "idle", round: 1 };
 }
 

@@ -5,6 +5,7 @@ import { ExtraOverlayStudio } from "@/components/ExtraOverlayStudio";
 import { STORE_OVERLAYS } from "@/lib/liveOverlays";
 import { BreakingNewsStudio } from "@/components/BreakingNewsStudio";
 import { FramedAvatar } from "@/components/FramedAvatar";
+import { MitLiveGameCanvas } from "@/components/MitLiveGames";
 import { notifyOverlayChannel, playBroadcastSound } from "@/components/SoundEngine";
 import {
   DEFAULT_QUIZ_QUESTIONS,
@@ -66,6 +67,15 @@ export function GameOverlayStage({
   const [droppingPuck, setDroppingPuck] = useState(false);
 
   const partyAvatars = avatars.length > 0 ? avatars : [];
+
+  if (gameSlug === "mit-halay-party" || gameSlug === "mit-avatar-arena") {
+    return (
+      <MitLiveGameCanvas
+        mode={gameSlug === "mit-halay-party" ? "halay" : "arena"}
+        state={state}
+      />
+    );
+  }
 
   if (gameSlug === "live-quiz") {
     const questions =
@@ -824,6 +834,42 @@ export function FreeGamesArena({
       const likes = Math.max(0, Number(event.likes || 0));
       const message = String(event.message || "").trim();
       const normalizedMessage = message.toLowerCase();
+
+      if (selectedSlug === "mit-halay-party" && ["join", "follow", "share", "gift", "like", "chat"].includes(kind)) {
+        type Dancer = { name: string; avatar: string; score: number; action: string; lastGift?: string };
+        const dancers = (next.dancers as Dancer[]) || [];
+        const existing = dancers.find((d) => d.name.toLowerCase() === name.toLowerCase());
+        const command = normalizedMessage.replace(/^!/, "").split(/\s+/)[0];
+        const allowedMoves = ["dance", "jump", "spin", "wave", "hug"];
+        const action = kind === "chat" && allowedMoves.includes(command) ? command : kind === "gift" ? "spotlight" : "dance";
+        const points = kind === "gift" ? Math.max(1, coins) : kind === "like" ? Math.max(1, likes) : 1;
+        const dancer: Dancer = existing
+          ? { ...existing, score: existing.score + points, action, lastGift: kind === "gift" ? event.giftName || "Gift" : existing.lastGift }
+          : { name, avatar: event.avatarUrl || "/avatars/a1.png", score: points, action, lastGift: kind === "gift" ? event.giftName || "Gift" : undefined };
+        next.dancers = existing
+          ? dancers.map((d) => d.name.toLowerCase() === name.toLowerCase() ? dancer : d).slice(-24)
+          : [...dancers, dancer].slice(-24);
+        next.bpm = Math.min(180, Math.max(90, Number(next.bpm || 105) + (kind === "gift" ? Math.min(12, 2 + coins / 100) : 1)));
+        changed = true;
+      }
+
+      if (selectedSlug === "mit-avatar-arena" && ["join", "follow", "like", "gift", "chat"].includes(kind)) {
+        type Player = { name: string; avatar: string; mass: number; score: number };
+        const players = (next.players as Player[]) || [];
+        const existing = players.find((p) => p.name.toLowerCase() === name.toLowerCase());
+        const messageCommand = normalizedMessage.split(/\s+/)[0];
+        const shouldEnter = true;
+        if (existing || shouldEnter) {
+          const growth = kind === "gift" ? Math.max(25, Math.min(900, coins * 2)) : kind === "like" ? Math.max(1, Math.min(120, likes)) : kind === "chat" ? 14 : 8;
+          const player: Player = existing
+            ? { ...existing, mass: Math.min(4000, existing.mass + growth), score: existing.score + growth, avatar: event.avatarUrl || existing.avatar }
+            : { name, avatar: event.avatarUrl || "/avatars/a1.png", mass: 100 + growth, score: growth };
+          next.players = existing
+            ? players.map((p) => p.name.toLowerCase() === name.toLowerCase() ? player : p).slice(-40)
+            : [...players, player].slice(-40);
+          changed = true;
+        }
+      }
 
       if (selectedSlug === "coin-battle" && kind === "gift") {
         const contenders = (next.contenders as Array<{ name: string; avatar: string; frame: string; coins: number }>) || [];
