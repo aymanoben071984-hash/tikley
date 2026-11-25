@@ -27,7 +27,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       </head>
       <body className="min-h-screen bg-background font-sans text-foreground antialiased selection:bg-primary/30 selection:text-foreground">
         <LocaleProvider>{children}</LocaleProvider>
-        <Analytics />
+        {process.env.VERCEL ? <Analytics /> : null}
       </body>
     </html>
   );
