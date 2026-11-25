@@ -640,7 +640,7 @@ export function DashboardApp({ initialSection = "overview", initialGame }: Dashb
               }`}
             >
               <Lightbulb className="lo-hint-bulb h-4 w-4 shrink-0" />
-              {sidebarExpanded && <span>Guide · OBS &amp; LIVE Studio</span>}
+              {sidebarExpanded && <span>{tx("Guide · OBS & LIVE Studio")}</span>}
             </button>
 
             {SIDEBAR_NAV_ITEMS.map((item, idx) => {
@@ -744,7 +744,7 @@ export function DashboardApp({ initialSection = "overview", initialGame }: Dashb
 
                       <div>
                         <h1 className="text-2xl font-black tracking-tight text-white sm:text-3xl">
-                          Welcome back, {firstName}
+                          {tx("Welcome back")}, {firstName}
                         </h1>
                         <p className="mt-1 text-xs text-slate-300/85 sm:text-sm">
                           {isLive
@@ -763,7 +763,7 @@ export function DashboardApp({ initialSection = "overview", initialGame }: Dashb
                         }}
                         className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/35 bg-amber-500/15 px-3.5 py-1.5 text-xs font-extrabold text-amber-300 hover:bg-amber-500/25"
                       >
-                        🦁 Fire Test Lion
+                        🦁 {tx("Fire Test Lion")}
                       </button>
                       <button
                         type="button"
