@@ -343,7 +343,10 @@ export function normalizeBoardSettings(raw: unknown): TopBoardSettings {
         ? (rotationSrc.animation as SwitchAnimation)
         : d.rotation.animation,
     },
-    resetMode: src.resetMode === "on-live" ? "on-live" : "never",
+    // Current-LIVE leaderboards always reset at a new session; lifetime periods are preserved.
+    resetMode: type === "top-likers" || type === "top-gifters"
+      ? "on-live"
+      : src.resetMode === "on-live" ? "on-live" : "never",
     scorePosition: src.scorePosition === "inside" || src.scorePosition === "above" ? src.scorePosition : "beside",
     nameplate: typeof src.nameplate === "string" ? src.nameplate : "",
     crownStyle: typeof src.crownStyle === "string" ? src.crownStyle : "",
@@ -418,6 +421,8 @@ export function getBoardMeta(type: BoardType) {
 export function rankBoard(avatars: AvatarPreset[], type: BoardType, maxRows: number) {
   return [...avatars]
     .map((a) => ({ preset: a, value: getBoardValue(a, type) }))
+    // A zero score means the viewer has not participated in this period/session.
+    .filter((row) => row.value > 0)
     .sort((x, y) => y.value - x.value)
     .slice(0, maxRows);
 }
