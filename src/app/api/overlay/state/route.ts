@@ -12,7 +12,7 @@ import { ensureSeeded } from "@/lib/seed";
 import { listTopBoards } from "@/lib/topBoardsServer";
 import { overlayDisplays } from "@/db/schema";
 import { normalizeDisplay } from "@/lib/overlayDisplay";
-import { and, count, desc, eq, inArray, lt, notLike } from "drizzle-orm";
+import { count, desc, eq, inArray, lt } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
@@ -58,7 +58,7 @@ export async function GET(request: Request) {
     }
 
     const displayKey = (searchParams.get("displayKey") || target).slice(0, 120);
-    const [[profile], widgets, avatars, games, scenes, events, boards, [displayRow], leaderboardUsers] = await Promise.all([
+    const [[profile], widgets, avatars, games, scenes, events, boards, [displayRow]] = await Promise.all([
       db.select().from(streamerProfiles).limit(1),
       db.select().from(widgetConfigs),
       db.select().from(avatarPresets).orderBy(desc(avatarPresets.coinsTotal)),
@@ -70,12 +70,6 @@ export async function GET(request: Request) {
         .limit(20),
       listTopBoards(),
       db.select().from(overlayDisplays).where(eq(overlayDisplays.overlayKey, displayKey)).limit(1),
-      db.selectDistinct({ username: liveEvents.username })
-        .from(liveEvents)
-        .where(and(
-          inArray(liveEvents.eventType, ["gift", "like", "share"]),
-          notLike(liveEvents.sourceEventId, "admin-test:%"),
-        )),
     ]);
     // Top boards are scoped to the current LIVE counters, not historical event rows.
     // Counters are reset by the LIVE-session lifecycle; zero-score users stay hidden.
