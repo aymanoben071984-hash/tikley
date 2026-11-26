@@ -61,13 +61,15 @@ export async function resetBoardTypes(types: BoardType[]): Promise<void> {
 /** Called when the streamer goes LIVE: reset every board set to "on-live". */
 export async function resetBoardsOnLive(): Promise<void> {
   const boards = await listTopBoards();
-  const types: BoardType[] = [];
+  // These two metrics represent the current LIVE only and must reset for every
+  // new session, even when a board is disabled or has older saved settings.
+  const types: BoardType[] = ["top-likers", "top-gifters"];
   for (const b of boards) {
     const s = normalizeBoardSettings(b.settings);
     if (b.enabled && s.resetMode === "on-live") {
       types.push(s.type, ...(s.rotation.enabled ? s.rotation.boards : []));
     }
   }
-  // All-time rankings are never wiped automatically.
-  await resetBoardTypes(types.filter((t) => t !== "alltime-supporters"));
+  // Weekly and all-time totals are historical periods and are never reset here.
+  await resetBoardTypes(types.filter((t) => t !== "weekly-supporters" && t !== "alltime-supporters"));
 }
