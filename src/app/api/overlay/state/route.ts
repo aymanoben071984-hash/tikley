@@ -64,7 +64,10 @@ export async function GET(request: Request) {
       db.select().from(avatarPresets).orderBy(desc(avatarPresets.coinsTotal)),
       db.select().from(gameConfigs),
       db.select().from(linkScenes),
-      db.select().from(liveEvents).orderBy(desc(liveEvents.id)).limit(20),
+      db.select().from(liveEvents)
+        .where(inArray(liveEvents.eventType, ["gift", "like"]))
+        .orderBy(desc(liveEvents.id))
+        .limit(20),
       listTopBoards(),
       db.select().from(overlayDisplays).where(eq(overlayDisplays.overlayKey, displayKey)).limit(1),
       db.selectDistinct({ username: liveEvents.username })
@@ -74,9 +77,10 @@ export async function GET(request: Request) {
           notLike(liveEvents.sourceEventId, "admin-test:%"),
         )),
     ]);
-    const liveHandles = new Set(leaderboardUsers.map((row) => row.username.trim().replace(/^@/, "").toLowerCase()));
+    // Top boards are scoped to the current LIVE counters, not historical event rows.
+    // Counters are reset by the LIVE-session lifecycle; zero-score users stay hidden.
     const topListAvatars = avatars.filter((avatar) =>
-      liveHandles.has(avatar.tiktokUsername.trim().replace(/^@/, "").toLowerCase()),
+      avatar.coinsTotal > 0 || avatar.likesTotal > 0,
     );
     const display = normalizeDisplay(displayRow?.settings);
 
