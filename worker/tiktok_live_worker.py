@@ -49,6 +49,7 @@ client.logger.setLevel(logging.INFO)
 
 http_session = None
 live_confirmed = False
+live_session_id = None
 delivery_lock = asyncio.Lock()
 
 
@@ -174,11 +175,20 @@ async def drain_spool():
 
 
 async def mark_live():
-    global live_confirmed
+    global live_confirmed, live_session_id
     if live_confirmed:
         return True
 
-    state, status, reason = await deliver({"eventType": "live_state", "status": "live"})
+    # One UUID identifies this actual TikTok LIVE connection. Reuse it for
+    # retries, but create a fresh one after the connection ends.
+    if live_session_id is None:
+        live_session_id = str(uuid.uuid4())
+
+    state, status, reason = await deliver({
+        "eventType": "live_state",
+        "status": "live",
+        "sessionId": live_session_id,
+    })
     live_confirmed = state == "delivered"
     if live_confirmed:
         log.info("LIVE state confirmed by Tikley API for @%s; room_id=%s", HANDLE, client.room_id)
@@ -191,11 +201,23 @@ async def mark_live():
 
 
 async def mark_waiting():
-    global live_confirmed
+    global live_confirmed, live_session_id
     live_confirmed = False
-    state, status, reason = await deliver({"eventType": "live_state", "status": "waiting"})
+    # Do not send a session-less waiting message during worker startup.
+    if live_session_id is None:
+        return
+
+    ended_session_id = live_session_id
+    state, status, reason = await deliver({
+        "eventType": "live_state",
+        "status": "waiting",
+        "sessionId": ended_session_id,
+    })
     if state != "delivered":
         log.warning("Could not confirm waiting state (delivery=%s status=%s): %s", state, status, reason)
+    # The next successful TikTok connection must receive a new session UUID,
+    # even if the waiting notification could not be delivered.
+    live_session_id = None
 
 
 def avatar_url_for(user):
@@ -242,8 +264,13 @@ def event_fields(event):
 
 
 async def queue_event(payload):
-    """Persist first; deliver only after the API has acknowledged LIVE state."""
+    """Persist events with their LIVE session ID, then deliver in order."""
+    global live_session_id
+    if live_session_id is None:
+        live_session_id = str(uuid.uuid4())
+    payload["sessionId"] = live_session_id
     enqueue(payload)
+
     if not live_confirmed and not await mark_live():
         log.warning("Event queued until LIVE state is confirmed: %s", payload.get("sourceEventId"))
         return
