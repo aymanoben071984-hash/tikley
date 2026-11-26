@@ -158,6 +158,7 @@ export async function POST(request: Request) {
             avatarUrl,
             frameSlug: avatarFrame,
             coinsTotal: coins,
+            likesTotal: 0,
             sharesTotal: shares,
             weeklyCoins: coins,
             allTimeCoins: coins,
