@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { Check, Clock3, Eye, EyeOff, Play, RotateCcw, SkipForward } from "lucide-react";
+import { Clock3, Eye, Play, RotateCcw, SkipForward } from "lucide-react";
 
 type PictureQuestion = {
   id: string;
@@ -30,7 +30,7 @@ const QUESTION_BANK: PictureQuestion[] = [
 ];
 
 const CATEGORIES = ["البلدان", "الأكلات", "أسئلة دينية", "ثقافة عامة", "مختلط"];
-const DEFAULTS = { category: "مختلط", duration: 20, revealEvery: 4, questionCount: 10, currentQuestionIndex: 0, startedAt: 0, revealed: false, answerIndex: -1 };
+const DEFAULTS = { category: "مختلط", duration: 20, revealEvery: 4, questionCount: 12, currentQuestionIndex: 0, startedAt: 0, revealed: false, answerIndex: -1 };
 
 type Props = {
   state: Record<string, unknown>;
@@ -39,12 +39,12 @@ type Props = {
 };
 
 export function PictureQuizStage({ state, interactive = false, onUpdateState }: Props) {
-  const settings = { ...DEFAULTS, ...state } as typeof DEFAULTS;
   const category = String(state.category || DEFAULTS.category);
   const questions = useMemo(() => {
     const filtered = category === "مختلط" ? QUESTION_BANK : QUESTION_BANK.filter((q) => q.category === category);
-    return filtered.length ? filtered : QUESTION_BANK;
-  }, [category]);
+    const available = filtered.length ? filtered : QUESTION_BANK;
+    return category === "مختلط" ? available.slice(0, Math.max(1, Math.min(12, Number(state.questionCount || 12)))) : available;
+  }, [category, state.questionCount]);
   const index = Math.abs(Number(state.currentQuestionIndex || 0)) % questions.length;
   const question = questions[index];
   const duration = Math.max(5, Math.min(90, Number(state.duration || DEFAULTS.duration)));
