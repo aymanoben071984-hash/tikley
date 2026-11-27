@@ -65,7 +65,7 @@ export async function GET(request: Request) {
       db.select().from(gameConfigs),
       db.select().from(linkScenes),
       db.select().from(liveEvents)
-        .where(inArray(liveEvents.eventType, ["gift", "like"]))
+        .where(inArray(liveEvents.eventType, ["gift", "like", "join", "follow", "share", "chat"]))
         .orderBy(desc(liveEvents.id))
         .limit(20),
       listTopBoards(),
