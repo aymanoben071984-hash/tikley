@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Copy, ExternalLink, Music2, Radio, RotateCcw, Sparkles, Users } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Copy, ExternalLink, Music2, Radio, RotateCcw, Users } from "lucide-react";
 
 type LiveViewer = {
   id: string;
@@ -49,25 +49,6 @@ type OverlayPayload = {
 };
 
 const COLORS = ["#fb4acb", "#39d9ff", "#ffc857", "#a78bfa", "#55e6a5", "#ff785e"];
-const MOVES = ["dance", "spin", "jump", "spotlight"] as const;
-
-function makeViewer(event: LiveEvent, fallbackAvatar = "/avatars/a1.png"): LiveViewer {
-  const username = event.username || event.displayName || "LIVE Viewer";
-  return {
-    id: username.toLowerCase(),
-    name: event.displayName || username.replace(/^@/, ""),
-    username,
-    avatar: event.avatarUrl || fallbackAvatar,
-    score: Math.max(1, Number(event.coins || event.likes || 1)),
-    coins: Math.max(0, Number(event.coins || 0)),
-    likes: Math.max(0, Number(event.likes || 0)),
-    role: "DANCER",
-    move: event.eventType === "gift" ? "spotlight" : "dance",
-    color: COLORS[Math.abs(username.length * 7) % COLORS.length],
-    gift: event.giftName,
-  };
-}
-
 export function DiscoHalalExperience({ preview = false }: { preview?: boolean }) {
   const [payload, setPayload] = useState<OverlayPayload | null>(null);
   const [dancers, setDancers] = useState<LiveViewer[]>([]);
