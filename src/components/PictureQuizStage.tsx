@@ -64,6 +64,7 @@ export function PictureQuizStage({ state, interactive = false, onUpdateState }: 
   const blur = finished ? 0 : Math.max(0, 22 - revealLevel * 5.5);
   const progress = startedAt ? Math.min(100, (elapsed / duration) * 100) : 0;
   const update = (patch: Record<string, unknown>) => onUpdateState?.(patch);
+  const chatAnswers = (state.chatAnswers as Array<{ name: string; message: string }>) || [];
 
   return (
     <section dir="rtl" className="mx-auto w-full max-w-2xl overflow-hidden rounded-3xl border border-cyan-300/20 bg-[#080d1d] text-white shadow-[0_20px_60px_rgba(0,0,0,.5)]">
@@ -83,19 +84,20 @@ export function PictureQuizStage({ state, interactive = false, onUpdateState }: 
           {question.options.map((option, i) => <button key={option} type="button" disabled={!interactive || !startedAt || finished} onClick={() => setSelected(i)} className={`min-h-12 rounded-xl border px-3 py-2 text-sm font-bold transition ${selected === i ? "border-cyan-300 bg-cyan-400/20 text-cyan-100" : "border-white/10 bg-white/[.05] hover:bg-white/10"} ${finished && i === question.correctIndex ? "border-emerald-400 bg-emerald-500/20 text-emerald-200" : ""}`}>{["أ","ب","ج","د"][i]} · {option}</button>)}
         </div>
         {finished && <div className="mt-3 rounded-xl border border-emerald-400/25 bg-emerald-500/10 p-3 text-sm"><div className="font-black text-emerald-200">أحسنت! الإجابة الصحيحة: {question.answer}</div><p className="mt-1 text-xs leading-6 text-white/70">{question.fact}</p></div>}
+        {chatAnswers.length > 0 && <div className="mt-3 rounded-xl border border-cyan-300/20 bg-cyan-400/10 p-3"><div className="mb-2 text-xs font-black text-cyan-100">🏆 أصحاب الإجابات الصحيحة</div><div className="flex flex-wrap gap-2">{chatAnswers.slice(0,5).map((winner,i)=><span key={`${winner.name}-${i}`} className="rounded-full bg-white/10 px-2.5 py-1 text-[10px] font-bold">{winner.name}</span>)}</div></div>}
         <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/10"><div className="h-full rounded-full bg-gradient-to-l from-cyan-300 to-fuchsia-400 transition-all duration-200" style={{width: `${progress}%`}}/></div>
         {interactive && <div className="mt-4 space-y-3 border-t border-white/10 pt-4">
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            <label className="text-[11px] font-bold text-white/70">الفئة<select value={category} onChange={(e)=>update({category:e.target.value,questionCount:e.target.value === "مختلط" ? 12 : 3,currentQuestionIndex:0,startedAt:0,revealed:false})} className="mt-1 w-full rounded-lg border border-white/15 bg-slate-900 px-2 py-2 text-xs text-white">{CATEGORIES.map((v)=><option key={v}>{v}</option>)}</select></label>
+            <label className="text-[11px] font-bold text-white/70">الفئة<select value={category} onChange={(e)=>update({category:e.target.value,questionCount:e.target.value === "مختلط" ? 12 : 3,currentQuestionIndex:0,startedAt:0,revealed:false,chatAnswers:[]})} className="mt-1 w-full rounded-lg border border-white/15 bg-slate-900 px-2 py-2 text-xs text-white">{CATEGORIES.map((v)=><option key={v}>{v}</option>)}</select></label>
             <label className="text-[11px] font-bold text-white/70">وقت الإجابة<select value={duration} onChange={(e)=>update({duration:Number(e.target.value)})} className="mt-1 w-full rounded-lg border border-white/15 bg-slate-900 px-2 py-2 text-xs text-white">{[10,15,20,30,45,60,90].map(v)=><option key={v} value={v}>{v} ثانية</option>)}</select></label>
             <label className="text-[11px] font-bold text-white/70">سرعة كشف الصورة<select value={revealEvery} onChange={(e)=>update({revealEvery:Number(e.target.value)})} className="mt-1 w-full rounded-lg border border-white/15 bg-slate-900 px-2 py-2 text-xs text-white">{[2,3,4,5,7,10].map(v)=><option key={v} value={v}>كل {v} ثوانٍ</option>)}</select></label>
             <label className="text-[11px] font-bold text-white/70">عدد الأسئلة<select value={category === "مختلط" ? Number(state.questionCount || 12) : questions.length} onChange={(e)=>update({questionCount:Number(e.target.value)})} className="mt-1 w-full rounded-lg border border-white/15 bg-slate-900 px-2 py-2 text-xs text-white">{[5,10,15,20].map(v)=><option key={v} value={v}>{v} أسئلة</option>)}</select></label>
           </div>
           <div className="flex flex-wrap gap-2">
-            <button type="button" onClick={()=>update({startedAt:Date.now(),revealed:false,answerIndex:-1})} className="inline-flex items-center gap-2 rounded-xl bg-cyan-400 px-4 py-2.5 text-xs font-black text-slate-950 hover:bg-cyan-300"><Play size={14}/> ابدأ السؤال</button>
+            <button type="button" onClick={()=>update({startedAt:Date.now(),revealed:false,answerIndex:-1,correctAnswer:question.answer,chatAnswers:[]})} className="inline-flex items-center gap-2 rounded-xl bg-cyan-400 px-4 py-2.5 text-xs font-black text-slate-950 hover:bg-cyan-300"><Play size={14}/> ابدأ السؤال</button>
             <button type="button" onClick={()=>update({revealed:true})} className="inline-flex items-center gap-2 rounded-xl border border-emerald-400/30 bg-emerald-500/15 px-4 py-2.5 text-xs font-bold text-emerald-200"><Eye size={14}/> كشف الإجابة</button>
-            <button type="button" onClick={()=>update({currentQuestionIndex:index+1,startedAt:0,revealed:false})} className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-4 py-2.5 text-xs font-bold"><SkipForward size={14}/> السؤال التالي</button>
-            <button type="button" onClick={()=>update({currentQuestionIndex:0,startedAt:0,revealed:false})} className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-4 py-2.5 text-xs font-bold text-white/70"><RotateCcw size={14}/> إعادة الجولة</button>
+            <button type="button" onClick={()=>update({currentQuestionIndex:index+1,startedAt:0,revealed:false,chatAnswers:[]})} className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-4 py-2.5 text-xs font-bold"><SkipForward size={14}/> السؤال التالي</button>
+            <button type="button" onClick={()=>update({currentQuestionIndex:0,startedAt:0,revealed:false,chatAnswers:[]})} className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-4 py-2.5 text-xs font-bold text-white/70"><RotateCcw size={14}/> إعادة الجولة</button>
           </div>
           <p className="text-[10px] leading-5 text-white/45">تُحفظ الإعدادات في إعدادات اللعبة، ويظهر العدّ التنازلي وكشف الصورة في معاينة البث ونافذة OBS.</p>
         </div>}
