@@ -150,7 +150,7 @@ export function FlagHeartsStudio({ widget, onSave, onCopyUrl }: FlagHeartsStudio
             </div>
             <div className="relative mb-2">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-              <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search a country (English or Arabic)…" className="w-full rounded-xl border border-border bg-background py-2 pl-8 pr-3 text-xs outline-none focus:border-brand-cyan" />
+              <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={tx("Search a country (English or Arabic)…")} className="w-full rounded-xl border border-border bg-background py-2 pl-8 pr-3 text-xs outline-none focus:border-brand-cyan" />
             </div>
             <div className="grid max-h-72 grid-cols-3 gap-1.5 overflow-y-auto pr-1 sm:grid-cols-4 lg:grid-cols-6">
               {list.map((c) => {
