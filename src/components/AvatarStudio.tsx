@@ -464,7 +464,7 @@ export function AvatarStudio({
               <div className="flex flex-col gap-1">
                 <button
                   type="button"
-                  title="Fire Live Entrance"
+                  title={tx("Fire Live Entrance")}
                   onClick={() =>
                     onFireEntrance({
                       displayName: p.displayName,
@@ -480,7 +480,7 @@ export function AvatarStudio({
                 </button>
                 <button
                   type="button"
-                  title="Remove Preset"
+                  title={tx("Remove Preset")}
                   onClick={() => onDeletePreset(p.id)}
                   className="rounded-lg bg-red-500/15 p-1.5 text-red-400 hover:bg-red-500/25"
                 >
