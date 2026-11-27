@@ -58,14 +58,16 @@ export function Section({
   icon?: React.ReactNode;
   children: React.ReactNode;
 }) {
+  const { locale } = useLocale();
+  const tx = (source: string) => translateText(locale, source);
   return (
     <div className="rounded-2xl border border-border bg-card p-4">
       <div className="mb-3">
         <div className="flex items-center gap-2 text-sm font-extrabold text-foreground">
           {icon}
-          {title}
+          {tx(title)}
         </div>
-        {hint && <p className="mt-0.5 text-[11px] leading-relaxed text-muted-foreground">{hint}</p>}
+        {hint && <p className="mt-0.5 text-[11px] leading-relaxed text-muted-foreground">{tx(hint)}</p>}
       </div>
       {children}
     </div>
