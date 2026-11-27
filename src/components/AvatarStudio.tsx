@@ -367,7 +367,7 @@ export function AvatarStudio({
             <input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search 68 frames (dragon, cat, neon...)"
+              placeholder={tx("Search 68 frames (dragon, cat, neon...)")}
               className="w-full rounded-xl border border-border bg-background pl-8 pr-3 py-1.5 text-xs outline-none focus:border-brand-cyan"
             />
           </div>
