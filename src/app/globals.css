@@ -507,3 +507,13 @@ html[dir="rtl"] select {
 html[dir="rtl"] .overlay-root {
   direction: rtl;
 }
+
+
+/* Arabic dashboard typography fallback; preserve Latin text and numeric direction. */
+html[lang="ar"] body {
+  font-family: "Changa", "Noto Sans Arabic", Tahoma, Arial, sans-serif;
+}
+html[dir="rtl"] .ol-name,
+html[dir="rtl"] .ol-board-font {
+  unicode-bidi: plaintext;
+}
