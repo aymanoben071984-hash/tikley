@@ -471,7 +471,6 @@ const auditTranslations: Record<string, Partial<Record<Locale, string>>> = {
   "Action name": { ar: "اسم الإجراء", fr: "Nom de l’action", de: "Aktionsname", tr: "Eylem adı", es: "Nombre de la acción", it: "Nome dell’azione" },
   "Screen": { ar: "الشاشة", fr: "Écran", de: "Bildschirm", tr: "Ekran", es: "Pantalla", it: "Schermo" },
   "Delete action": { ar: "حذف الإجراء", fr: "Supprimer l’action", de: "Aktion löschen", tr: "Eylemi sil", es: "Eliminar acción", it: "Elimina azione" },
-  "Reset": { ar: "إعادة ضبط", fr: "Réinitialiser", de: "Zurücksetzen", tr: "Sıfırla", es: "Restablecer", it: "Reimposta" },
   "Platform": { ar: "المنصة", fr: "Plateforme", de: "Plattform", tr: "Platform", es: "Plataforma", it: "Piattaforma" },
   "Handle shown on stream": { ar: "اسم المستخدم الظاهر في البث", fr: "Identifiant affiché à l’écran", de: "Im Stream angezeigter Benutzername", tr: "Yayında gösterilen kullanıcı adı", es: "Usuario mostrado en directo", it: "Nome utente mostrato in diretta" },
   "Profile link": { ar: "رابط الملف الشخصي", fr: "Lien du profil", de: "Profil-Link", tr: "Profil bağlantısı", es: "Enlace del perfil", it: "Link del profilo" },
