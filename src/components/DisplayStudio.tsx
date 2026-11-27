@@ -358,7 +358,7 @@ export function DisplayStudio({ boards, widgets, onCopyUrl, onToast }: { boards:
         <div className="rounded-2xl border border-border bg-card p-3">
           <div className="relative mb-2">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search overlays…" className="w-full rounded-xl border border-border bg-background py-2 pl-8 pr-3 text-xs outline-none focus:border-brand-cyan" />
+            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={tx("Search overlays…")} className="w-full rounded-xl border border-border bg-background py-2 pl-8 pr-3 text-xs outline-none focus:border-brand-cyan" />
           </div>
           <div className="max-h-[70vh] space-y-3 overflow-y-auto pr-1">
             {groups.map(([g, list]) => (
