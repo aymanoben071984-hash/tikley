@@ -178,10 +178,10 @@ export function GiftVideosStudio({ onCopyUrl, onToast }: GiftVideosStudioProps) 
           </button>
         </div>
         <div className="relative mt-5 grid grid-cols-2 gap-2 border-t border-border/70 pt-4 sm:grid-cols-4">
-          <div className="rounded-xl bg-background/55 px-3 py-2.5"><div className="text-[10px] font-semibold text-muted-foreground">Total rules</div><div className="mt-1 text-xl font-black tabular-nums text-foreground">{actions.length}</div></div>
-          <div className="rounded-xl bg-background/55 px-3 py-2.5"><div className="text-[10px] font-semibold text-muted-foreground">Active rules</div><div className="mt-1 text-xl font-black tabular-nums text-emerald-400">{actions.filter((a) => a.enabled).length}</div></div>
-          <div className="rounded-xl bg-background/55 px-3 py-2.5"><div className="text-[10px] font-semibold text-muted-foreground">Screens in use</div><div className="mt-1 text-xl font-black tabular-nums text-cyan-300">{new Set(actions.map((a) => a.screen)).size}<span className="ml-1 text-xs font-bold text-muted-foreground">/ 6</span></div></div>
-          <div className="rounded-xl bg-background/55 px-3 py-2.5"><div className="text-[10px] font-semibold text-muted-foreground">Disabled rules</div><div className="mt-1 text-xl font-black tabular-nums text-amber-300">{actions.filter((a) => !a.enabled).length}</div></div>
+          <div className="rounded-xl bg-background/55 px-3 py-2.5"><div className="text-[10px] font-semibold text-muted-foreground">{tx("Total rules")}</div><div className="mt-1 text-xl font-black tabular-nums text-foreground">{actions.length}</div></div>
+          <div className="rounded-xl bg-background/55 px-3 py-2.5"><div className="text-[10px] font-semibold text-muted-foreground">{tx("Active rules")}</div><div className="mt-1 text-xl font-black tabular-nums text-emerald-400">{actions.filter((a) => a.enabled).length}</div></div>
+          <div className="rounded-xl bg-background/55 px-3 py-2.5"><div className="text-[10px] font-semibold text-muted-foreground">{tx("Screens in use")}</div><div className="mt-1 text-xl font-black tabular-nums text-cyan-300">{new Set(actions.map((a) => a.screen)).size}<span className="ml-1 text-xs font-bold text-muted-foreground">/ 6</span></div></div>
+          <div className="rounded-xl bg-background/55 px-3 py-2.5"><div className="text-[10px] font-semibold text-muted-foreground">{tx("Disabled rules")}</div><div className="mt-1 text-xl font-black tabular-nums text-amber-300">{actions.filter((a) => !a.enabled).length}</div></div>
         </div>
       </div>
 
@@ -194,15 +194,15 @@ export function GiftVideosStudio({ onCopyUrl, onToast }: GiftVideosStudioProps) 
             <div key={n} onClick={() => setFilter(on ? "all" : n)} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setFilter(on ? "all" : n); } }} className={`group relative cursor-pointer overflow-hidden rounded-2xl border p-3.5 transition duration-200 hover:-translate-y-0.5 ${on ? "border-cyan-400/70 bg-cyan-400/10 ring-1 ring-cyan-400/30 shadow-lg shadow-cyan-950/10" : "border-border/80 bg-card hover:border-cyan-400/40 hover:bg-secondary/20"}`}>
               <div className="flex items-start justify-between gap-2">
                 <div className={`grid h-9 w-9 place-items-center rounded-xl ${on ? "bg-cyan-400/20 text-cyan-300" : "bg-secondary text-muted-foreground group-hover:text-cyan-300"}`}><Film className="h-4 w-4" /></div>
-                <span className={`rounded-full px-2 py-1 text-[9px] font-black uppercase tracking-wider ${count ? "bg-emerald-500/10 text-emerald-400" : "bg-secondary text-muted-foreground"}`}>{count ? "Configured" : "Empty"}</span>
+                <span className={`rounded-full px-2 py-1 text-[9px] font-black uppercase tracking-wider ${count ? "bg-emerald-500/10 text-emerald-400" : "bg-secondary text-muted-foreground"}`}>{count ? tx("Configured") : tx("Empty")}</span>
               </div>
               <div className="mt-3 flex items-end justify-between gap-2">
-                <div><div className="text-sm font-extrabold text-foreground">Screen {n}</div><div className="mt-0.5 text-[10px] text-muted-foreground">{count} action{count === 1 ? "" : "s"} mapped</div></div>
+                <div><div className="text-sm font-extrabold text-foreground">Screen {n}</div><div className="mt-0.5 text-[10px] text-muted-foreground">{count} {tx("action(s) mapped")}</div></div>
                 <div className="text-xl font-black tabular-nums text-foreground/70">{String(n).padStart(2, "0")}</div>
               </div>
               <div className="mt-3 flex gap-1.5" onClick={(e) => e.stopPropagation()}>
                 <button type="button" onClick={() => { onCopyUrl(screenLink(n), `Gift Video Screen ${n}`); setCopied(n); setTimeout(() => setCopied(null), 1800); }} className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-cyan-400/10 px-2 py-2 text-[11px] font-bold text-cyan-300 transition hover:bg-cyan-400/20">
-                  {copied === n ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />} {copied === n ? "Copied" : "Copy source"}
+                  {copied === n ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />} {copied === n ? tx("Copied") : tx("Copy source")}
                 </button>
                 <a href={screenLink(n)} target="_blank" rel="noreferrer" aria-label={`Open screen ${n}`} className="grid h-8 w-8 place-items-center rounded-lg border border-border text-muted-foreground transition hover:border-cyan-400/40 hover:text-foreground">
                   <ExternalLink className="h-3.5 w-3.5" />
