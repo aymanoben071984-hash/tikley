@@ -484,6 +484,22 @@ const auditTranslations: Record<string, Partial<Record<Locale, string>>> = {
   "Play / pause (Space)": { ar: "تشغيل / إيقاف مؤقت (مسافة)", fr: "Lire / pause (Espace)", de: "Wiedergabe / Pause (Leertaste)", tr: "Oynat / duraklat (Boşluk)", es: "Reproducir / pausar (Espacio)", it: "Riproduci / pausa (Spazio)" },
   "Custom accent colour": { ar: "لون تمييز مخصص", fr: "Couleur d’accent personnalisée", de: "Benutzerdefinierte Akzentfarbe", tr: "Özel vurgu rengi", es: "Color de acento personalizado", it: "Colore di accento personalizzato" },
   "or": { ar: "أو", fr: "ou", de: "oder", tr: "veya", es: "o", it: "o" },
+  "Copy overlay link": { ar: "نسخ رابط الشاشة", fr: "Copier le lien de l’overlay", de: "Overlay-Link kopieren", tr: "Katman bağlantısını kopyala", es: "Copiar enlace del overlay", it: "Copia link overlay" },
+  "Reset title": { ar: "إعادة ضبط العنوان", fr: "Réinitialiser le titre", de: "Titel zurücksetzen", tr: "Başlığı sıfırla", es: "Restablecer título", it: "Reimposta titolo" },
+  "Emoji crown": { ar: "تاج تعبيري", fr: "Couronne emoji", de: "Emoji-Krone", tr: "Emoji tacı", es: "Corona emoji", it: "Corona emoji" },
+  "Fire Live Entrance": { ar: "تشغيل دخول مباشر", fr: "Déclencher l’entrée en direct", de: "LIVE-Auftritt auslösen", tr: "Canlı giriş efektini çalıştır", es: "Activar entrada en directo", it: "Attiva ingresso live" },
+  "Remove Preset": { ar: "حذف الإعداد المسبق", fr: "Supprimer le préréglage", de: "Voreinstellung entfernen", tr: "Ön ayarı kaldır", es: "Eliminar preajuste", it: "Rimuovi preset" },
+  "Copy TikTok LIVE Studio link (9:16)": { ar: "نسخ رابط TikTok LIVE Studio (9:16)", fr: "Copier le lien TikTok LIVE Studio (9:16)", de: "TikTok-LIVE-Studio-Link kopieren (9:16)", tr: "TikTok LIVE Studio bağlantısını kopyala (9:16)", es: "Copiar enlace de TikTok LIVE Studio (9:16)", it: "Copia link TikTok LIVE Studio (9:16)" },
+  "Copy OBS link (16:9)": { ar: "نسخ رابط OBS (16:9)", fr: "Copier le lien OBS (16:9)", de: "OBS-Link kopieren (16:9)", tr: "OBS bağlantısını kopyala (16:9)", es: "Copiar enlace de OBS (16:9)", it: "Copia link OBS (16:9)" },
+  "Test on stream": { ar: "اختبار أثناء البث", fr: "Tester en direct", de: "Im Stream testen", tr: "Yayında test et", es: "Probar en directo", it: "Prova in diretta" },
+  "Copy this note's own link": { ar: "نسخ رابط هذه الملاحظة", fr: "Copier le lien de cette note", de: "Eigenen Link dieser Notiz kopieren", tr: "Bu notun bağlantısını kopyala", es: "Copiar el enlace de esta nota", it: "Copia il link di questa nota" },
+  "Duplicate": { ar: "إنشاء نسخة", fr: "Dupliquer", de: "Duplizieren", tr: "Çoğalt", es: "Duplicar", it: "Duplica" },
+  "Delete": { ar: "حذف", fr: "Supprimer", de: "Löschen", tr: "Sil", es: "Eliminar", it: "Elimina" },
+  "Open note": { ar: "فتح الملاحظة", fr: "Ouvrir la note", de: "Notiz öffnen", tr: "Notu aç", es: "Abrir nota", it: "Apri nota" },
+  "Reset this format": { ar: "إعادة ضبط هذا التنسيق", fr: "Réinitialiser ce format", de: "Dieses Format zurücksetzen", tr: "Bu biçimi sıfırla", es: "Restablecer este formato", it: "Reimposta questo formato" },
+  "Copy these settings to every overlay": { ar: "نسخ هذه الإعدادات إلى جميع الشاشات", fr: "Copier ces réglages sur tous les overlays", de: "Diese Einstellungen auf alle Overlays kopieren", tr: "Bu ayarları tüm katmanlara kopyala", es: "Copiar estos ajustes a todos los overlays", it: "Copia queste impostazioni su tutti gli overlay" },
+  "Real-time PostgreSQL & Overlay Sync Connected": { ar: "اتصال متزامن بقاعدة PostgreSQL والشاشات في الوقت الحقيقي", fr: "Synchronisation PostgreSQL et overlays en temps réel", de: "Echtzeit-Synchronisierung von PostgreSQL und Overlays", tr: "Gerçek zamanlı PostgreSQL ve katman eşitlemesi bağlı", es: "Sincronización en tiempo real de PostgreSQL y overlays", it: "Sincronizzazione PostgreSQL e overlay in tempo reale" },
+  "Refresh profile": { ar: "تحديث الملف الشخصي", fr: "Actualiser le profil", de: "Profil aktualisieren", tr: "Profili yenile", es: "Actualizar perfil", it: "Aggiorna profilo" },
 };
 
 export function translateText(locale: Locale, source: string): string {
