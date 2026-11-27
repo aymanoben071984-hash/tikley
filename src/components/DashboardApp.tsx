@@ -612,8 +612,8 @@ export function DashboardApp({ initialSection = "overview", initialGame }: Dashb
       {/* BODY: COLLAPSIBLE SIDEBAR + MAIN WORKSPACE */}
       <div className="flex flex-1">
         <aside
-          className={`relative shrink-0 border-r border-sidebar-border bg-sidebar transition-all duration-200 ${
-            sidebarExpanded ? "w-60" : "w-[68px]"
+          className={`sticky top-14 h-[calc(100vh-3.5rem)] relative shrink-0 border-s border-sidebar-border/80 bg-sidebar/95 backdrop-blur-xl transition-[width] duration-300 ${
+            sidebarExpanded ? "w-64 max-md:w-[68px]" : "w-[68px]"
           }`}
         >
           {/* Collapse / Expand Edge Pill Button */}
@@ -621,16 +621,16 @@ export function DashboardApp({ initialSection = "overview", initialGame }: Dashb
             type="button"
             onClick={() => setSidebarExpanded((v) => !v)}
             aria-label="Toggle sidebar"
-            className="absolute -right-3 top-4 z-20 grid h-6 w-6 place-items-center rounded-full border border-sidebar-border bg-card text-muted-foreground shadow hover:text-foreground"
+            className="absolute -end-3 top-4 z-20 grid h-6 w-6 place-items-center rounded-full border border-sidebar-border bg-card text-muted-foreground shadow-lg transition hover:text-foreground"
           >
             {sidebarExpanded ? (
-              <ChevronLeft className="h-3.5 w-3.5" />
+              locale === "ar" ? <ChevronRight className="h-3.5 w-3.5" /> : <ChevronLeft className="h-3.5 w-3.5" />
             ) : (
-              <ChevronRight className="h-3.5 w-3.5" />
+              locale === "ar" ? <ChevronLeft className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />
             )}
           </button>
 
-          <div className="flex h-[calc(100vh-3.5rem)] flex-col gap-1 overflow-y-auto p-2.5">
+          <div className="flex h-full flex-col gap-1 overflow-y-auto p-2.5 pb-4">
             {/* Guide Shortcut Pill */}
             <button
               type="button"
@@ -640,7 +640,7 @@ export function DashboardApp({ initialSection = "overview", initialGame }: Dashb
               }`}
             >
               <Lightbulb className="lo-hint-bulb h-4 w-4 shrink-0" />
-              {sidebarExpanded && <span>{tx("Guide · OBS & LIVE Studio")}</span>}
+              {sidebarExpanded && <span className="max-md:hidden">{tx("Guide · OBS & LIVE Studio")}</span>}
             </button>
 
             {SIDEBAR_NAV_ITEMS.map((item, idx) => {
@@ -648,21 +648,31 @@ export function DashboardApp({ initialSection = "overview", initialGame }: Dashb
               const active = activeSection === item.id;
               const prevGroup = idx > 0 ? SIDEBAR_NAV_ITEMS[idx - 1].group : item.group;
               const showDivider = idx > 0 && prevGroup !== item.group;
+              const groupTitle =
+                item.group === "core" ? tx("Workspace") :
+                item.group === "overlays" ? tx("LIVE & Overlays") :
+                item.group === "interactive" ? tx("Interactive Studio") :
+                tx("Creator Studio");
 
               return (
                 <React.Fragment key={item.id}>
-                  {showDivider && (
-                    <div className="my-1.5 h-px bg-sidebar-border/80" />
+                  {(idx === 0 || showDivider) && sidebarExpanded && (
+                    <div className="px-3 pb-1 pt-3 text-[10px] font-extrabold uppercase tracking-[0.16em] text-muted-foreground/75">
+                      {groupTitle}
+                    </div>
+                  )}
+                  {showDivider && !sidebarExpanded && (
+                    <div className="mx-2 my-2 h-px bg-sidebar-border/80" />
                   )}
                   <button
                     type="button"
                     title={tx(item.label)}
                     onClick={() => setActiveSection(item.id)}
-                    className={`group relative flex items-center gap-3 rounded-xl px-2.5 py-2 text-xs font-bold transition ${
+                    className={`group relative flex items-center gap-3 rounded-xl border border-transparent px-3 py-2.5 text-[13px] font-semibold transition-all duration-200 ${
                       sidebarExpanded ? "justify-between" : "justify-center"
                     } ${
                       active
-                        ? "bg-brand-cyan text-slate-950 shadow-[0_4px_18px_hsl(var(--brand-cyan)/0.38)]"
+                        ? "border-brand-cyan/30 bg-brand-cyan text-slate-950 shadow-[0_6px_22px_hsl(var(--brand-cyan)/0.24)]"
                         : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-foreground"
                     }`}
                   >
@@ -682,13 +692,13 @@ export function DashboardApp({ initialSection = "overview", initialGame }: Dashb
                         )}
                       </div>
                       {sidebarExpanded && (
-                        <span className="truncate">{item.label}</span>
+                        <span className="truncate max-md:hidden">{tx(item.label)}</span>
                       )}
                     </div>
 
                     {sidebarExpanded && item.badge && (
                       <span
-                        className={`rounded-full px-1.5 py-0.5 text-[9px] font-black ${
+                        className={`rounded-full px-2 py-0.5 text-[9px] font-black tracking-wide ${
                           active
                             ? "bg-slate-950/20 text-slate-950"
                             : "bg-brand-cyan/15 text-brand-cyan"
