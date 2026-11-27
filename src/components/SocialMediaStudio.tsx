@@ -41,7 +41,7 @@ function ColorOpt({ label, value, onChange, placeholder }: { label: string; valu
         <input type="color" value={value || "#ffffff"} onChange={(e) => onChange(e.target.value)} className="h-6 w-7 cursor-pointer border-0 bg-transparent" />
         <span className="min-w-0 flex-1 truncate font-mono text-[11px] text-muted-foreground">{value || placeholder}</span>
         {value && (
-          <button type="button" onClick={() => onChange("")} className="text-[10px] font-bold text-muted-foreground hover:text-foreground">{tx("Reset")}</button>
+          <button type="button" onClick={() => onChange("")} className="text-[10px] font-bold text-muted-foreground hover:text-foreground">Reset</button>
         )}
       </div>
     </div>
