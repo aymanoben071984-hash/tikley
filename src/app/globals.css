@@ -498,8 +498,8 @@ html[dir="rtl"] :is(input, textarea, select) { text-align: start; }
 
 /* OBS/browser-source canvases keep a stable LTR layout regardless of dashboard locale.
    Text nodes still use plaintext bidi so Arabic and Latin usernames render naturally. */
-html.obs-transparent .overlay-root { direction: ltr; }
-html.obs-transparent .overlay-root :is(.ol-name, .cb-name, .cb-hname, .cl-name, .fp-name, .podium-nickname) {
+.overlay-root { direction: ltr; }
+.overlay-root :is(.ol-name, .cb-name, .cb-hname, .cl-name, .fp-name, .podium-nickname) {
   unicode-bidi: plaintext;
 }
 html.obs-transparent .overlay-root :is(.cb-score-val, .cb-hscore, .cl-score, .cl-score-inside, .fp-score, .podium-value, .ol-score) {
