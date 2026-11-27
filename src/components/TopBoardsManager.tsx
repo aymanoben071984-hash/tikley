@@ -279,7 +279,7 @@ export function TopBoardsManager({ boards, avatars, onRefresh, onFireEvent, onCo
                 <div className="flex shrink-0 items-center gap-1" onClick={(e) => e.stopPropagation()}>
                   <button
                     type="button"
-                    title="Copy overlay link"
+                    title={tx("Copy overlay link")}
                     onClick={() => copyLink(b.id, b.name)}
                     className="rounded-lg p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground"
                   >
@@ -461,7 +461,7 @@ export function TopBoardsManager({ boards, avatars, onRefresh, onFireEvent, onCo
                   />
                   <button
                     type="button"
-                    title="Reset title"
+                    title={tx("Reset title")}
                     onClick={() => setS({ titles: { ...s.titles, [s.type]: meta.defaultTitle } })}
                     className="rounded-xl border border-border px-2.5 text-muted-foreground hover:text-foreground"
                   >
@@ -569,7 +569,7 @@ export function TopBoardsManager({ boards, avatars, onRefresh, onFireEvent, onCo
                   <div className="text-xs">
                     <div className="font-semibold text-muted-foreground">{tx("Crown for #1")}</div>
                     <div className="mt-1 flex max-h-28 flex-wrap gap-1 overflow-y-auto rounded-xl border border-border p-1.5">
-                      <button type="button" onClick={() => setS({ crownStyle: "" })} className={`grid h-10 w-10 place-items-center rounded-lg text-lg ${!s.crownStyle ? "bg-brand-cyan/20 ring-1 ring-brand-cyan" : "bg-secondary/40"}`} title="Emoji crown">{tx("👑")}</button>
+                      <button type="button" onClick={() => setS({ crownStyle: "" })} className={`grid h-10 w-10 place-items-center rounded-lg text-lg ${!s.crownStyle ? "bg-brand-cyan/20 ring-1 ring-brand-cyan" : "bg-secondary/40"}`} title={tx("Emoji crown")}>{tx("👑")}</button>
                       {CROWNS.map((c) => (
                         <button key={c.id} type="button" title={c.label} onClick={() => setS({ crownStyle: c.id })} className={`grid h-10 w-10 place-items-center rounded-lg ${s.crownStyle === c.id ? "bg-brand-cyan/20 ring-1 ring-brand-cyan" : "bg-secondary/40"}`}>
                           {/* eslint-disable-next-line @next/next/no-img-element */}
