@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Clock3, Eye, Play, RotateCcw, SkipForward } from "lucide-react";
 
 type PictureQuestion = {
