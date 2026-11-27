@@ -620,7 +620,7 @@ export function DashboardApp({ initialSection = "overview", initialGame }: Dashb
           <button
             type="button"
             onClick={() => setSidebarExpanded((v) => !v)}
-            aria-label="Toggle sidebar"
+            aria-label={tx("Toggle sidebar")}
             className="absolute -end-3 top-4 z-20 grid h-6 w-6 place-items-center rounded-full border border-sidebar-border bg-card text-muted-foreground shadow-lg transition hover:text-foreground"
           >
             {sidebarExpanded ? (
@@ -1012,7 +1012,7 @@ export function DashboardApp({ initialSection = "overview", initialGame }: Dashb
 
                         <div className="flex items-center gap-2 rounded-xl border border-brand-cyan/15 bg-brand-cyan/[0.06] px-3.5 py-2.5 text-xs text-muted-foreground">
                           <Lock className="h-3.5 w-3.5 shrink-0 text-brand-cyan" />
-                          <span>Each username locks to the account that linked it.</span>
+                          <span>{tx("Each username locks to the account that linked it.")}</span>
                         </div>
                       </div>
                     </div>
@@ -1127,7 +1127,7 @@ export function DashboardApp({ initialSection = "overview", initialGame }: Dashb
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2 text-sm font-extrabold text-foreground">
                           <Layers className="h-4 w-4 text-brand-cyan" />
-                          <span>Overlays on your stream</span>
+                          <span>{tx("Overlays on your stream")}</span>
                         </div>
                         {activeOverlays.length > 0 && (
                           <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-black text-emerald-300">
@@ -1138,9 +1138,9 @@ export function DashboardApp({ initialSection = "overview", initialGame }: Dashb
 
                       {activeOverlays.length === 0 ? (
                         <p className="text-xs leading-relaxed text-muted-foreground">
-                          No overlay is open right now. Add one of your overlay links as a browser source in{" "}
-                          <strong className="text-foreground">TikTok LIVE Studio</strong> or{" "}
-                          <strong className="text-foreground">OBS Studio</strong> and it shows up here.
+                          {tx("No overlay is open right now. Add one of your overlay links as a browser source in")}{" "}
+                          <strong className="text-foreground">TikTok LIVE Studio</strong> {tx("or")}{" "}
+                          <strong className="text-foreground">OBS Studio</strong> {tx("and it shows up here.")}
                         </p>
                       ) : (
                         <div className="space-y-1.5">
@@ -1390,7 +1390,7 @@ export function DashboardApp({ initialSection = "overview", initialGame }: Dashb
                       {o === "A" ? "Option A · Single board" : "Option B · Boards manager"}
                       {o === "B" && topOption !== "B" && (
                         <span className="lo-new-pointer absolute -top-9 left-1/2 -translate-x-1/2">
-                          <span className="lo-new-pointer-badge">New</span>
+                          <span className="lo-new-pointer-badge">{tx("New")}</span>
                           <span className="lo-new-pointer-hand">👇</span>
                         </span>
                       )}
