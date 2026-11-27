@@ -88,6 +88,14 @@ export function DiscoHalalExperience({ preview = false }: { preview?: boolean })
       if (!fresh.length) return;
       fresh.forEach((event) => seenIds.current.add(event.id));
       if (seenIds.current.size > 500) seenIds.current = new Set([...seenIds.current].slice(-250));
+      let energyDelta = 0;
+      let latestEventLabel = "";
+      for (const event of fresh) {
+        const kind = String(event.eventType || "").toLowerCase();
+        const name = event.username || event.displayName || "LIVE Viewer";
+        latestEventLabel = kind === "gift" ? `🎁 ${event.displayName || name} sent ${event.giftName || "a gift"}` : kind === "like" ? `💗 ${event.displayName || name} sent likes` : kind === "share" ? `🔁 ${event.displayName || name} shared the LIVE` : `✨ ${event.displayName || name} joined the party`;
+        energyDelta += kind === "gift" ? Math.max(5, Math.min(24, Number(event.coins || 5) / 20)) : 2;
+      }
       setDancers((current) => {
         let updated = [...current];
         for (const event of fresh) {
@@ -123,12 +131,11 @@ export function DiscoHalalExperience({ preview = false }: { preview?: boolean })
               gift: event.giftName,
             });
           }
-          setLastEvent(kind === "gift" ? `🎁 ${event.displayName || name} sent ${event.giftName || "a gift"}` : kind === "like" ? `💗 ${event.displayName || name} sent likes` : `✨ ${event.displayName || name} joined the party`);
-          if (kind === "gift") setEnergy((value) => Math.min(100, value + Math.max(5, Math.min(24, Number(event.coins || 5) / 20))));
-          else setEnergy((value) => Math.min(100, value + 2));
         }
         return updated.slice(-18);
       });
+      if (latestEventLabel) setLastEvent(latestEventLabel);
+      if (energyDelta) setEnergy((value) => Math.min(100, value + energyDelta));
     } catch {
       // A transient OBS network error should not stop the animation loop.
     }
