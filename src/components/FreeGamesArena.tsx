@@ -938,6 +938,24 @@ export function FreeGamesArena({
         changed = true;
       }
 
+      if (selectedSlug === "picture-quiz" && kind === "chat" && next.startedAt && !next.revealed) {
+        const durationMs = Math.max(5, Math.min(90, Number(next.duration || 20))) * 1000;
+        const stillOpen = Date.now() - Number(next.startedAt) < durationMs;
+        const normalizeAnswer = (value: string) => value.toLowerCase().trim()
+          .replace(/[\\u064B-\\u065F\\u0670]/g, "")
+          .replace(/[أإآ]/g, "ا").replace(/ى/g, "ي").replace(/ة/g, "ه")
+          .replace(/^!/, "").replace(/[؟?!.،,]/g, "").trim();
+        const expected = normalizeAnswer(String(next.correctAnswer || ""));
+        const guess = normalizeAnswer(message);
+        if (stillOpen && expected && guess === expected) {
+          const winners = (next.chatAnswers as Array<{ name: string; message: string }>) || [];
+          if (!winners.some((winner) => winner.name.toLowerCase() === name.toLowerCase())) {
+            next.chatAnswers = [{ name, message }, ...winners].slice(0, 20);
+            changed = true;
+          }
+        }
+      }
+
       if (selectedSlug === "word-scramble" && kind === "chat") {
         const answer = String(next.word || "").trim().toLowerCase();
         const guess = normalizedMessage.replace(/^!guess\s*/, "").replace(/^!word\s*/, "");
