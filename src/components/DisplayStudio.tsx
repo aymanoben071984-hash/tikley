@@ -176,7 +176,7 @@ function FormatColumn({
             </div>
           </div>
         </div>
-        <button type="button" title="Reset this format" onClick={() => onChange({ ...PLACEMENT_DEFAULT })} className="rounded-lg border border-border p-1.5 text-muted-foreground hover:text-foreground">
+        <button type="button" title={tx("Reset this format")} onClick={() => onChange({ ...PLACEMENT_DEFAULT })} className="rounded-lg border border-border p-1.5 text-muted-foreground hover:text-foreground">
           <RotateCcw className="h-3.5 w-3.5" />
         </button>
       </div>
@@ -416,7 +416,7 @@ export function DisplayStudio({ boards, widgets, onCopyUrl, onToast }: { boards:
         <div className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-popover/95 px-4 py-3 shadow-2xl backdrop-blur-md">
           <span className="truncate text-xs font-semibold text-muted-foreground">{dirty ? `Unsaved display changes for ${source?.label ?? ""}` : "All display settings saved"}</span>
           <div className="flex shrink-0 items-center gap-2">
-            <button type="button" disabled={bulk} onClick={applyToAll} title="Copy these settings to every overlay" className="inline-flex items-center gap-1 rounded-xl border border-border px-3 py-2 text-xs font-bold text-foreground hover:bg-secondary disabled:opacity-50">
+            <button type="button" disabled={bulk} onClick={applyToAll} title={tx("Copy these settings to every overlay")} className="inline-flex items-center gap-1 rounded-xl border border-border px-3 py-2 text-xs font-bold text-foreground hover:bg-secondary disabled:opacity-50">
               {bulk ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CopyCheck className="h-3.5 w-3.5" />} Apply to all
             </button>
             <button type="button" disabled={!dirty || saving} onClick={() => setDraft(savedDisplay)} className="rounded-xl border border-border px-3 py-2 text-xs font-bold text-foreground hover:bg-secondary disabled:opacity-40">{tx("Discard")}</button>
