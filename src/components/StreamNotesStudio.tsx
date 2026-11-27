@@ -160,12 +160,12 @@ export function StreamNotesStudio({ widget, onSave, onCopyUrl }: StreamNotesStud
                   <div className="mt-1.5 flex items-center justify-between gap-2">
                     <span className="truncate text-[11px] font-bold text-foreground">{NOTE_DESIGN_LABELS[n.design]}</span>
                     <span className="flex shrink-0 items-center gap-1" onClick={(e) => e.stopPropagation()}>
-                      <button type="button" title="Copy this note's own link" onClick={() => copy(noteLink(n.id), "Note", n.id)} className="rounded-md bg-brand-cyan/20 px-1.5 py-1 text-[10px] font-bold text-brand-cyan hover:bg-brand-cyan/30">
+                      <button type="button" title={tx("Copy this note's own link")} onClick={() => copy(noteLink(n.id), "Note", n.id)} className="rounded-md bg-brand-cyan/20 px-1.5 py-1 text-[10px] font-bold text-brand-cyan hover:bg-brand-cyan/30">
                         {copied === n.id ? "Copied" : "Link"}
                       </button>
-                      <a href={noteLink(n.id)} target="_blank" rel="noreferrer" aria-label="Open note" className="rounded-md p-1 text-muted-foreground hover:text-foreground"><ExternalLink className="h-3 w-3" /></a>
-                      <button type="button" title="Duplicate" onClick={() => duplicate(n)} className="rounded-md p-1 text-muted-foreground hover:text-foreground"><CopyPlus className="h-3 w-3" /></button>
-                      <button type="button" title="Delete" onClick={() => remove(n.id)} className="rounded-md p-1 text-muted-foreground hover:text-red-400"><Trash2 className="h-3 w-3" /></button>
+                      <a href={noteLink(n.id)} target="_blank" rel="noreferrer" aria-label={tx("Open note")} className="rounded-md p-1 text-muted-foreground hover:text-foreground"><ExternalLink className="h-3 w-3" /></a>
+                      <button type="button" title={tx("Duplicate")} onClick={() => duplicate(n)} className="rounded-md p-1 text-muted-foreground hover:text-foreground"><CopyPlus className="h-3 w-3" /></button>
+                      <button type="button" title={tx("Delete")} onClick={() => remove(n.id)} className="rounded-md p-1 text-muted-foreground hover:text-red-400"><Trash2 className="h-3 w-3" /></button>
                     </span>
                   </div>
                 </div>

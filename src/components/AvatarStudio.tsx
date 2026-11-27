@@ -367,7 +367,7 @@ export function AvatarStudio({
             <input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search 68 frames (dragon, cat, neon...)"
+              placeholder={tx("Search 68 frames (dragon, cat, neon...)")}
               className="w-full rounded-xl border border-border bg-background pl-8 pr-3 py-1.5 text-xs outline-none focus:border-brand-cyan"
             />
           </div>
@@ -464,7 +464,7 @@ export function AvatarStudio({
               <div className="flex flex-col gap-1">
                 <button
                   type="button"
-                  title="Fire Live Entrance"
+                  title={tx("Fire Live Entrance")}
                   onClick={() =>
                     onFireEntrance({
                       displayName: p.displayName,
@@ -480,7 +480,7 @@ export function AvatarStudio({
                 </button>
                 <button
                   type="button"
-                  title="Remove Preset"
+                  title={tx("Remove Preset")}
                   onClick={() => onDeletePreset(p.id)}
                   className="rounded-lg bg-red-500/15 p-1.5 text-red-400 hover:bg-red-500/25"
                 >

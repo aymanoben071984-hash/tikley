@@ -224,7 +224,7 @@ export function GiftVideosStudio({ onCopyUrl, onToast }: GiftVideosStudioProps) 
                     </div>
                   </div>
                   <span onClick={(e) => e.stopPropagation()} className="flex items-center gap-1.5">
-                    <button type="button" title="Test on stream" onClick={() => test(a)} className="rounded-lg bg-emerald-500/15 p-1.5 text-emerald-300 hover:bg-emerald-500/25">
+                    <button type="button" title={tx("Test on stream")} onClick={() => test(a)} className="rounded-lg bg-emerald-500/15 p-1.5 text-emerald-300 hover:bg-emerald-500/25">
                       <Zap className="h-3.5 w-3.5" />
                     </button>
                     <Toggle checked={a.enabled} onChange={(v) => toggleEnabled(a, v)} />
@@ -239,14 +239,14 @@ export function GiftVideosStudio({ onCopyUrl, onToast }: GiftVideosStudioProps) 
         {draft ? (
           <div className="space-y-4">
             <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-card p-4">
-              <input value={draft.name} maxLength={120} onChange={(e) => set({ name: e.target.value })} aria-label="Action name" className="min-w-0 flex-1 rounded-xl border border-transparent bg-transparent px-2 py-1 text-lg font-black text-foreground outline-none hover:border-border focus:border-brand-cyan" />
-              <select value={draft.screen} onChange={(e) => set({ screen: Number(e.target.value) })} aria-label="Screen" className="rounded-xl border border-border bg-background px-3 py-2 text-xs font-bold text-foreground">
+              <input value={draft.name} maxLength={120} onChange={(e) => set({ name: e.target.value })} aria-label={tx("Action name")} className="min-w-0 flex-1 rounded-xl border border-transparent bg-transparent px-2 py-1 text-lg font-black text-foreground outline-none hover:border-border focus:border-brand-cyan" />
+              <select value={draft.screen} onChange={(e) => set({ screen: Number(e.target.value) })} aria-label={tx("Screen")} className="rounded-xl border border-border bg-background px-3 py-2 text-xs font-bold text-foreground">
                 {Array.from({ length: SCREEN_COUNT }, (_, i) => <option key={i} value={i + 1}>Screen {i + 1}</option>)}
               </select>
               <button type="button" onClick={runPreview} className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 px-3 py-2 text-xs font-black text-slate-950 hover:brightness-110">
                 <Play className="h-3.5 w-3.5" /> Preview
               </button>
-              <button type="button" onClick={() => remove(draft)} className="rounded-xl border border-red-500/30 bg-red-500/10 p-2 text-red-400 hover:bg-red-500/20" aria-label="Delete action">
+              <button type="button" onClick={() => remove(draft)} className="rounded-xl border border-red-500/30 bg-red-500/10 p-2 text-red-400 hover:bg-red-500/20" aria-label={tx("Delete action")}>
                 <Trash2 className="h-4 w-4" />
               </button>
             </div>

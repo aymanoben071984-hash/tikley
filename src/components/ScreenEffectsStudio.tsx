@@ -145,7 +145,7 @@ export function ScreenEffectsStudio({ widget, onSave, onFireEvent, onCopyUrl }: 
             {["#ffffff", "#22d3ee", "#f472b6", "#facc15", "#a855f7", "#10b981", "#f43f5e"].map((c) => (
               <button key={c} type="button" title={c} onClick={() => setA({ tint: c })} className={`h-6 w-6 rounded-full ${amb.tint === c ? "ring-2 ring-brand-cyan ring-offset-2 ring-offset-card" : ""}`} style={{ background: c }} />
             ))}
-            <input type="color" value={amb.tint ?? "#ffffff"} onChange={(e) => setA({ tint: e.target.value })} className="h-7 w-9 cursor-pointer rounded border-0 bg-transparent" aria-label="Custom tint" />
+            <input type="color" value={amb.tint ?? "#ffffff"} onChange={(e) => setA({ tint: e.target.value })} className="h-7 w-9 cursor-pointer rounded border-0 bg-transparent" aria-label={tx("Custom tint")} />
             {!tintable && <span className="text-[10px] text-muted-foreground">{tx("(this effect uses its own colours)")}</span>}
           </div>
         </Section>

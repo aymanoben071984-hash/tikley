@@ -534,7 +534,7 @@ export function SceneAndStudioSetup({
                 <div className="flex shrink-0 items-center gap-1.5">
                   <button
                     type="button"
-                    title="Copy TikTok LIVE Studio link (9:16)"
+                    title={tx("Copy TikTok LIVE Studio link (9:16)")}
                     onClick={() => copyWithFeedback(withFormat(ep.path, "9:16"), `${ep.label} (9:16)`)}
                     className="rounded-lg bg-pink-500/15 px-2 py-1 text-[11px] font-bold text-pink-300 hover:bg-pink-500/25"
                   >
@@ -542,7 +542,7 @@ export function SceneAndStudioSetup({
                   </button>
                   <button
                     type="button"
-                    title="Copy OBS link (16:9)"
+                    title={tx("Copy OBS link (16:9)")}
                     onClick={() => copyWithFeedback(withFormat(ep.path, "16:9"), `${ep.label} (16:9)`)}
                     className="rounded-lg bg-sky-500/15 px-2 py-1 text-[11px] font-bold text-sky-300 hover:bg-sky-500/25"
                   >

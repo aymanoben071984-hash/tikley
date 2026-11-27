@@ -208,10 +208,10 @@ export function EventTickersStudio({ events, onFireEvent, onCopyUrl }: EventTick
               <div className="space-y-2 text-xs">
                 <input value={s.message} maxLength={80} dir="auto" placeholder={meta.defaultMessage} onChange={(e) => set({ message: e.target.value })} className="w-full rounded-xl border border-border bg-background px-3 py-2 font-semibold text-foreground outline-none focus:border-brand-cyan" />
                 <div className="grid grid-cols-2 gap-2">
-                  <select value={s.fontFamily} onChange={(e) => set({ fontFamily: e.target.value })} className="rounded-xl border border-border bg-background px-2 py-2 font-semibold text-foreground" aria-label="Name font">
+                  <select value={s.fontFamily} onChange={(e) => set({ fontFamily: e.target.value })} className="rounded-xl border border-border bg-background px-2 py-2 font-semibold text-foreground" aria-label={tx("Name font")}>
                     {TICKER_FONTS.map((f) => <option key={f} value={f}>Name: {f}</option>)}
                   </select>
-                  <select value={s.msgFont} onChange={(e) => set({ msgFont: e.target.value })} className="rounded-xl border border-border bg-background px-2 py-2 font-semibold text-foreground" aria-label="Message font">
+                  <select value={s.msgFont} onChange={(e) => set({ msgFont: e.target.value })} className="rounded-xl border border-border bg-background px-2 py-2 font-semibold text-foreground" aria-label={tx("Message font")}>
                     {TICKER_FONTS.map((f) => <option key={f} value={f}>Message: {f}</option>)}
                   </select>
                 </div>

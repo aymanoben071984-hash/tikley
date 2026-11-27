@@ -114,7 +114,7 @@ export function BackgroundsStudio({ onToast }: { onToast: (msg: string) => void 
           />
           <div className="relative w-full sm:w-64">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search backgrounds…" className="w-full rounded-xl border border-border bg-background py-2 pl-8 pr-3 text-xs outline-none focus:border-brand-cyan" />
+            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={tx("Search backgrounds…")} className="w-full rounded-xl border border-border bg-background py-2 pl-8 pr-3 text-xs outline-none focus:border-brand-cyan" />
           </div>
         </div>
         <div className="flex flex-wrap gap-1.5">
@@ -260,7 +260,7 @@ function BackgroundPreview({ item, initialOrientation, onClose, onToast }: { ite
                 {item.tags.map((t) => <span key={t} className="rounded-full bg-secondary px-2 py-0.5 text-[10px] text-muted-foreground">#{t}</span>)}
               </div>
             </div>
-            <button type="button" onClick={onClose} aria-label="Close preview" className="rounded-lg p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground">
+            <button type="button" onClick={onClose} aria-label={tx("Close preview")} className="rounded-lg p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground">
               <X className="h-5 w-5" />
             </button>
           </div>
@@ -280,7 +280,7 @@ function BackgroundPreview({ item, initialOrientation, onClose, onToast }: { ite
                 {["#28c7fa", "#ec4899", "#a855f7", "#10b981", "#f59e0b", "#f43f5e", "#d4af37", "#ffffff"].map((c) => (
                   <button key={c} type="button" title={c} onClick={() => setAccent(c)} className={`h-6 w-6 rounded-full ${accent === c ? "ring-2 ring-brand-cyan ring-offset-2 ring-offset-card" : ""}`} style={{ background: c }} />
                 ))}
-                <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="h-7 w-9 cursor-pointer rounded border-0 bg-transparent" aria-label="Custom accent colour" />
+                <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} className="h-7 w-9 cursor-pointer rounded border-0 bg-transparent" aria-label={tx("Custom accent colour")} />
               </div>
             </div>
           )}
