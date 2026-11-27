@@ -102,12 +102,10 @@
   --color-sidebar-foreground: hsl(var(--sidebar-foreground));
   --color-sidebar-border: hsl(var(--sidebar-border));
   --color-sidebar-accent: hsl(var(--sidebar-accent));
-  --font-sans: "Changa", "Changa Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-changa), var(--font-noto-arabic), ui-sans-serif, system-ui, sans-serif;
 }
 
-/* Changa — the OverlayLive dashboard font (copied from overlaylive.app) */
-@font-face{font-family:Changa Fallback;src:local(Arial);ascent-override:123.2%;descent-override:61.55%;line-gap-override:0.0%;size-adjust:99.6%}
-
+/* Arabic and Latin font files are self-hosted by next/font in the root layout. */
 
 * {
   border-color: hsl(var(--border));
@@ -319,10 +317,6 @@ html.obs-transparent body {
 @keyframes ol-n-gradient-loop { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
 @keyframes ol-n-shimmer { 0% { background-position: 100% 50%; } 100% { background-position: -100% 50%; } }
 
-@media (prefers-reduced-motion: reduce) {
-  .ol-name, .ol-name .ol-ch { animation: none !important; }
-}
-
 /* ===== Board text direction + fonts ===== */
 /* Names follow their own script (Latin = left to right, Arabic = right to left),
    no matter which side the board is aligned to. */
@@ -488,32 +482,56 @@ html.obs-transparent body {
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 
-@media (prefers-reduced-motion: reduce) {
-  .animate-fade-up, .ol-tiktok-coin-spin, .lo-hint-pulse, .lo-new-pointer, .lo-new-target,
-  .lo-hint-fresh::after, .lo-hint-fresh .lo-hint-bulb, .popular-badge::after, .popular-flame { animation: none; }
-  .lo-hint-fresh::after { opacity: 0; }
-}
 
 
-/* Locale-aware base direction. Component-specific positioning remains opt-in. */
-html[dir="rtl"] body {
-  direction: rtl;
-}
-html[dir="rtl"] input,
-html[dir="rtl"] textarea,
-html[dir="rtl"] select {
-  text-align: start;
-}
-html[dir="rtl"] .overlay-root {
-  direction: rtl;
+
+/* ===== Locale direction and script-safe overlay typography ===== */
+/* The dashboard follows the selected locale; individual stream canvases opt out. */
+html[dir="rtl"] body { direction: rtl; }
+html[dir="ltr"] body { direction: ltr; }
+
+html[dir="rtl"] :is(input, textarea, select) { text-align: start; }
+
+/* Technical identifiers and external OBS/browser-source URLs stay LTR in Arabic UI. */
+html[dir="rtl"] :is(code, pre, kbd, samp, .font-mono),
+html[dir="rtl"] a[href^="http"] {
+  direction: ltr;
+  unicode-bidi: isolate;
+  text-align: left;
 }
 
-
-/* Arabic dashboard typography fallback; preserve Latin text and numeric direction. */
-html[lang="ar"] body {
-  font-family: "Changa", "Noto Sans Arabic", Tahoma, Arial, sans-serif;
-}
-html[dir="rtl"] .ol-name,
-html[dir="rtl"] .ol-board-font {
+/* OBS/browser-source canvases keep a stable LTR layout regardless of dashboard locale.
+   Text nodes still use plaintext bidi so Arabic and Latin usernames render naturally. */
+.overlay-root { direction: ltr; }
+.overlay-root :is(.ol-name, .cb-name, .cb-hname, .cl-name, .fp-name, .podium-nickname) {
   unicode-bidi: plaintext;
+}
+.overlay-root :is(.cb-score-val, .cb-hscore, .cl-score, .cl-score-inside, .fp-score, .podium-value, .ol-score) {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+/* Arabic dashboard typography uses real self-hosted font files, with local fallbacks. */
+html[lang="ar"] body {
+  font-family: var(--font-changa), var(--font-noto-arabic), Tahoma, Arial, sans-serif;
+}
+
+/* Usernames follow their own writing system; numeric values remain LTR. */
+.ol-name,
+.ol-board-font :is(.cb-name, .cb-hname, .cl-name, .fp-name, .podium-nickname, .ol-name-box) {
+  unicode-bidi: plaintext;
+}
+.ol-board-font :is(.cb-score-val, .cb-hscore, .cl-score, .cl-score-inside, .fp-score, .podium-value, .ol-score) {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+/* Consolidated reduced-motion overrides for dashboard and stream UI. */
+@media (prefers-reduced-motion: reduce) {
+  .ol-name, .ol-name .ol-ch,
+  .animate-fade-up, .ol-tiktok-coin-spin, .lo-hint-pulse, .lo-new-pointer, .lo-new-target,
+  .lo-hint-fresh::after, .lo-hint-fresh .lo-hint-bulb, .popular-badge::after, .popular-flame {
+    animation: none !important;
+  }
+  .lo-hint-fresh::after { opacity: 0; }
 }

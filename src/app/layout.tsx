@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Analytics } from "@vercel/analytics/next";
+import { Changa, Noto_Sans_Arabic } from "next/font/google";
 import "./globals.css";
 import { LocaleProvider } from "@/components/LocaleProvider";
+
+const changa = Changa({ subsets: ["arabic", "latin"], weight: ["200", "300", "400", "500", "600", "700", "800"], variable: "--font-changa", display: "swap" });
+const notoSansArabic = Noto_Sans_Arabic({ subsets: ["arabic", "latin"], weight: ["400", "500", "600", "700"], variable: "--font-noto-arabic", display: "swap" });
 
 export const metadata: Metadata = {
   title: "OverlayLive | TikTok LIVE Overlays, Alerts, Avatars & Free Games for OBS & LIVE Studio",
@@ -20,7 +24,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" dir="ltr" className="dark" suppressHydrationWarning>
+    <html lang="en" dir="ltr" className={`dark ${changa.variable} ${notoSansArabic.variable}`} suppressHydrationWarning>
       <head>
         {/* eslint-disable-next-line @next/next/no-css-tags */}
         <link rel="stylesheet" href="/assets/overlaylive-engine.css" />
