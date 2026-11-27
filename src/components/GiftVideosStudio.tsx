@@ -165,7 +165,7 @@ export function GiftVideosStudio({ onCopyUrl, onToast }: GiftVideosStudioProps) 
               <div className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-muted-foreground">{tx("Interactive Actions")}</div>
               <h2 className="text-2xl font-black text-foreground">{tx("Gift Videos")}</h2>
               <p className="max-w-3xl text-xs text-muted-foreground">
-                Trigger full-screen video or GIF animations (with optional sound) on up to 6 independent overlays when specific gifts are sent, coin milestones are hit, or likes reach a threshold.
+                {tx("Trigger full-screen video or GIF animations (with optional sound) on up to 6 independent overlays when specific gifts are sent, coin milestones are hit, or likes reach a threshold.")}
               </p>
             </div>
           </div>
