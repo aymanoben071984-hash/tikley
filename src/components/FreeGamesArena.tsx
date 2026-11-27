@@ -727,7 +727,7 @@ export function GameOverlayStage({
           {fuse > 0 ? `${holder} holds the bomb!` : `💥 Exploded on ${holder}!`}
         </div>
         <div className="text-[11px] text-white/65">{tx("Type !pass or send a Rose to pass it!")}</div>
-      </div>
+      </div>}
     </div>
   );
 }
@@ -745,6 +745,21 @@ interface FreeGamesArenaProps {
   ) => Promise<void>;
   onCopyUrl: (path: string, label: string) => void;
 }
+
+type PcGameDefinition = {
+  slug: string; title: string; subtitle: string;
+  access: "free" | "pro"; platform: string; icon: string;
+};
+const PC_GAMES_CATALOG: PcGameDefinition[] = [
+  { slug: "minecraft", title: "Minecraft", subtitle: "Viewer gifts and likes can trigger world events through a server connection.", access: "free", platform: "PC · Server integration", icon: "⛏️" },
+  { slug: "luanti", title: "Luanti", subtitle: "Open-source voxel sandbox with a community interaction mod.", access: "free", platform: "PC · Open source", icon: "🧱" },
+  { slug: "any-game-keyboard", title: "Any PC Game · Keyboard", subtitle: "Map LIVE gifts, likes and chat commands to safe, game-window-only key presses.", access: "pro", platform: "Windows desktop", icon: "⌨️" },
+  { slug: "fivem", title: "FiveM", subtitle: "A custom-server experience with viewer-triggered vehicles, NPCs and world effects.", access: "pro", platform: "GTA V · FiveM server", icon: "🚘" },
+  { slug: "lethal-company", title: "Lethal Company", subtitle: "Let viewers influence a co-op horror run with game events and enemy encounters.", access: "pro", platform: "Steam · Mod adapter", icon: "👾" },
+  { slug: "stardew-valley", title: "Stardew Valley", subtitle: "Bring chat into the farm with weather changes, gifts and surprise encounters.", access: "pro", platform: "Steam · SMAPI", icon: "🌱" },
+  { slug: "horde-wants-you-dead", title: "Horde Wants You Dead", subtitle: "A wave shooter where viewers can send enemies or support the player.", access: "pro", platform: "Steam · Mod adapter", icon: "🧟" },
+  { slug: "uebs2", title: "Ultimate Epic Battle Simulator 2", subtitle: "Viewers choose sides and add units to large-scale battles.", access: "pro", platform: "Steam · Mod adapter", icon: "⚔️" },
+];
 
 export function FreeGamesArena({
   games,
@@ -764,7 +779,7 @@ export function FreeGamesArena({
   const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
   const [storeSearch, setStoreSearch] = useState("");
   const [storeCategory, setStoreCategory] = useState<string>("all");
-  const [storeFreeOnly, setStoreFreeOnly] = useState(true);
+  const [storeFreeOnly, setStoreFreeOnly] = useState(false);
   const storeCategories = [
     { id: "all", label: tx("All games") },
     { id: "quiz", label: tx("Quiz") },
@@ -774,11 +789,18 @@ export function FreeGamesArena({
     { id: "word", label: tx("Word games") },
     { id: "arcade", label: tx("Arcade") },
     { id: "news", label: tx("Stream tools") },
+    { id: "pc", label: locale === "ar" ? "ألعاب الكمبيوتر" : "PC Games" },
   ];
+  const normalizedSearch = storeSearch.trim().toLowerCase();
   const visibleGames = FREE_GAMES_CATALOG.filter((game) => {
-    const matchesCategory = storeCategory === "all" || game.category === storeCategory;
+    const matchesCategory = storeCategory === "all" || (storeCategory !== "pc" && game.category === storeCategory);
     const searchable = `${game.title} ${game.subtitle} ${game.triggerLabel}`.toLowerCase();
-    return matchesCategory && searchable.includes(storeSearch.trim().toLowerCase()) && (!storeFreeOnly || game.isFree);
+    return matchesCategory && searchable.includes(normalizedSearch) && (!storeFreeOnly || game.isFree);
+  });
+  const visiblePcGames = PC_GAMES_CATALOG.filter((game) => {
+    const matchesCategory = storeCategory === "all" || storeCategory === "pc";
+    const searchable = `${game.title} ${game.subtitle} ${game.platform}`.toLowerCase();
+    return matchesCategory && searchable.includes(normalizedSearch) && (!storeFreeOnly || game.access === "free");
   });
   const [newQText, setNewQText] = useState("");
   const [newOpts, setNewOpts] = useState<[string, string, string, string]>([
@@ -1528,10 +1550,13 @@ export function FreeGamesArena({
       <section className="rounded-2xl border border-border bg-card p-4 sm:p-5">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h3 className="text-base font-black text-foreground">{tx("Game Store")}</h3>
-            <p className="mt-1 text-xs text-muted-foreground">{tx("Search and filter all existing Tikley games by category.")}</p>
+            <h3 className="text-base font-black text-foreground">{locale === "ar" ? "متجر الألعاب" : tx("Game Store")}</h3>
+            <p className="mt-1 text-xs text-muted-foreground">{locale === "ar" ? "ألعاب Tikley التفاعلية وألعاب الكمبيوتر المجانية والمدفوعة في مكان واحد." : "Browse Tikley LIVE games and free or Pro+ connected PC titles in one place."}</p>
           </div>
-          <span className="rounded-xl border border-emerald-400/25 bg-emerald-500/10 px-3 py-2 text-xs font-extrabold text-emerald-300">{visibleGames.length} / {FREE_GAMES_CATALOG.length} · {tx("FREE")}</span>
+          <div className="flex flex-wrap gap-2">
+            <span className="rounded-xl border border-emerald-400/25 bg-emerald-500/10 px-3 py-2 text-xs font-extrabold text-emerald-300">{FREE_GAMES_CATALOG.length} {locale === "ar" ? "لعبة LIVE مجانية" : "free LIVE games"}</span>
+            <span className="rounded-xl border border-brand-cyan/25 bg-brand-cyan/10 px-3 py-2 text-xs font-extrabold text-brand-cyan">{PC_GAMES_CATALOG.length} {locale === "ar" ? "ألعاب PC" : "PC titles"}</span>
+          </div>
         </div>
         <div className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
           <label className="flex items-center gap-2 rounded-xl border border-border bg-secondary/30 px-3 py-2.5">
@@ -1545,14 +1570,46 @@ export function FreeGamesArena({
         </div>
         <div className="flex gap-2 overflow-x-auto pb-2">
           {storeCategories.map((category) => {
-            const count = category.id === "all" ? FREE_GAMES_CATALOG.length : FREE_GAMES_CATALOG.filter((game) => game.category === category.id).length;
+            const count = category.id === "all" ? FREE_GAMES_CATALOG.length + PC_GAMES_CATALOG.length : category.id === "pc" ? PC_GAMES_CATALOG.length : FREE_GAMES_CATALOG.filter((game) => game.category === category.id).length;
             return <button key={category.id} type="button" aria-pressed={storeCategory === category.id} onClick={() => setStoreCategory(category.id)} className={`shrink-0 rounded-full border px-3.5 py-2 text-xs font-bold transition ${storeCategory === category.id ? "border-brand-cyan bg-brand-cyan/15 text-brand-cyan" : "border-border bg-secondary/30 text-muted-foreground hover:border-brand-cyan/40 hover:text-foreground"}`}>{category.label} <span className="ml-1 opacity-70">{count}</span></button>;
           })}
         </div>
       </section>
 
+      {/* Connected PC games catalog */}
+      {(storeCategory === "all" || storeCategory === "pc") && (
+        <section className="space-y-3">
+          <div className="flex flex-wrap items-end justify-between gap-2">
+            <div>
+              <h3 className="text-base font-extrabold text-foreground">🖥️ {locale === "ar" ? "ألعاب الكمبيوتر المتصلة" : "Connected PC Games"}</h3>
+              <p className="mt-1 text-xs text-muted-foreground">{locale === "ar" ? "الألعاب المجانية وألعاب Pro+ الواردة في المرجع. يتطلب تشغيل تكاملات الكمبيوتر تطبيق سطح المكتب والموصل الخاص بكل لعبة." : "Free and Pro+ PC titles from the supplied reference. PC integrations require the desktop app and a game-specific connector."}</p>
+            </div>
+            <span className="rounded-full border border-border bg-secondary/40 px-3 py-1.5 text-[10px] font-bold text-muted-foreground">FREE + PRO+</span>
+          </div>
+          <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {visiblePcGames.map((game) => (
+              <article key={game.slug} className="group relative overflow-hidden rounded-2xl border border-border bg-card p-4 transition hover:border-brand-cyan/40">
+                <div className="pointer-events-none absolute -end-8 -top-8 h-28 w-28 rounded-full bg-brand-cyan/10 blur-2xl" />
+                <div className="relative mb-3 flex items-start justify-between gap-2">
+                  <span className="grid h-12 w-12 place-items-center rounded-xl border border-white/10 bg-gradient-to-br from-slate-800 to-slate-950 text-2xl">{game.icon}</span>
+                  <span className={"rounded-full px-2.5 py-1 text-[10px] font-black " + (game.access === "free" ? "bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-400/30" : "bg-amber-500/15 text-amber-300 ring-1 ring-amber-400/30")}>
+                    {game.access === "free" ? (locale === "ar" ? "مجانية" : "FREE") : "PRO+"}
+                  </span>
+                </div>
+                <h4 className="relative text-sm font-extrabold text-foreground">{game.title}</h4>
+                <p className="relative mt-1 min-h-[3.5rem] text-xs leading-relaxed text-muted-foreground">{game.subtitle}</p>
+                <div className="relative mt-3 flex items-center justify-between gap-2 border-t border-border/70 pt-2.5">
+                  <span className="text-[10px] font-semibold text-muted-foreground">{game.platform}</span>
+                  <span className="rounded-lg bg-secondary/70 px-2 py-1 text-[9px] font-bold text-muted-foreground">{locale === "ar" ? "قيد ربط التكامل" : "Connector pending"}</span>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* All Live Overlays catalog */}
-      <div>
+      {storeCategory !== "pc" && <div>
         <div className="mb-3 flex items-center justify-between">
           <h3 className="text-base font-extrabold text-foreground">
             🕹️ {tx("All Live Overlays (click one to set it up and preview it)")}
