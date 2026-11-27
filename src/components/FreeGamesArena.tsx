@@ -1576,6 +1576,26 @@ export function FreeGamesArena({
         </div>
       </section>
 
+      {/* Disco Halal standalone LIVE dance floor */}
+      <section className="overflow-hidden rounded-2xl border border-fuchsia-400/30 bg-gradient-to-br from-[#160b2b] via-[#100b24] to-[#07131f] p-4 sm:p-5">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl border border-fuchsia-300/30 bg-fuchsia-500/15 text-3xl shadow-[0_0_28px_rgba(217,70,239,.2)]">🪩</div>
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <h3 className="text-base font-black text-white">Disco Halal</h3>
+                <span className="rounded-full bg-fuchsia-400/15 px-2 py-0.5 text-[9px] font-black text-fuchsia-200">LIVE DANCE FLOOR</span>
+              </div>
+              <p className="mt-1 max-w-2xl text-xs leading-relaxed text-white/65">A neon 3D-inspired dance club for your TikTok LIVE community. Viewers enter with live interactions; gifts trigger spotlight moves and party energy.</p>
+            </div>
+          </div>
+          <div className="flex shrink-0 gap-2">
+            <button type="button" onClick={() => window.open("/dashboard/games/disco-halal", "_blank", "noopener,noreferrer")} className="rounded-xl bg-fuchsia-500 px-4 py-2.5 text-xs font-black text-white hover:bg-fuchsia-400">Open game studio ↗</button>
+            <button type="button" onClick={() => onCopyUrl("/overlay/disco-halal", "Disco Halal")} className="rounded-xl border border-white/20 px-4 py-2.5 text-xs font-bold text-white hover:bg-white/10">Copy OBS URL</button>
+          </div>
+        </div>
+      </section>
+
       {/* Connected PC games catalog */}
       {(storeCategory === "all" || storeCategory === "pc") && (
         <section className="space-y-3">
