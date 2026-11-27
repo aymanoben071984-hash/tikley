@@ -492,6 +492,14 @@ html[dir="ltr"] body { direction: ltr; }
 
 html[dir="rtl"] :is(input, textarea, select) { text-align: start; }
 
+/* Technical identifiers and external OBS/browser-source URLs stay LTR in Arabic UI. */
+html[dir="rtl"] :is(code, pre, kbd, samp, .font-mono),
+html[dir="rtl"] a[href^="http"] {
+  direction: ltr;
+  unicode-bidi: isolate;
+  text-align: left;
+}
+
 /* OBS/browser-source canvases keep a stable LTR layout regardless of dashboard locale.
    Text nodes still use plaintext bidi so Arabic and Latin usernames render naturally. */
 .overlay-root { direction: ltr; }
