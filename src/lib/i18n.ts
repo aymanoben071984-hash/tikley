@@ -117,6 +117,15 @@ const navigationTranslations: Record<string, Partial<Record<Locale, string>>> = 
 const dashboardTranslations: Record<string, Partial<Record<Locale, string>>> = {
   "Guide · OBS & LIVE Studio": { ar: "دليل OBS وLIVE Studio", fr: "Guide · OBS et LIVE Studio", de: "Anleitung · OBS & LIVE Studio", tr: "Rehber · OBS ve LIVE Studio", es: "Guía · OBS y LIVE Studio", it: "Guida · OBS e LIVE Studio" },
   "Welcome back": { ar: "مرحباً بعودتك", fr: "Bon retour", de: "Willkommen zurück", tr: "Tekrar hoş geldiniz", es: "Bienvenido de nuevo", it: "Bentornato" },
+  "LIVE ON AIR": { ar: "على الهواء مباشرة", fr: "EN DIRECT", de: "LIVE", tr: "CANLI YAYINDA", es: "EN DIRECTO", it: "IN DIRETTA" },
+  "WAITING FOR LIVE": { ar: "في انتظار بدء البث", fr: "EN ATTENTE DU DIRECT", de: "WARTET AUF LIVE", tr: "CANLI YAYIN BEKLENİYOR", es: "ESPERANDO EL DIRECTO", it: "IN ATTESA DELLA DIRETTA" },
+  "What&apos;s New on Tikley": { ar: "ما الجديد في Tikley؟", fr: "Quoi de neuf sur Tikley ?", de: "Neu bei Tikley", tr: "Tikley'de yenilikler", es: "Novedades de Tikley", it: "Novità su Tikley" },
+  "68 Ornate Avatar Frames Unlocked": { ar: "68 إطاراً مزخرفاً للشخصيات", fr: "68 cadres d’avatar ornés débloqués", de: "68 kunstvolle Avatarrahmen freigeschaltet", tr: "68 süslü avatar çerçevesi açıldı", es: "68 marcos ornamentales desbloqueados", it: "68 cornici avatar ornate sbloccate" },
+  "Free TikTok LIVE Games": { ar: "ألعاب TikTok LIVE المجانية", fr: "Jeux TikTok LIVE gratuits", de: "Kostenlose TikTok-LIVE-Spiele", tr: "Ücretsiz TikTok LIVE oyunları", es: "Juegos gratuitos de TikTok LIVE", it: "Giochi TikTok LIVE gratuiti" },
+  "Toggle theme": { ar: "تبديل المظهر", fr: "Changer de thème", de: "Design wechseln", tr: "Temayı değiştir", es: "Cambiar tema", it: "Cambia tema" },
+  "Customize appearance": { ar: "تخصيص المظهر", fr: "Personnaliser l’apparence", de: "Darstellung anpassen", tr: "Görünümü özelleştir", es: "Personalizar apariencia", it: "Personalizza aspetto" },
+  "Terms of Service": { ar: "شروط الاستخدام", fr: "Conditions d’utilisation", de: "Nutzungsbedingungen", tr: "Kullanım koşulları", es: "Términos del servicio", it: "Termini di servizio" },
+  "Privacy Policy": { ar: "سياسة الخصوصية", fr: "Politique de confidentialité", de: "Datenschutzerklärung", tr: "Gizlilik politikası", es: "Política de privacidad", it: "Informativa sulla privacy" },
   "Fire Test Lion": { ar: "إطلاق هدية الأسد التجريبية", fr: "Tester le cadeau Lion", de: "Testgeschenk Löwe auslösen", tr: "Aslan test hediyesini gönder", es: "Probar regalo León", it: "Prova regalo Leone" },
   "Test Mode is running — sample events are flowing to your overlays.": { ar: "الوضع التجريبي يعمل — يتم إرسال أحداث تجريبية إلى الشاشات.", fr: "Le mode test est actif — des événements de démonstration alimentent vos overlays.", de: "Der Testmodus läuft — Beispieldaten werden an deine Overlays gesendet.", tr: "Test modu çalışıyor — örnek etkinlikler katmanlarınıza aktarılıyor.", es: "El modo de prueba está activo: se envían eventos de ejemplo a tus overlays.", it: "La modalità test è attiva: gli eventi di esempio arrivano agli overlay." },
 };

@@ -466,7 +466,7 @@ export function DashboardApp({ initialSection = "overview", initialGame }: Dashb
             }`}
           >
             <span className="h-1.5 w-1.5 rounded-full bg-slate-950" />
-            {isLive ? "LIVE ON AIR" : "WAITING FOR LIVE"}
+            {isLive ? tx("LIVE ON AIR") : tx("WAITING FOR LIVE")}
           </button>
 
           <span
@@ -531,11 +531,11 @@ export function DashboardApp({ initialSection = "overview", initialGame }: Dashb
             {showNotifMenu && (
               <div className="absolute right-0 mt-2 w-80 rounded-2xl border border-border bg-popover p-3.5 shadow-2xl z-50 space-y-2.5">
                 <div className="text-xs font-extrabold text-foreground">
-                  What&apos;s New on OverlayLive
+                  {tx("What&apos;s New on Tikley")}
                 </div>
                 <div className="rounded-xl bg-secondary/50 p-2.5 text-xs">
                   <div className="font-bold text-brand-cyan">
-                    🐉 68 Ornate Avatar Frames Unlocked
+                    🐉 {tx("68 Ornate Avatar Frames Unlocked")}
                   </div>
                   <p className="mt-0.5 text-[11px] text-muted-foreground">
                     Ember Dragon, Sakura Fox, Stormfang Wolf &amp; 65 more frames ready for VIPs and Podiums.
@@ -543,7 +543,7 @@ export function DashboardApp({ initialSection = "overview", initialGame }: Dashb
                 </div>
                 <div className="rounded-xl bg-secondary/50 p-2.5 text-xs">
                   <div className="font-bold text-emerald-400">
-                    🎮 12 Free TikTok LIVE Games
+                    🎮 {tx("Free TikTok LIVE Games")}
                   </div>
                   <p className="mt-0.5 text-[11px] text-muted-foreground">
                     Quiz, Coin Battle, Lucky Wheel, Plinko &amp; Boss Raid ready for OBS &amp; TikTok LIVE Studio.
@@ -560,7 +560,7 @@ export function DashboardApp({ initialSection = "overview", initialGame }: Dashb
           <button
             type="button"
             onClick={() => setDarkMode((d) => !d)}
-            aria-label="Toggle theme"
+            aria-label={tx("Toggle theme")}
             className="grid h-8 w-8 place-items-center rounded-full text-muted-foreground hover:bg-secondary hover:text-foreground"
           >
             {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
@@ -571,7 +571,7 @@ export function DashboardApp({ initialSection = "overview", initialGame }: Dashb
             <button
               type="button"
               onClick={() => setShowPaletteMenu((v) => !v)}
-              aria-label="Customize appearance"
+              aria-label={tx("Customize appearance")}
               className="grid h-8 w-8 place-items-center rounded-full text-muted-foreground hover:bg-secondary hover:text-foreground"
             >
               <Palette className="h-4 w-4" />
@@ -715,8 +715,8 @@ export function DashboardApp({ initialSection = "overview", initialGame }: Dashb
             <div className="mt-auto border-t border-sidebar-border/80 pt-2">
               {sidebarExpanded ? (
                 <div className="flex flex-wrap gap-x-3 gap-y-1 px-2 pb-1 text-[10px] font-semibold text-muted-foreground">
-                  <a href="/terms" target="_blank" rel="noreferrer" className="hover:text-foreground">Terms of Service</a>
-                  <a href="/privacy" target="_blank" rel="noreferrer" className="hover:text-foreground">Privacy Policy</a>
+                  <a href="/terms" target="_blank" rel="noreferrer" className="hover:text-foreground">{tx("Terms of Service")}</a>
+                  <a href="/privacy" target="_blank" rel="noreferrer" className="hover:text-foreground">{tx("Privacy Policy")}</a>
                 </div>
               ) : (
                 <div className="flex flex-col items-center gap-1">
