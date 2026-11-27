@@ -651,7 +651,7 @@ export function DashboardApp({ initialSection = "overview", initialGame }: Dashb
               const groupTitle =
                 item.group === "core" ? tx("Workspace") :
                 item.group === "overlays" ? tx("LIVE & Overlays") :
-                item.group === "interactive" ? tx("Interactive Studio") :
+                item.group === "interactive" ? tx("Interactive Actions") :
                 tx("Creator Studio");
 
               return (
