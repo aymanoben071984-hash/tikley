@@ -6,6 +6,7 @@ import { STORE_OVERLAYS } from "@/lib/liveOverlays";
 import { BreakingNewsStudio } from "@/components/BreakingNewsStudio";
 import { FramedAvatar } from "@/components/FramedAvatar";
 import { MitLiveGameCanvas } from "@/components/MitLiveGames";
+import { PictureQuizStage } from "@/components/PictureQuizStage";
 import { notifyOverlayChannel, playBroadcastSound } from "@/components/SoundEngine";
 import {
   DEFAULT_QUIZ_QUESTIONS,
@@ -75,6 +76,10 @@ export function GameOverlayStage({
         state={state}
       />
     );
+  }
+
+  if (gameSlug === "picture-quiz") {
+    return <PictureQuizStage state={state} interactive={interactive} onUpdateState={onUpdateState} />;
   }
 
   if (gameSlug === "live-quiz") {
@@ -931,6 +936,24 @@ export function FreeGamesArena({
         const votes = (next.votes as Record<string, number>) || {};
         next.votes = { ...votes, [option]: Number(votes[option] || 0) + 1 };
         changed = true;
+      }
+
+      if (selectedSlug === "picture-quiz" && kind === "chat" && next.startedAt && !next.revealed) {
+        const durationMs = Math.max(5, Math.min(90, Number(next.duration || 20))) * 1000;
+        const stillOpen = Date.now() - Number(next.startedAt) < durationMs;
+        const normalizeAnswer = (value: string) => value.toLowerCase().trim()
+          .replace(/[\u064B-\u065F\u0670]/g, "")
+          .replace(/[أإآ]/g, "ا").replace(/ى/g, "ي").replace(/ة/g, "ه")
+          .replace(/^!/, "").replace(/[؟?!.،,]/g, "").trim();
+        const expected = normalizeAnswer(String(next.correctAnswer || ""));
+        const guess = normalizeAnswer(message);
+        if (stillOpen && expected && guess === expected) {
+          const winners = (next.chatAnswers as Array<{ name: string; message: string }>) || [];
+          if (!winners.some((winner) => winner.name.toLowerCase() === name.toLowerCase())) {
+            next.chatAnswers = [{ name, message }, ...winners].slice(0, 20);
+            changed = true;
+          }
+        }
       }
 
       if (selectedSlug === "word-scramble" && kind === "chat") {
