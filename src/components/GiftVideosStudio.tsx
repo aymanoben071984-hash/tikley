@@ -155,23 +155,33 @@ export function GiftVideosStudio({ onCopyUrl, onToast }: GiftVideosStudioProps) 
 
   return (
     <div className="space-y-5 pb-24">
-      <div className="rounded-2xl border border-border bg-gradient-to-r from-amber-950/40 via-card to-fuchsia-950/40 p-5">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-3.5">
-            <div className="grid h-12 w-12 place-items-center rounded-2xl bg-amber-400/15 text-amber-400 ring-1 ring-amber-400/35">
-              <Film className="h-6 w-6" />
+      <div className="relative isolate overflow-hidden rounded-3xl border border-border/80 bg-card p-5 shadow-xl shadow-black/10 sm:p-6">
+        <div aria-hidden="true" className="pointer-events-none absolute -end-16 -top-24 h-64 w-64 rounded-full bg-cyan-400/10 blur-3xl" />
+        <div aria-hidden="true" className="pointer-events-none absolute -start-20 -bottom-28 h-64 w-64 rounded-full bg-violet-500/10 blur-3xl" />
+        <div className="relative flex flex-wrap items-center justify-between gap-4">
+          <div className="flex min-w-0 items-center gap-4">
+            <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-cyan-400/20 to-violet-500/20 text-cyan-300 ring-1 ring-cyan-300/25 shadow-inner">
+              <Film className="h-7 w-7" />
             </div>
-            <div>
-              <div className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-muted-foreground">{tx("Interactive Actions")}</div>
-              <h2 className="text-2xl font-black text-foreground">{tx("Gift Videos")}</h2>
-              <p className="max-w-3xl text-xs text-muted-foreground">
+            <div className="min-w-0">
+              <div className="mb-1 flex flex-wrap items-center gap-2 text-[10px] font-extrabold uppercase tracking-[0.2em] text-muted-foreground">
+                <span>{tx("Interactive Actions")}</span><span className="h-1 w-1 rounded-full bg-cyan-400" /><span>6 {tx("independent screens")}</span>
+              </div>
+              <h2 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{tx("Gift Videos")}</h2>
+              <p className="mt-1 max-w-3xl text-xs leading-relaxed text-muted-foreground">
                 {tx("Trigger full-screen video or GIF animations (with optional sound) on up to 6 independent overlays when specific gifts are sent, coin milestones are hit, or likes reach a threshold.")}
               </p>
             </div>
           </div>
-          <button type="button" onClick={create} className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-brand-blue to-brand-cyan px-4 py-2.5 text-xs font-black text-white shadow hover:brightness-110">
+          <button type="button" onClick={create} className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-brand-blue to-brand-cyan px-4 py-3 text-xs font-black text-white shadow-lg shadow-cyan-950/20 transition hover:-translate-y-0.5 hover:brightness-110">
             <Plus className="h-4 w-4" /> New action
           </button>
+        </div>
+        <div className="relative mt-5 grid grid-cols-2 gap-2 border-t border-border/70 pt-4 sm:grid-cols-4">
+          <div className="rounded-xl bg-background/55 px-3 py-2.5"><div className="text-[10px] font-semibold text-muted-foreground">{tx("Total rules")}</div><div className="mt-1 text-xl font-black tabular-nums text-foreground">{actions.length}</div></div>
+          <div className="rounded-xl bg-background/55 px-3 py-2.5"><div className="text-[10px] font-semibold text-muted-foreground">{tx("Active rules")}</div><div className="mt-1 text-xl font-black tabular-nums text-emerald-400">{actions.filter((a) => a.enabled).length}</div></div>
+          <div className="rounded-xl bg-background/55 px-3 py-2.5"><div className="text-[10px] font-semibold text-muted-foreground">{tx("Screens in use")}</div><div className="mt-1 text-xl font-black tabular-nums text-cyan-300">{new Set(actions.map((a) => a.screen)).size}<span className="ml-1 text-xs font-bold text-muted-foreground">/ 6</span></div></div>
+          <div className="rounded-xl bg-background/55 px-3 py-2.5"><div className="text-[10px] font-semibold text-muted-foreground">{tx("Disabled rules")}</div><div className="mt-1 text-xl font-black tabular-nums text-amber-300">{actions.filter((a) => !a.enabled).length}</div></div>
         </div>
       </div>
 
@@ -181,14 +191,20 @@ export function GiftVideosStudio({ onCopyUrl, onToast }: GiftVideosStudioProps) 
           const count = actions.filter((a) => a.screen === n).length;
           const on = filter === n;
           return (
-            <div key={n} onClick={() => setFilter(on ? "all" : n)} className={`cursor-pointer rounded-2xl border p-3 transition ${on ? "border-brand-cyan bg-brand-cyan/10 ring-1 ring-brand-cyan" : "border-border bg-card hover:border-brand-cyan/40"}`}>
-              <div className="text-sm font-extrabold text-foreground">Screen {n}</div>
-              <div className="text-[10px] text-muted-foreground">{count} action{count === 1 ? "" : "s"}</div>
-              <div className="mt-2 flex gap-1.5" onClick={(e) => e.stopPropagation()}>
-                <button type="button" onClick={() => { onCopyUrl(screenLink(n), `Gift Video Screen ${n}`); setCopied(n); setTimeout(() => setCopied(null), 1800); }} className="inline-flex flex-1 items-center justify-center gap-1 rounded-lg bg-brand-cyan/20 px-2 py-1 text-[11px] font-bold text-brand-cyan hover:bg-brand-cyan/30">
-                  {copied === n ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />} {copied === n ? "Copied" : "Link"}
+            <div key={n} onClick={() => setFilter(on ? "all" : n)} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setFilter(on ? "all" : n); } }} className={`group relative cursor-pointer overflow-hidden rounded-2xl border p-3.5 transition duration-200 hover:-translate-y-0.5 ${on ? "border-cyan-400/70 bg-cyan-400/10 ring-1 ring-cyan-400/30 shadow-lg shadow-cyan-950/10" : "border-border/80 bg-card hover:border-cyan-400/40 hover:bg-secondary/20"}`}>
+              <div className="flex items-start justify-between gap-2">
+                <div className={`grid h-9 w-9 place-items-center rounded-xl ${on ? "bg-cyan-400/20 text-cyan-300" : "bg-secondary text-muted-foreground group-hover:text-cyan-300"}`}><Film className="h-4 w-4" /></div>
+                <span className={`rounded-full px-2 py-1 text-[9px] font-black uppercase tracking-wider ${count ? "bg-emerald-500/10 text-emerald-400" : "bg-secondary text-muted-foreground"}`}>{count ? tx("Configured") : tx("Empty")}</span>
+              </div>
+              <div className="mt-3 flex items-end justify-between gap-2">
+                <div><div className="text-sm font-extrabold text-foreground">Screen {n}</div><div className="mt-0.5 text-[10px] text-muted-foreground">{count} {tx("action(s) mapped")}</div></div>
+                <div className="text-xl font-black tabular-nums text-foreground/70">{String(n).padStart(2, "0")}</div>
+              </div>
+              <div className="mt-3 flex gap-1.5" onClick={(e) => e.stopPropagation()}>
+                <button type="button" onClick={() => { onCopyUrl(screenLink(n), `Gift Video Screen ${n}`); setCopied(n); setTimeout(() => setCopied(null), 1800); }} className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-cyan-400/10 px-2 py-2 text-[11px] font-bold text-cyan-300 transition hover:bg-cyan-400/20">
+                  {copied === n ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />} {copied === n ? tx("Copied") : tx("Copy source")}
                 </button>
-                <a href={screenLink(n)} target="_blank" rel="noreferrer" aria-label={`Open screen ${n}`} className="rounded-lg border border-border px-2 py-1 text-muted-foreground hover:text-foreground">
+                <a href={screenLink(n)} target="_blank" rel="noreferrer" aria-label={`Open screen ${n}`} className="grid h-8 w-8 place-items-center rounded-lg border border-border text-muted-foreground transition hover:border-cyan-400/40 hover:text-foreground">
                   <ExternalLink className="h-3.5 w-3.5" />
                 </a>
               </div>
