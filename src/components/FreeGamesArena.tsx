@@ -727,7 +727,7 @@ export function GameOverlayStage({
           {fuse > 0 ? `${holder} holds the bomb!` : `💥 Exploded on ${holder}!`}
         </div>
         <div className="text-[11px] text-white/65">{tx("Type !pass or send a Rose to pass it!")}</div>
-      </div>}
+      </div>
     </div>
   );
 }
@@ -1686,7 +1686,7 @@ export function FreeGamesArena({
             <button type="button" onClick={() => { setStoreSearch(""); setStoreCategory("all"); setStoreFreeOnly(true); }} className="mt-3 rounded-lg bg-brand-cyan px-3 py-2 text-xs font-black text-slate-950">{tx("Reset filters")}</button>
           </div>
         )}
-      </div>
+      </div>}
     </div>
   );
 }
