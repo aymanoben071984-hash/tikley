@@ -6,6 +6,7 @@ import { STORE_OVERLAYS } from "@/lib/liveOverlays";
 import { BreakingNewsStudio } from "@/components/BreakingNewsStudio";
 import { FramedAvatar } from "@/components/FramedAvatar";
 import { MitLiveGameCanvas } from "@/components/MitLiveGames";
+import { PictureQuizStage } from "@/components/PictureQuizStage";
 import { notifyOverlayChannel, playBroadcastSound } from "@/components/SoundEngine";
 import {
   DEFAULT_QUIZ_QUESTIONS,
@@ -75,6 +76,10 @@ export function GameOverlayStage({
         state={state}
       />
     );
+  }
+
+  if (gameSlug === "picture-quiz") {
+    return <PictureQuizStage state={state} interactive={interactive} onUpdateState={onUpdateState} />;
   }
 
   if (gameSlug === "live-quiz") {
