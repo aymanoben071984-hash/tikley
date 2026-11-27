@@ -482,11 +482,7 @@ html.obs-transparent body {
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 
-@media (prefers-reduced-motion: reduce) {
-  .animate-fade-up, .ol-tiktok-coin-spin, .lo-hint-pulse, .lo-new-pointer, .lo-new-target,
-  .lo-hint-fresh::after, .lo-hint-fresh .lo-hint-bulb, .popular-badge::after, .popular-flame { animation: none; }
-  .lo-hint-fresh::after { opacity: 0; }
-}
+
 
 
 /* ===== Locale direction and script-safe overlay typography ===== */
@@ -502,7 +498,7 @@ html[dir="rtl"] :is(input, textarea, select) { text-align: start; }
 .overlay-root :is(.ol-name, .cb-name, .cb-hname, .cl-name, .fp-name, .podium-nickname) {
   unicode-bidi: plaintext;
 }
-html.obs-transparent .overlay-root :is(.cb-score-val, .cb-hscore, .cl-score, .cl-score-inside, .fp-score, .podium-value, .ol-score) {
+.overlay-root :is(.cb-score-val, .cb-hscore, .cl-score, .cl-score-inside, .fp-score, .podium-value, .ol-score) {
   direction: ltr;
   unicode-bidi: isolate;
 }
