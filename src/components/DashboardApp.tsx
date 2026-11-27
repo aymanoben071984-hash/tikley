@@ -470,7 +470,7 @@ export function DashboardApp({ initialSection = "overview", initialGame }: Dashb
           </button>
 
           <span
-            title="Real-time PostgreSQL & Overlay Sync Connected"
+            title={tx("Real-time PostgreSQL & Overlay Sync Connected")}
             className="inline-flex items-center text-emerald-400"
           >
             <Wifi className="h-4 w-4" />
@@ -1049,7 +1049,7 @@ export function DashboardApp({ initialSection = "overview", initialGame }: Dashb
                         <button
                           type="button"
                           onClick={fetchDashboard}
-                          title="Refresh profile"
+                          title={tx("Refresh profile")}
                           className="rounded-lg p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground"
                         >
                           <RefreshCw className="h-4 w-4" />
