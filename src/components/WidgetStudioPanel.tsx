@@ -149,7 +149,7 @@ export function WidgetStudioPanel({
                 <input
                   value={chatDraft}
                   onChange={(e) => setChatDraft(e.target.value)}
-                  placeholder="Post simulated viewer chat comment..."
+                  placeholder={tx("Post simulated viewer chat comment...")}
                   className="flex-1 rounded-xl border border-border bg-background px-3 py-2 text-xs outline-none focus:border-brand-cyan"
                 />
                 <button
