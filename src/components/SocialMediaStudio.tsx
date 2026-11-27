@@ -41,7 +41,7 @@ function ColorOpt({ label, value, onChange, placeholder }: { label: string; valu
         <input type="color" value={value || "#ffffff"} onChange={(e) => onChange(e.target.value)} className="h-6 w-7 cursor-pointer border-0 bg-transparent" />
         <span className="min-w-0 flex-1 truncate font-mono text-[11px] text-muted-foreground">{value || placeholder}</span>
         {value && (
-          <button type="button" onClick={() => onChange("")} className="text-[10px] font-bold text-muted-foreground hover:text-foreground">Reset</button>
+          <button type="button" onClick={() => onChange("")} className="text-[10px] font-bold text-muted-foreground hover:text-foreground">{tx("Reset")}</button>
         )}
       </div>
     </div>
@@ -110,15 +110,15 @@ export function SocialMediaStudio({ widget, onSave, onCopyUrl }: SocialMediaStud
                   <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-slate-950">
                     <PlatformIcon platform={l.platform} size={20} />
                   </span>
-                  <select value={l.platform} onChange={(e) => setLink(i, { platform: e.target.value })} aria-label="Platform" className="rounded-lg border border-border bg-background px-2 py-1.5 text-xs font-semibold text-foreground">
+                  <select value={l.platform} onChange={(e) => setLink(i, { platform: e.target.value })} aria-label={tx("Platform")} className="rounded-lg border border-border bg-background px-2 py-1.5 text-xs font-semibold text-foreground">
                     {Object.entries(SOCIAL_PLATFORMS).map(([id, p]) => <option key={id} value={id}>{p.label}</option>)}
                   </select>
-                  <input value={l.label} maxLength={60} dir="auto" placeholder="@yourname" onChange={(e) => setLink(i, { label: e.target.value })} aria-label="Handle shown on stream" className="min-w-[140px] flex-1 rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs font-bold text-foreground outline-none focus:border-brand-cyan" />
-                  <input value={l.url} maxLength={200} placeholder="https://… (optional)" onChange={(e) => setLink(i, { url: e.target.value })} aria-label="Profile link" className="min-w-[140px] flex-1 rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs text-muted-foreground outline-none focus:border-brand-cyan" />
+                  <input value={l.label} maxLength={60} dir="auto" placeholder="@yourname" onChange={(e) => setLink(i, { label: e.target.value })} aria-label={tx("Handle shown on stream")} className="min-w-[140px] flex-1 rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs font-bold text-foreground outline-none focus:border-brand-cyan" />
+                  <input value={l.url} maxLength={200} placeholder="https://… (optional)" onChange={(e) => setLink(i, { url: e.target.value })} aria-label={tx("Profile link")} className="min-w-[140px] flex-1 rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs text-muted-foreground outline-none focus:border-brand-cyan" />
                   <span className="flex items-center">
-                    <button type="button" aria-label="Move up" onClick={() => moveLink(i, -1)} disabled={i === 0} className="rounded p-1 text-muted-foreground hover:text-foreground disabled:opacity-30"><ArrowUp className="h-3.5 w-3.5" /></button>
-                    <button type="button" aria-label="Move down" onClick={() => moveLink(i, 1)} disabled={i === draft.links.length - 1} className="rounded p-1 text-muted-foreground hover:text-foreground disabled:opacity-30"><ArrowDown className="h-3.5 w-3.5" /></button>
-                    <button type="button" aria-label="Remove" onClick={() => set({ links: draft.links.filter((_, j) => j !== i) })} className="rounded p-1 text-muted-foreground hover:text-red-400"><Trash2 className="h-3.5 w-3.5" /></button>
+                    <button type="button" aria-label={tx("Move up")} onClick={() => moveLink(i, -1)} disabled={i === 0} className="rounded p-1 text-muted-foreground hover:text-foreground disabled:opacity-30"><ArrowUp className="h-3.5 w-3.5" /></button>
+                    <button type="button" aria-label={tx("Move down")} onClick={() => moveLink(i, 1)} disabled={i === draft.links.length - 1} className="rounded p-1 text-muted-foreground hover:text-foreground disabled:opacity-30"><ArrowDown className="h-3.5 w-3.5" /></button>
+                    <button type="button" aria-label={tx("Remove")} onClick={() => set({ links: draft.links.filter((_, j) => j !== i) })} className="rounded p-1 text-muted-foreground hover:text-red-400"><Trash2 className="h-3.5 w-3.5" /></button>
                   </span>
                 </div>
               ))}
@@ -162,7 +162,7 @@ export function SocialMediaStudio({ widget, onSave, onCopyUrl }: SocialMediaStud
                   <span className="flex justify-between font-semibold text-muted-foreground"><span>{tx("Text size")}</span><span className="text-foreground">{draft.fontSize}%</span></span>
                   <input type="range" min={50} max={200} step={5} value={draft.fontSize} onChange={(e) => set({ fontSize: Number(e.target.value) })} className="mt-1 w-full accent-cyan-400" />
                 </label>
-                <select value={draft.fontFamily} onChange={(e) => set({ fontFamily: e.target.value })} aria-label="Font" className="w-full rounded-xl border border-border bg-background px-3 py-2 font-semibold text-foreground">
+                <select value={draft.fontFamily} onChange={(e) => set({ fontFamily: e.target.value })} aria-label={tx("Font")} className="w-full rounded-xl border border-border bg-background px-3 py-2 font-semibold text-foreground">
                   {FONTS.map((f) => <option key={f} value={f}>{f ? `Font: ${f}` : "Font: design default"}</option>)}
                 </select>
                 <ColorOpt label="Handle colour" value={draft.textColor} placeholder="Design default" onChange={(v) => set({ textColor: v })} />
