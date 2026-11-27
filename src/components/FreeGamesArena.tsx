@@ -465,7 +465,7 @@ export function GameOverlayStage({
               <input
                 value={guessInput}
                 onChange={(e) => setGuessInput(e.target.value)}
-                placeholder="Type guess (e.g. STREAMER)..."
+                placeholder={tx("Type guess (e.g. STREAMER)...")}
                 className="flex-1 rounded-xl border border-white/15 bg-white/5 px-3 py-1.5 text-xs text-white outline-none focus:border-cyan-400"
               />
               <button
@@ -567,7 +567,7 @@ export function GameOverlayStage({
           {visibleDancers.length === 0 && <div className="absolute inset-0 grid place-items-center text-xs font-semibold text-white/60">{tx("Waiting for viewers to join the dance floor…")}</div>}
         </div>
         <div className="mt-2 flex items-center justify-between text-[10px] text-white/65">
-          <span>Chat: !dance · !jump · !hug · !spin · !wave</span>
+          <span>{tx("Chat: !dance · !jump · !hug · !spin · !wave")}</span>
           <span>❤️ {visibleDancers.reduce((sum, d) => sum + Number(d.score || 0), 0).toLocaleString()}</span>
         </div>
       </div>
@@ -1179,7 +1179,7 @@ export function FreeGamesArena({
                 <input
                   value={newQText}
                   onChange={(e) => setNewQText(e.target.value)}
-                  placeholder="Write your question for chat..."
+                  placeholder={tx("Write your question for chat...")}
                   className="w-full rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs text-foreground outline-none focus:border-brand-cyan"
                 />
                 <div className="grid grid-cols-2 gap-1.5">
