@@ -224,7 +224,7 @@ export function GiftVideosStudio({ onCopyUrl, onToast }: GiftVideosStudioProps) 
                     </div>
                   </div>
                   <span onClick={(e) => e.stopPropagation()} className="flex items-center gap-1.5">
-                    <button type="button" title="Test on stream" onClick={() => test(a)} className="rounded-lg bg-emerald-500/15 p-1.5 text-emerald-300 hover:bg-emerald-500/25">
+                    <button type="button" title={tx("Test on stream")} onClick={() => test(a)} className="rounded-lg bg-emerald-500/15 p-1.5 text-emerald-300 hover:bg-emerald-500/25">
                       <Zap className="h-3.5 w-3.5" />
                     </button>
                     <Toggle checked={a.enabled} onChange={(v) => toggleEnabled(a, v)} />
